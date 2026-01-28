@@ -2,6 +2,7 @@
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.kotlin.compose) apply false
 }
 
 // To clean the application gradle module correctly (Build -> Clean Project or ./gradlew clean)
