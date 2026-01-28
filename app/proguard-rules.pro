@@ -19,3 +19,45 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# --- GENERAL ---
+
+# Keep stack trace data for Crashlytics (Line numbers, files)
+-keepattributes SourceFile,LineNumberTable
+
+# Required for libraries using Reflection (Dagger, Retrofit, etc.)
+-keepattributes *Annotation*
+-keepattributes EnclosingMethod
+-keepattributes Exceptions, InnerClasses
+
+# CRITICAL: Keep Generic types (List<User> -> List<User>)
+# Fixes crashes in Retrofit/Gson/Moshi
+-keepattributes Signature
+
+# --- KOTLIN ---
+-keepclassmembers class ** {
+    @org.jetbrains.annotations.Nullable *;
+    @org.jetbrains.annotations.NotNull *;
+}
+
+# --- KOTLIN SERIALIZATION ---
+# Prevent renaming fields in JSON models
+-keepclassmembers class * {
+    @kotlinx.serialization.Serializable *;
+}
+
+# --- RETROFIT ---
+# Keep annotations for HTTP methods (@GET, @POST)
+-keepattributes RuntimeVisibleAnnotations, RuntimeVisibleParameterAnnotations
+-keepattributes AnnotationDefault
+
+# --- NAVIGATION COMPOSE ---
+# Prevent crashes when passing arguments between screens
+-keepnames class * implements android.os.Parcelable
+-keepnames class * implements java.io.Serializable
+
+# --- DEBUGGING SUPPORT (OPTIONAL) ---
+# Keep resource IDs. Usually not needed for Release.
+-keep class **.R$* {
+    <fields>;
+}
