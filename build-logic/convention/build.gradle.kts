@@ -15,5 +15,10 @@ gradlePlugin {
             id = "artopos.android.application"
             implementationClass = "ru.createsmart.artopos.AndroidApplicationConventionPlugin"
         }
+
+        register("androidLibrary") {
+            id = "artopos.android.library"
+            implementationClass = "ru.createsmart.artopos.AndroidLibraryConventionPlugin"
+        }
     }
 }
