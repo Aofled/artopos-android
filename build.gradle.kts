@@ -3,3 +3,8 @@ plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.kotlin.android) apply false
 }
+
+// To clean the application gradle module correctly (Build -> Clean Project or ./gradlew clean)
+tasks.register("clean", Delete::class) {
+    delete(rootProject.layout.buildDirectory)
+}
