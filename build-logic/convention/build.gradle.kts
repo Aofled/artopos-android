@@ -1,5 +1,6 @@
 plugins {
     `kotlin-dsl`
+    alias(libs.plugins.detekt)
 }
 
 group = "ru.createsmart.artopos.buildlogic"
@@ -7,6 +8,14 @@ group = "ru.createsmart.artopos.buildlogic"
 dependencies {
     implementation(libs.android.gradlePlugin)
     implementation(libs.kotlin.gradlePlugin)
+
+    implementation(libs.detekt.gradlePlugin)
+    detektPlugins(libs.detekt.formatting)
+}
+
+detekt {
+    config.setFrom(files("../../config/detekt/detekt.yml"))
+    autoCorrect = true
 }
 
 gradlePlugin {
@@ -29,6 +38,11 @@ gradlePlugin {
         register("androidLibraryCompose") {
             id = "artopos.android.library.compose"
             implementationClass = "ru.createsmart.artopos.AndroidLibraryComposeConventionPlugin"
+        }
+
+        register("detekt") {
+            id = "artopos.convention.detekt"
+            implementationClass = "ru.createsmart.artopos.DetektConventionPlugin"
         }
     }
 }
