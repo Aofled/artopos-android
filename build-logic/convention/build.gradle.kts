@@ -33,6 +33,12 @@ gradlePlugin {
             implementationClass = "ru.createsmart.artopos.AndroidLibraryConventionPlugin"
         }
 
+        // Pure Kotlin Library (No Android dependencies)
+        register("jvmLibrary") {
+            id = "artopos.jvm.library"
+            implementationClass = "ru.createsmart.artopos.JvmLibraryConventionPlugin"
+        }
+
         register("androidApplicationCompose") {
             id = "artopos.android.application.compose"
             implementationClass = "ru.createsmart.artopos.AndroidApplicationComposeConventionPlugin"
