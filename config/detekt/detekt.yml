@@ -139,6 +139,12 @@ complexity:
     constructorThreshold: 7
     ignoreDefaultParameters: false
     ignoreDataClasses: true
+    ignoreAnnotated:
+      - 'GET'
+      - 'POST'
+      - 'PUT'
+      - 'DELETE'
+      - 'PATCH'
     ignoreAnnotatedParameter: []
   MethodOverloading:
     active: false
