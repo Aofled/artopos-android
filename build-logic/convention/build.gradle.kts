@@ -11,6 +11,9 @@ dependencies {
 
     implementation(libs.detekt.gradlePlugin)
     detektPlugins(libs.detekt.formatting)
+
+    implementation(libs.hilt.gradlePlugin)
+    implementation(libs.ksp.gradlePlugin)
 }
 
 detekt {
@@ -43,6 +46,11 @@ gradlePlugin {
         register("detekt") {
             id = "artopos.convention.detekt"
             implementationClass = "ru.createsmart.artopos.DetektConventionPlugin"
+        }
+
+        register("hilt") {
+            id = "artopos.di.hilt"
+            implementationClass = "ru.createsmart.artopos.HiltConventionPlugin"
         }
     }
 }

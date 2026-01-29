@@ -1,6 +1,7 @@
 plugins {
     id("artopos.android.application")
     id("artopos.android.application.compose")
+    id("artopos.di.hilt")
 }
 
 android {
