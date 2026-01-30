@@ -14,6 +14,8 @@ dependencies {
 
     implementation(libs.hilt.gradlePlugin)
     implementation(libs.ksp.gradlePlugin)
+
+    implementation(libs.room.gradlePlugin)
 }
 
 detekt {
@@ -57,6 +59,11 @@ gradlePlugin {
         register("hilt") {
             id = "artopos.di.hilt"
             implementationClass = "ru.createsmart.artopos.HiltConventionPlugin"
+        }
+
+        register("room") {
+            id = "artopos.convention.room"
+            implementationClass = "ru.createsmart.artopos.AndroidRoomConventionPlugin"
         }
     }
 }
