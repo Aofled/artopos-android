@@ -29,3 +29,4 @@ rootProject.name = "Artopos"
 include(":app")
 include(":core:model")
 include(":core:network")
+include(":core:database")
