@@ -603,7 +603,7 @@ style:
         value: 'STOPSHIP:'
       - reason: 'Forbidden TODO todo marker in comment, please do the changes.'
         value: 'TODO:'
-    allowedPatterns: ''
+    allowedPatterns: 'TODO\([a-zA-Z]+\):'
   ForbiddenImport:
     active: false
     imports: []
