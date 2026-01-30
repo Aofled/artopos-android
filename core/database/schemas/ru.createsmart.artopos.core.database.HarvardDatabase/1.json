@@ -1,0 +1,94 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "68d350c76f0392ebb21683085139b0c3",
+    "entities": [
+      {
+        "tableName": "artworks",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `title` TEXT NOT NULL, `artist` TEXT NOT NULL, `image_url` TEXT NOT NULL, `date` TEXT, `year_int` INTEGER, `technique` TEXT, `description` TEXT, `url` TEXT, `image_dimensions_width` INTEGER, `image_dimensions_height` INTEGER, `coordinates_lat` REAL, `coordinates_lon` REAL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "artist",
+            "columnName": "artist",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "imageUrl",
+            "columnName": "image_url",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "yearInt",
+            "columnName": "year_int",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "technique",
+            "columnName": "technique",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "url",
+            "columnName": "url",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "imageDimensions.width",
+            "columnName": "image_dimensions_width",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "imageDimensions.height",
+            "columnName": "image_dimensions_height",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "coordinates.lat",
+            "columnName": "coordinates_lat",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "coordinates.lon",
+            "columnName": "coordinates_lon",
+            "affinity": "REAL"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '68d350c76f0392ebb21683085139b0c3')"
+    ]
+  }
+}
