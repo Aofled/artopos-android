@@ -35,5 +35,12 @@ internal fun Project.configureAndroidCompose(
         add("implementation", libs.findBundle("compose").get())
         // Add debug tools (Inspector, Previews). Only for Debug builds!
         add("debugImplementation", libs.findBundle("compose-debug").get())
+
+        // Safer state collection: collectAsStateWithLifecycle()
+        // Stops updating UI when app is in background (saves battery).
+        add("implementation", libs.findLibrary("androidx-lifecycle-runtime-compose").get())
+
+        // Async Image Loading
+        add("implementation", libs.findLibrary("coil-compose").get())
     }
 }
