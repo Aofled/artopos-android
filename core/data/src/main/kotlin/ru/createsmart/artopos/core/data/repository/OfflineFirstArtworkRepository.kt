@@ -35,7 +35,13 @@ class OfflineFirstArtworkRepository @Inject constructor(
         return runCatching {
             withContext(Dispatchers.IO) {
                 val response = api.getArtworks()
-                val newArtwork = response.records.map { it.toDBO() }
+
+                // Filter Logic: Drop broken items.
+                val validRecords = response.records.filter { dto ->
+                    !dto.images.isNullOrEmpty()
+                }
+
+                val newArtwork = validRecords.map { it.toDBO() }
                 dao.insertArtworks(newArtwork) // Cache Update: This triggers the Flow above
             }
         }
