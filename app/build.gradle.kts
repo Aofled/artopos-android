@@ -29,8 +29,6 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
     implementation(projects.core.data)
     implementation(projects.core.ui)
     implementation(projects.feature.discover)
