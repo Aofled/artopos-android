@@ -145,6 +145,7 @@ complexity:
       - 'PUT'
       - 'DELETE'
       - 'PATCH'
+      - 'Composable'
     ignoreAnnotatedParameter: []
   MethodOverloading:
     active: false
