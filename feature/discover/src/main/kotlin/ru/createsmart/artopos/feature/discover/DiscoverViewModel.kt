@@ -22,12 +22,14 @@ class DiscoverViewModel @Inject constructor(
 ) : ViewModel() {
     private val _isRefreshing = MutableStateFlow(false)
     private val _isError = MutableStateFlow(false)
+    private val _contentVersion = MutableStateFlow(0)
 
     val uiState: StateFlow<DiscoverUiState> = combine(
         getArtworks(),
         _isRefreshing,
         _isError,
-    ) { artworks, isRefreshing, isError ->
+        _contentVersion,
+    ) { artworks, isRefreshing, isError, contentVersion ->
 
         when {
             artworks.isEmpty() && isError -> DiscoverUiState.Error
@@ -37,6 +39,7 @@ class DiscoverViewModel @Inject constructor(
             else -> DiscoverUiState.Success(
                 artworks = artworks.map { it.toUi() },
                 isRefreshing = isRefreshing,
+                contentVersion = contentVersion,
             )
         }
     }
@@ -59,6 +62,7 @@ class DiscoverViewModel @Inject constructor(
         viewModelScope.launch {
             _isRefreshing.value = true
             _isError.value = false
+            _contentVersion.value++ // Increment version to force Coil to clear cache/retry for all images
 
             val result = syncArtworks()
 

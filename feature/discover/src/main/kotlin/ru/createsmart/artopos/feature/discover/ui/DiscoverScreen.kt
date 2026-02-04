@@ -65,6 +65,7 @@ fun DiscoverScreen(
                 is DiscoverUiState.Success -> {
                     ArtworksView(
                         artworks = state.artworks,
+                        contentVersion = state.contentVersion,
                         isRefreshing = state.isRefreshing,
                         onRefresh = onRefresh,
                         onArtworkClick = onArtworkClick,

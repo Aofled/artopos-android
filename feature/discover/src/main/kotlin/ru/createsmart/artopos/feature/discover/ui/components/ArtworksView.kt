@@ -24,6 +24,7 @@ import ru.createsmart.artopos.feature.discover.model.ArtworkListItem
 @Composable
 fun ArtworksView(
     artworks: List<ArtworkListItem>,
+    contentVersion: Int,
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
     onArtworkClick: (Int) -> Unit,
@@ -65,6 +66,7 @@ fun ArtworksView(
             ) { artwork ->
                 ArtworkCard(
                     artwork = artwork,
+                    contentVersion = contentVersion,
                     onClick = { onArtworkClick(artwork.id) },
                 )
             }
@@ -82,6 +84,7 @@ private fun ArtworksViewPreview() {
     ArtoposTheme {
         ArtworksView(
             artworks = mockData,
+            contentVersion = 0,
             isRefreshing = false,
             onRefresh = {},
             onArtworkClick = {},

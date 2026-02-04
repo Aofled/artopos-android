@@ -19,6 +19,7 @@ import ru.createsmart.artopos.feature.discover.model.ArtworkListItem
 fun ArtworkCard(
     modifier: Modifier = Modifier,
     artwork: ArtworkListItem,
+    contentVersion: Int,
     onClick: () -> Unit,
 ) {
     Column(
@@ -26,7 +27,7 @@ fun ArtworkCard(
             .fillMaxWidth()
             .clickable(onClick = onClick),
     ) {
-        ArtworkImage(artwork)
+        ArtworkImage(artwork, contentVersion)
         Column(
             modifier = Modifier.padding(top = 8.dp, start = 4.dp),
         ) {
@@ -64,6 +65,7 @@ private fun ArtworkCardPreview() {
                 year = "1897",
             ),
             onClick = {},
+            contentVersion = 0,
             modifier = Modifier.padding(16.dp),
         )
     }

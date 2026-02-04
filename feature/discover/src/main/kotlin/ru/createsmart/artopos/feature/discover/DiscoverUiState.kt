@@ -8,5 +8,6 @@ sealed interface DiscoverUiState {
     data class Success(
         val artworks: List<ArtworkListItem>,
         val isRefreshing: Boolean = false,
+        val contentVersion: Int = 0, // Used to force-reload images when Pull-to-Refresh is triggered
     ) : DiscoverUiState
 }

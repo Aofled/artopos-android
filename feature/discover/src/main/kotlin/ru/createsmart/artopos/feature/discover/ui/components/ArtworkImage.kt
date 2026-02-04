@@ -33,14 +33,16 @@ import ru.createsmart.artopos.feature.discover.model.ArtworkListItem
 @Composable
 internal fun ArtworkImage(
     artwork: ArtworkListItem,
+    globalVersion: Int,
 ) {
-    var retryHash by remember { mutableIntStateOf(0) } // State to trigger Coil reload manually
+    // State to trigger Coil reload manually
+    var localRetry by remember { mutableIntStateOf(0) }
+    // Combine Global (Pull-to-Refresh) and Local (Tap) signals to force reload
+    val requestKey = globalVersion + localRetry
     SubcomposeAsyncImage( // Standard 'AsyncImage' only supports simple Drawables for loading
         model = ImageRequest.Builder(LocalContext.current)
             .data(artwork.imageUrl)
-            // Hack: Changing this parameter forces Coil to treat the request as "new"
-            // and try downloading again, even if the URL is the same.
-            .setParameter("retry_hash", retryHash, memoryCacheKey = null)
+            .setParameter("retry_hash", requestKey, memoryCacheKey = null)
             .crossfade(true)
             .build(),
         contentDescription = null,
@@ -59,7 +61,7 @@ internal fun ArtworkImage(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.errorContainer)
-                    .clickable { retryHash++ }, // Tap the broken image to retry loading
+                    .clickable { localRetry++ }, // Tap to retry
                 contentAlignment = Alignment.Center,
             ) {
                 Column(
