@@ -34,7 +34,7 @@ jobs:
     name: Build Debug APK
     runs-on: ubuntu-latest
 
-    needs: []
+    needs: [ detekt-analysis ]
 
     steps:
       - name: Checkout code
@@ -45,6 +45,10 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+
+      - name: Create local.properties
+        run: |
+          echo "HARVARD_API_KEY=${{ secrets.HARVARD_API_KEY }}" > ./local.properties
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
