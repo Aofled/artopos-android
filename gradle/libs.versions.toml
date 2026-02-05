@@ -27,6 +27,8 @@ room = "2.8.4"
 javaxInject = "1"
 kotlinxCoroutines = "1.10.1"
 coil = "2.7.0"
+benchmarkMacro = "1.4.1"
+uiautomator = "2.3.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -65,6 +67,8 @@ room-compiler = { group = "androidx.room", name = "room-compiler", version.ref =
 room-gradlePlugin = { group = "androidx.room", name = "room-gradle-plugin", version.ref = "room" }
 javax-inject = { group = "javax.inject", name = "javax.inject", version.ref = "javaxInject" }
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
+androidx-benchmark-macro-junit4 = { group = "androidx.benchmark", name = "benchmark-macro-junit4", version.ref = "benchmarkMacro" }
+androidx-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "uiautomator" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -74,6 +78,7 @@ detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+android-test = { id = "com.android.test", version.ref = "agp" }
 
 [bundles]
 compose = [
@@ -100,4 +105,10 @@ network = [
 room = [
     "room-runtime",
     "room-ktx",
+]
+
+benchmark = [
+    "androidx-junit",
+    "androidx-uiautomator",
+    "androidx-benchmark-macro-junit4",
 ]

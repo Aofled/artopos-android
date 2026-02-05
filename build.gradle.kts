@@ -41,6 +41,7 @@ plugins {
     alias(libs.plugins.hilt) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.kotlin.serialization) apply false
+    alias(libs.plugins.android.test) apply false
 }
 
 // To clean the application gradle module correctly (Build -> Clean Project or ./gradlew clean)

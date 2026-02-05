@@ -65,5 +65,11 @@ gradlePlugin {
             id = "artopos.convention.room"
             implementationClass = "ru.createsmart.artopos.AndroidRoomConventionPlugin"
         }
+
+        // Performance Testing (Startup, Frames)
+        register("androidBenchmark") {
+            id = "artopos.android.benchmark"
+            implementationClass = "ru.createsmart.artopos.AndroidBenchmarkConventionPlugin"
+        }
     }
 }
