@@ -27,6 +27,7 @@ dependencyResolutionManagement {
 // ./gradlew :core:model:assembleDebug Compile specific module (e.g. core:model):
 rootProject.name = "Artopos"
 include(":app")
+include(":benchmark")
 include(":core:model")
 include(":core:network")
 include(":core:database")
