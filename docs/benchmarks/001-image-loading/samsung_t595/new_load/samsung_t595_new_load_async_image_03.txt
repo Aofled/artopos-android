@@ -1,0 +1,12 @@
+"samsung",
+"device": "gta2xllte",
+"model": "SM-T595",
+"type": "user",
+"version": {
+	"codename": "REL",
+	"sdk": 29
+}
+
+DiscoverScrollBenchmark_scrollListAggressive
+frameCount           [min   905.0],   [median   965.5],   [max 1,255.0]
+frameDurationCpuMs   P50     11.4,   P90     25.2,   P95     29.1,   P99     30.7
