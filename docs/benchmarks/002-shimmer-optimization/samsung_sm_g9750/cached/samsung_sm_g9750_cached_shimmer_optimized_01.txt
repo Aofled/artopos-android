@@ -1,0 +1,13 @@
+"brand": "samsung",
+"device": "beyond2q",
+"model": "SM-G9750",
+"type": "user",
+"version": {
+	"codename": "REL",
+	"sdk": 31
+}
+
+DiscoverScrollBenchmark_scrollListAggressive
+frameCount           [min   822.0],   [median   861.0],   [max 1,278.0]
+frameDurationCpuMs   P50      4.9,   P90      6.9,   P95      7.8,   P99      9.9
+frameOverrunMs       P50    -10.3,   P90     -8.2,   P95     -7.3,   P99     -5.0
