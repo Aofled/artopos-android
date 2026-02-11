@@ -1,5 +1,6 @@
 package ru.createsmart.artopos.feature.discover.ui.components
 
+import UiText
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -29,6 +30,7 @@ fun ArtworksView(
     onRefresh: () -> Unit,
     onArtworkClick: (Int) -> Unit,
     contentPadding: PaddingValues,
+    onShowMessage: (UiText) -> Unit,
 ) {
     val pullToRefreshState = rememberPullToRefreshState()
 
@@ -68,6 +70,7 @@ fun ArtworksView(
                     artwork = artwork,
                     contentVersion = contentVersion,
                     onClick = { onArtworkClick(artwork.id) },
+                    onShowMessage = onShowMessage,
                 )
             }
         }
@@ -88,6 +91,7 @@ private fun ArtworksViewPreview() {
             isRefreshing = false,
             onRefresh = {},
             onArtworkClick = {},
+            onShowMessage = {},
             contentPadding = PaddingValues(0.dp),
         )
     }

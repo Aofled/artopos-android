@@ -1,20 +1,29 @@
 package ru.createsmart.artopos.feature.discover.ui
 
+import UiText
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.launch
 import ru.createsmart.artopos.core.ui.theme.ArtoposTheme
 import ru.createsmart.artopos.feature.discover.DiscoverUiState
 import ru.createsmart.artopos.feature.discover.DiscoverViewModel
@@ -43,9 +52,28 @@ fun DiscoverScreen(
     onRefresh: () -> Unit,
     onArtworkClick: (Int) -> Unit,
 ) {
+    val context = LocalContext.current
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    val scope = rememberCoroutineScope()
+
+    val showMessage: (UiText) -> Unit = { message ->
+        scope.launch {
+            snackbarHostState.currentSnackbarData?.dismiss()
+            val textString = message.asString(context)
+            snackbarHostState.showSnackbar(textString)
+        }
+    }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.background,
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackbarHostState,
+                modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars),
+            )
+        },
         contentWindowInsets = WindowInsets.statusBars,
     ) { innerPadding ->
         Box(
@@ -53,15 +81,25 @@ fun DiscoverScreen(
         ) {
             when (state) {
                 is DiscoverUiState.Loading -> {
-                    Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
+                    Box(
+                        modifier = Modifier
+                            .padding(innerPadding)
+                            .fillMaxSize(),
+                    ) {
                         LoadingView()
                     }
                 }
+
                 is DiscoverUiState.Error -> {
-                    Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
+                    Box(
+                        modifier = Modifier
+                            .padding(innerPadding)
+                            .fillMaxSize(),
+                    ) {
                         ErrorView(onRetry = onRefresh)
                     }
                 }
+
                 is DiscoverUiState.Success -> {
                     ArtworksView(
                         artworks = state.artworks,
@@ -70,6 +108,7 @@ fun DiscoverScreen(
                         onRefresh = onRefresh,
                         onArtworkClick = onArtworkClick,
                         contentPadding = innerPadding,
+                        onShowMessage = showMessage,
                     )
                 }
             }

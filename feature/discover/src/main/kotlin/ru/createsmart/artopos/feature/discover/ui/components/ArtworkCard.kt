@@ -1,5 +1,6 @@
 package ru.createsmart.artopos.feature.discover.ui.components
 
+import UiText
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -21,13 +22,14 @@ fun ArtworkCard(
     artwork: ArtworkListItem,
     contentVersion: Int,
     onClick: () -> Unit,
+    onShowMessage: (UiText) -> Unit,
 ) {
     Column(
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
     ) {
-        ArtworkImage(artwork, contentVersion)
+        ArtworkImage(artwork, contentVersion, onShowMessage)
         Column(
             modifier = Modifier.padding(top = 8.dp, start = 4.dp),
         ) {
@@ -65,6 +67,7 @@ private fun ArtworkCardPreview() {
                 year = "1897",
             ),
             onClick = {},
+            onShowMessage = {},
             contentVersion = 0,
             modifier = Modifier.padding(16.dp),
         )

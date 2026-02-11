@@ -1,5 +1,6 @@
 package ru.createsmart.artopos.feature.discover.ui.components
 
+import UiText
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -15,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -26,7 +28,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
+import coil.network.HttpException
 import coil.request.ImageRequest
+import ru.createsmart.artopos.core.common.util.isNetworkAvailable
 import ru.createsmart.artopos.feature.discover.R
 import ru.createsmart.artopos.feature.discover.model.ArtworkListItem
 
@@ -34,52 +38,79 @@ import ru.createsmart.artopos.feature.discover.model.ArtworkListItem
 internal fun ArtworkImage(
     artwork: ArtworkListItem,
     globalVersion: Int,
+    onShowMessage: (UiText) -> Unit,
 ) {
-    // State to trigger Coil reload manually
+    val context = LocalContext.current
     var localRetry by remember { mutableIntStateOf(0) }
-    // Combine Global (Pull-to-Refresh) and Local (Tap) signals to force reload
-    val requestKey = globalVersion + localRetry
-    SubcomposeAsyncImage( // Standard 'AsyncImage' only supports simple Drawables for loading
-        model = ImageRequest.Builder(LocalContext.current)
+    var lastError: Throwable? by remember { mutableStateOf(null) }
+
+    val imageRequest = remember(artwork.imageUrl, globalVersion, localRetry) {
+        ImageRequest.Builder(context)
             .data(artwork.imageUrl)
-            .setParameter("retry_hash", requestKey, memoryCacheKey = null)
+            // Combine Global (Pull-to-Refresh) and Local (Tap) signals to force reload
+            .setParameter("retry_hash", globalVersion + localRetry, memoryCacheKey = null)
             .crossfade(true)
-            .build(),
+            .listener(
+                onSuccess = { _, _ -> lastError = null },
+                onError = { _, result ->
+                    lastError = result.throwable
+                    if (localRetry > 0) onShowMessage(UiText.StringResource(R.string.error_load_image))
+                },
+            )
+            .build()
+    }
+
+    // Note: We use SubcomposeAsyncImage to support Custom Composables (Shimmer)
+    SubcomposeAsyncImage(
+        model = imageRequest,
         contentDescription = null,
         contentScale = ContentScale.Crop,
         modifier = Modifier
             .fillMaxWidth()
             .aspectRatio(artwork.aspectRatio)
             .clip(RoundedCornerShape(12.dp)),
-
-        loading = {
-            ShimmerBox(modifier = Modifier.fillMaxSize()) // Animation
-        },
+        loading = { ShimmerBox(modifier = Modifier.fillMaxSize()) }, // Show animation while downloading
 
         error = {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.errorContainer)
-                    .clickable { localRetry++ }, // Tap to retry
-                contentAlignment = Alignment.Center,
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.refresh),
-                        contentDescription = stringResource(R.string.btn_retry),
-                        tint = MaterialTheme.colorScheme.onErrorContainer,
-                    )
-                    Text(
-                        text = stringResource(R.string.btn_retry),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onErrorContainer,
-                        modifier = Modifier.padding(top = 4.dp),
-                    )
-                }
-            }
+            ArtworkImageErrorState(
+                onRetry = {
+                    if (!context.isNetworkAvailable()) {
+                        onShowMessage(UiText.StringResource(R.string.error_no_internet))
+                    } else if (lastError is HttpException && (lastError as HttpException).response.code == 404) {
+                        onShowMessage(UiText.StringResource(R.string.error_not_found))
+                    } else {
+                        localRetry++ // Tap to retry
+                    }
+                },
+            )
         },
     )
+}
+
+@Composable
+private fun ArtworkImageErrorState(
+    onRetry: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.errorContainer)
+            .clickable { onRetry() },
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Icon(
+                painter = painterResource(id = R.drawable.refresh),
+                contentDescription = stringResource(R.string.btn_retry),
+                tint = MaterialTheme.colorScheme.onErrorContainer,
+            )
+            Text(
+                text = stringResource(R.string.btn_retry),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onErrorContainer,
+                modifier = Modifier.padding(top = 4.dp),
+            )
+        }
+    }
 }
