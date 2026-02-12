@@ -4,6 +4,10 @@
     <string name="label_wrong">Something went wrong</string>
 
     <string name="error_load_image">Failed to load image</string>
-    <string name="error_no_internet">No internet connection</string>
     <string name="error_not_found">Image not found (404)</string>
+    <string name="error_no_internet">No internet connection</string>
+    <string name="error_failed_connect">Failed to connect to the server</string>
+    <string name="error_timed_out">"Download timed out"</string>
+    <string name="error_network_error">"Network error. Check your connection."</string>
+    <string name="error_server">"Server error""</string>
 </resources>

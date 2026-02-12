@@ -3,6 +3,7 @@ package ru.createsmart.artopos.feature.discover.ui
 import UiText
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBars
@@ -14,6 +15,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -23,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import ru.createsmart.artopos.core.ui.theme.ArtoposTheme
 import ru.createsmart.artopos.feature.discover.DiscoverUiState
@@ -43,6 +46,7 @@ fun DiscoverRoute(
         state = state,
         onRefresh = viewModel::refresh,
         onArtworkClick = onArtworkClick,
+        effectFlow = viewModel.uiEffect,
     )
 }
 
@@ -51,17 +55,24 @@ fun DiscoverScreen(
     state: DiscoverUiState,
     onRefresh: () -> Unit,
     onArtworkClick: (Int) -> Unit,
+    effectFlow: Flow<UiText>? = null,
 ) {
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
 
     val scope = rememberCoroutineScope()
 
-    val showMessage: (UiText) -> Unit = { message ->
+    fun showSnackbar(message: UiText) {
         scope.launch {
             snackbarHostState.currentSnackbarData?.dismiss()
-            val textString = message.asString(context)
-            snackbarHostState.showSnackbar(textString)
+            val text = message.asString(context)
+            snackbarHostState.showSnackbar(text)
+        }
+    }
+
+    LaunchedEffect(effectFlow) {
+        effectFlow?.collect { message ->
+            showSnackbar(message)
         }
     }
 
@@ -76,43 +87,53 @@ fun DiscoverScreen(
         },
         contentWindowInsets = WindowInsets.statusBars,
     ) { innerPadding ->
-        Box(
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            when (state) {
-                is DiscoverUiState.Loading -> {
-                    Box(
-                        modifier = Modifier
-                            .padding(innerPadding)
-                            .fillMaxSize(),
-                    ) {
-                        LoadingView()
-                    }
-                }
+        when (state) {
+            is DiscoverUiState.Loading -> {
+                IsLoading(innerPadding)
+            }
 
-                is DiscoverUiState.Error -> {
-                    Box(
-                        modifier = Modifier
-                            .padding(innerPadding)
-                            .fillMaxSize(),
-                    ) {
-                        ErrorView(onRetry = onRefresh)
-                    }
-                }
+            is DiscoverUiState.Error -> {
+                IsError(innerPadding, onRefresh)
+            }
 
-                is DiscoverUiState.Success -> {
-                    ArtworksView(
-                        artworks = state.artworks,
-                        contentVersion = state.contentVersion,
-                        isRefreshing = state.isRefreshing,
-                        onRefresh = onRefresh,
-                        onArtworkClick = onArtworkClick,
-                        contentPadding = innerPadding,
-                        onShowMessage = showMessage,
-                    )
-                }
+            is DiscoverUiState.Success -> {
+                ArtworksView(
+                    artworks = state.artworks,
+                    contentVersion = state.contentVersion,
+                    isRefreshing = state.isRefreshing,
+                    onRefresh = onRefresh,
+                    onArtworkClick = onArtworkClick,
+                    // Pass padding to the list so items are not hidden behind system bars
+                    contentPadding = innerPadding,
+                    onShowMessage = { msg -> showSnackbar(msg) },
+                )
             }
         }
+    }
+}
+
+@Composable
+private fun IsLoading(innerPadding: PaddingValues) {
+    Box(
+        modifier = Modifier
+            .padding(innerPadding)
+            .fillMaxSize(),
+    ) {
+        LoadingView()
+    }
+}
+
+@Composable
+private fun IsError(
+    innerPadding: PaddingValues,
+    onRefresh: () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .padding(innerPadding)
+            .fillMaxSize(),
+    ) {
+        ErrorView(onRetry = onRefresh)
     }
 }
 
