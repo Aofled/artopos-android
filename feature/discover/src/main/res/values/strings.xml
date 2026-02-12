@@ -1,11 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="btn_retry">Retry</string>
-    <string name="label_wrong">Something went wrong</string>
-
     <string name="label_discover">Discover</string>
-
-    <string name="error_load_image">Failed to load image</string>
-    <string name="error_no_internet">No internet connection</string>
-    <string name="error_not_found">Image not found (404)</string>
 </resources>
