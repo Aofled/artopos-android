@@ -17,7 +17,6 @@ class AndroidBenchmarkConventionPlugin : Plugin<Project> {
             with(pluginManager) {
                 // Special plugin for Benchmark/Test modules (not App, not Library)
                 apply("com.android.test")
-                apply("org.jetbrains.kotlin.android")
                 apply("artopos.convention.detekt")
             }
 

@@ -11,7 +11,7 @@ import org.gradle.kotlin.dsl.getByType
  * Configures Jetpack Compose (Compiler, features, dependencies)
  */
 internal fun Project.configureAndroidCompose(
-    commonExtension: CommonExtension<*, *, *, *, *, *>,
+    commonExtension: CommonExtension,
 ) {
     val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
@@ -19,7 +19,7 @@ internal fun Project.configureAndroidCompose(
     apply(plugin = "org.jetbrains.kotlin.plugin.compose")
 
     commonExtension.apply {
-        buildFeatures {
+        buildFeatures.apply {
             compose = true
         }
     }
