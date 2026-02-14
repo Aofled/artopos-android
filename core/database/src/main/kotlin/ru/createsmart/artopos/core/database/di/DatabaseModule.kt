@@ -9,6 +9,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import ru.createsmart.artopos.core.database.HarvardDatabase
 import ru.createsmart.artopos.core.database.dao.ArtworkDao
+import ru.createsmart.artopos.core.database.dao.ArtworkRemoteKeysDao
 import javax.inject.Singleton
 
 @Module
@@ -34,5 +35,10 @@ object DatabaseModule {
     @Provides
     fun provideHarvardDao(database: HarvardDatabase): ArtworkDao {
         return database.artworkDao()
+    }
+
+    @Provides
+    fun provideArtworkRemoteKeysDao(database: HarvardDatabase): ArtworkRemoteKeysDao {
+        return database.artworkRemoteKeysDao()
     }
 }
