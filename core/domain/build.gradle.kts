@@ -10,4 +10,6 @@ dependencies {
     // Async support. Use 'core' version, not 'android'.
     // Domain layer must NOT know about Android (Main Thread / Context).
     implementation(libs.kotlinx.coroutines.core)
+
+    implementation(libs.paging.common)
 }

@@ -1,0 +1,140 @@
+package ru.createsmart.artopos.core.data.mediator
+
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.LoadType
+import androidx.paging.PagingState
+import androidx.paging.RemoteMediator
+import androidx.room.withTransaction
+import ru.createsmart.artopos.core.data.mapper.toDBO
+import ru.createsmart.artopos.core.database.HarvardDatabase
+import ru.createsmart.artopos.core.database.model.ArtworkDBO
+import ru.createsmart.artopos.core.database.model.ArtworkRemoteKeysEntity
+import ru.createsmart.artopos.core.network.api.HarvardAPI
+import ru.createsmart.artopos.core.network.model.ArtworkDTO
+import ru.createsmart.artopos.core.network.model.NetworkResponse
+import java.io.IOException
+
+/**
+ * Orchestrates loading data from Network into the Database.
+ * Handles pagination keys (next/prev pages) and caching strategy.
+ */
+@OptIn(ExperimentalPagingApi::class)
+class ArtworkRemoteMediator(
+    private val database: HarvardDatabase,
+    private val api: HarvardAPI,
+) : RemoteMediator<Int, ArtworkDBO>() {
+    @Suppress("ReturnCount")
+    override suspend fun load(
+        loadType: LoadType,
+        state: PagingState<Int, ArtworkDBO>,
+    ): MediatorResult {
+        val page = when (loadType) {
+            LoadType.REFRESH -> {
+                // Logic: Find the page key closest to the current scroll position.
+                // If Refresh -> the closest key to the current position or start from 1
+                val remoteKeys = getRemoteKeyClosestToCurrentPosition(state)
+                remoteKeys?.nextKey?.minus(1)
+                    ?: remoteKeys?.prevKey?.plus(1)
+                    ?: 1
+            }
+
+            LoadType.PREPEND -> {
+                // Loading "top" (scrolling up).
+                // If remoteKeys is null, we are at the start -> Success(endOfPaginationReached = true)
+                val remoteKeys = getRemoteKeyForFirstItem(state)
+                val prevKey = remoteKeys?.prevKey ?: return MediatorResult.Success(
+                    endOfPaginationReached = remoteKeys != null,
+                )
+                prevKey
+            }
+
+            LoadType.APPEND -> {
+                // Loading "down" (scrolling down).
+                // If remoteKeys is null, we are at the end -> Success(endOfPaginationReached = true)
+                val remoteKeys = getRemoteKeyForLastItem(state)
+                val nextKey = remoteKeys?.nextKey ?: return MediatorResult.Success(
+                    endOfPaginationReached = remoteKeys != null,
+                )
+                nextKey
+            }
+        }
+
+        return try {
+            val apiResponse = api.getArtworks(
+                page = page,
+                size = state.config.pageSize,
+            )
+
+            val endOfPaginationReached = apiResponse.records.isEmpty() || apiResponse.info.nextUrl == null
+
+            updateDatabase(loadType, page, apiResponse, state, endOfPaginationReached)
+
+            MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)
+        } catch (exception: IOException) {
+            MediatorResult.Error(exception)
+        }
+    }
+
+    private suspend fun updateDatabase(
+        loadType: LoadType,
+        page: Int,
+        apiResponse: NetworkResponse<ArtworkDTO>,
+        state: PagingState<Int, ArtworkDBO>,
+        endOfPaginationReached: Boolean,
+    ) {
+        val validRecords = apiResponse.records.filter { !it.images.isNullOrEmpty() } // Only paintings with size
+
+        database.withTransaction {
+            if (loadType == LoadType.REFRESH) {
+                // Clear cache only on full Refresh (Pull-to-Refresh or initial load)
+                database.artworkRemoteKeysDao().clearRemoteKeys()
+                database.artworkDao().clearArtworks()
+            }
+
+            val prevKey = if (page == 1) null else page - 1
+            val nextKey = if (endOfPaginationReached) null else page + 1
+
+            val keys = validRecords.map { dto ->
+                ArtworkRemoteKeysEntity(artworkId = dto.id, prevKey = prevKey, nextKey = nextKey)
+            }
+
+            val artworks = validRecords.mapIndexed { index, dto ->
+                // Sort Order: Explicitly save the order index.
+                // Room does not guarantee insertion order, so we need a column to sort by later.
+                val globalIndex = (page - 1) * state.config.pageSize + index
+                dto.toDBO().copy(sortingIndex = globalIndex)
+            }
+
+            database.artworkRemoteKeysDao().insertAll(keys)
+            database.artworkDao().insertArtworks(artworks)
+        }
+    }
+
+    private suspend fun getRemoteKeyClosestToCurrentPosition(
+        state: PagingState<Int, ArtworkDBO>,
+    ): ArtworkRemoteKeysEntity? {
+        return state.anchorPosition?.let { position ->
+            state.closestItemToPosition(position)?.id?.let { artworkId ->
+                database.artworkRemoteKeysDao().remoteKeyArtworkId(artworkId)
+            }
+        }
+    }
+
+    private suspend fun getRemoteKeyForFirstItem(
+        state: PagingState<Int, ArtworkDBO>,
+    ): ArtworkRemoteKeysEntity? {
+        return state.pages.firstOrNull { it.data.isNotEmpty() }?.data?.firstOrNull()
+            ?.let { artwork ->
+                database.artworkRemoteKeysDao().remoteKeyArtworkId(artwork.id)
+            }
+    }
+
+    private suspend fun getRemoteKeyForLastItem(
+        state: PagingState<Int, ArtworkDBO>,
+    ): ArtworkRemoteKeysEntity? {
+        return state.pages.lastOrNull { it.data.isNotEmpty() }?.data?.lastOrNull()
+            ?.let { artwork ->
+                database.artworkRemoteKeysDao().remoteKeyArtworkId(artwork.id)
+            }
+    }
+}

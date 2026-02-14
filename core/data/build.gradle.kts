@@ -12,4 +12,7 @@ dependencies {
     implementation(projects.core.network)
     implementation(projects.core.database)
     implementation(projects.core.domain)
+
+    implementation(libs.paging.runtime)
+    implementation(libs.room.ktx)
 }
