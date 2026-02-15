@@ -15,4 +15,5 @@ dependencies {
     implementation(projects.core.ui)
     
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.paging.compose)
 }

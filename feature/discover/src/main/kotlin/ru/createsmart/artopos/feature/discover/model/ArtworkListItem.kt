@@ -2,6 +2,8 @@ package ru.createsmart.artopos.feature.discover.model
 
 import androidx.compose.runtime.Immutable
 
+// Optimization: Tells Compose that this object is stable.
+// Prevents unnecessary recompositions (flickering/lag) during scroll.
 @Immutable
 data class ArtworkListItem(
     val id: Int,

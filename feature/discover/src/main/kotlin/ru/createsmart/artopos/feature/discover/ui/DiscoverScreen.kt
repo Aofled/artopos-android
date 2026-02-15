@@ -3,7 +3,6 @@ package ru.createsmart.artopos.feature.discover.ui
 import UiText
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBars
@@ -25,11 +24,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
+import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import ru.createsmart.artopos.core.ui.theme.ArtoposTheme
-import ru.createsmart.artopos.feature.discover.DiscoverUiState
 import ru.createsmart.artopos.feature.discover.DiscoverViewModel
+import ru.createsmart.artopos.feature.discover.model.ArtworkListItem
 import ru.createsmart.artopos.feature.discover.ui.components.ArtworksView
 import ru.createsmart.artopos.feature.discover.ui.components.ErrorView
 import ru.createsmart.artopos.feature.discover.ui.components.LoadingView
@@ -40,22 +43,39 @@ fun DiscoverRoute(
     viewModel: DiscoverViewModel = hiltViewModel(),
     onArtworkClick: (Int) -> Unit,
 ) {
-    val state by viewModel.uiState.collectAsStateWithLifecycle()
+    // Lifecycle-aware collection. Pauses when app is in background.
+    val pagingItems = viewModel.artworksFlow.collectAsLazyPagingItems()
+
+    val contentVersion by viewModel.contentVersion.collectAsStateWithLifecycle()
 
     DiscoverScreen(
-        state = state,
-        onRefresh = viewModel::refresh,
+        pagingItems = pagingItems,
+        contentVersion = contentVersion,
+        onRefresh = {
+            if (viewModel.onRefresh()) {
+                pagingItems.refresh()
+            }
+        },
+        onRetry = {
+            if (viewModel.onRetryAction()) {
+                pagingItems.retry()
+            }
+        },
         onArtworkClick = onArtworkClick,
         effectFlow = viewModel.uiEffect,
+        onError = viewModel::onError,
     )
 }
 
 @Composable
 fun DiscoverScreen(
-    state: DiscoverUiState,
+    pagingItems: LazyPagingItems<ArtworkListItem>,
+    contentVersion: Int,
     onRefresh: () -> Unit,
+    onRetry: () -> Unit,
     onArtworkClick: (Int) -> Unit,
     effectFlow: Flow<UiText>? = null,
+    onError: (Throwable) -> Unit,
 ) {
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
@@ -76,6 +96,15 @@ fun DiscoverScreen(
         }
     }
 
+    LaunchedEffect(pagingItems.loadState) { // Global Error Handling
+        val state = pagingItems.loadState
+
+        (state.refresh as? LoadState.Error)?.error?.let { onError(it) }
+
+        (state.append as? LoadState.Error)?.error?.let { onError(it) }
+    }
+
+    // Scaffold handles system bars (Status/Nav Bar) automatically via contentWindowInsets
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.background,
@@ -87,66 +116,55 @@ fun DiscoverScreen(
         },
         contentWindowInsets = WindowInsets.statusBars,
     ) { innerPadding ->
-        when (state) {
-            is DiscoverUiState.Loading -> {
-                IsLoading(innerPadding)
-            }
+        val refreshState = pagingItems.loadState.refresh
+        val isListEmpty = pagingItems.itemCount == 0
 
-            is DiscoverUiState.Error -> {
-                IsError(innerPadding, onRefresh)
-            }
+        when {
+            !isListEmpty -> {
+                val isRefreshing = refreshState is LoadState.Loading
 
-            is DiscoverUiState.Success -> {
                 ArtworksView(
-                    artworks = state.artworks,
-                    contentVersion = state.contentVersion,
-                    isRefreshing = state.isRefreshing,
+                    artworks = pagingItems,
+                    contentVersion = contentVersion,
+                    isRefreshing = isRefreshing,
                     onRefresh = onRefresh,
+                    onRetry = onRetry,
                     onArtworkClick = onArtworkClick,
-                    // Pass padding to the list so items are not hidden behind system bars
                     contentPadding = innerPadding,
                     onShowMessage = { msg -> showSnackbar(msg) },
                 )
             }
+
+            refreshState is LoadState.Error && isListEmpty -> {
+                Box(modifier = Modifier.padding(innerPadding)) {
+                    ErrorView(onRetry = onRetry)
+                }
+            }
+
+            else -> {
+                Box(modifier = Modifier.padding(innerPadding)) {
+                    LoadingView()
+                }
+            }
         }
-    }
-}
-
-@Composable
-private fun IsLoading(innerPadding: PaddingValues) {
-    Box(
-        modifier = Modifier
-            .padding(innerPadding)
-            .fillMaxSize(),
-    ) {
-        LoadingView()
-    }
-}
-
-@Composable
-private fun IsError(
-    innerPadding: PaddingValues,
-    onRefresh: () -> Unit,
-) {
-    Box(
-        modifier = Modifier
-            .padding(innerPadding)
-            .fillMaxSize(),
-    ) {
-        ErrorView(onRetry = onRefresh)
     }
 }
 
 @Preview(showBackground = true, name = "Discover States", uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
 fun DiscoverScreenPreview(
-    @PreviewParameter(DiscoverStateProvider::class) state: DiscoverUiState,
+    @PreviewParameter(DiscoverStateProvider::class) pagingFlow: Flow<PagingData<ArtworkListItem>>,
 ) {
+    val pagingItems = pagingFlow.collectAsLazyPagingItems()
+
     ArtoposTheme {
         DiscoverScreen(
-            state = state,
+            pagingItems = pagingItems,
             onRefresh = { },
             onArtworkClick = { id -> println("Clicked id: $id") },
+            contentVersion = 0,
+            onRetry = { },
+            onError = { },
         )
     }
 }
