@@ -22,6 +22,7 @@ The UI follows a **minimalist, gallery-like aesthetic**, inspired by platforms l
 *   **Jetpack Compose** (Material 3, Edge-to-Edge, Staggered Grid).
 *   **Coroutines & Flow** (Heavy usage of `combine`, `stateIn`, `flowOn`).
 *   **Hilt** (Dependency Injection).
+*   **Paging 3** (RemoteMediator, Room Integration).
 
 ### Network & Data
 *   **Retrofit 2** + **Kotlin Serialization**.
@@ -35,8 +36,32 @@ The UI follows a **minimalist, gallery-like aesthetic**, inspired by platforms l
 *   **Convention Plugins** (Custom `build-logic` for sharing build configurations).
 *   **Detekt** (Static code analysis with auto-formatting).
 *   **R8/ProGuard** (Optimized release builds).
+*   **Macrobenchmark** (UI performance testing).
 
 ---  
+
+## 🏗 Project Structure
+
+The project is divided into independent modules to improve build times and enforce separation of concerns:
+
+```text
+root
+├── app                 # Application entry point, DI assembly
+├── build-logic         # Custom Gradle Convention Plugins
+├── core
+│   ├── model           # Domain models (Pure Kotlin)
+│   ├── network         # API interfaces, DTOs, OkHttp Clients
+│   ├── database        # Room Entities, DAOs
+│   ├── data            # Repositories, Mediators (Layer glue)
+│   ├── domain          # UseCases, Repository Interfaces (Pure Business Logic)
+│   ├── ui              # Design System (Theme, Type, Color, Components)
+│   └── common          # General Utilities (NetworkMonitor, etc.)
+├── feature
+│   └── discover        # "Discover" Feed Screen (UI + ViewModel)
+└── benchmark           # Performance Tests (Scroll Jank, Startup)
+```
+
+---
 
 ## 🚀 How to Run
 ### 1. Obtain an API Key (Required)
