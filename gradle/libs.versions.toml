@@ -32,6 +32,7 @@ uiautomator = "2.3.0"
 paging = "3.3.6"
 mockk = "1.14.9"
 turbine = "1.2.1"
+robolectric = "4.16"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -79,6 +80,7 @@ androidx-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomato
 test-mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 test-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
 test-turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
+test-robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -129,6 +131,8 @@ test-unit-minimal = [
 
 test-unit-full = [
     "junit",
+    "androidx-junit",
+    "test-robolectric",
     "test-coroutines",
     "test-mockk",
     "test-turbine",

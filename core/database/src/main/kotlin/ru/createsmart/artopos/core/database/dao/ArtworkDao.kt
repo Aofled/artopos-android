@@ -1,5 +1,6 @@
 package ru.createsmart.artopos.core.database.dao
 
+import androidx.annotation.VisibleForTesting
 import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
@@ -17,4 +18,8 @@ interface ArtworkDao {
 
     @Query("DELETE FROM artworks")
     suspend fun clearArtworks()
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @Query("SELECT * FROM artworks ORDER BY sorting_index ASC") // For ArtworkRemoteMediatorTest
+    suspend fun getAllArtworksForTest(): List<ArtworkDBO>
 }
