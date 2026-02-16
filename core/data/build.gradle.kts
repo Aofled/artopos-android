@@ -15,4 +15,6 @@ dependencies {
 
     implementation(libs.paging.runtime)
     implementation(libs.room.ktx)
+
+    testImplementation(libs.bundles.test.unit.minimal)
 }
