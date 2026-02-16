@@ -16,4 +16,6 @@ dependencies {
     
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.paging.compose)
+
+    testImplementation(libs.bundles.test.unit.minimal)
 }
