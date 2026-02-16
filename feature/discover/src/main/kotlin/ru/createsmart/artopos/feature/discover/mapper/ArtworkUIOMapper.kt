@@ -3,6 +3,8 @@ package ru.createsmart.artopos.feature.discover.mapper
 import ru.createsmart.artopos.core.model.Artwork
 import ru.createsmart.artopos.feature.discover.model.ArtworkListItem
 
+private const val DEFAULT_ASPECT_RATIO = 0.75f
+
 fun Artwork.toUi(): ArtworkListItem {
     val dims = imageDimensions
 
@@ -11,7 +13,7 @@ fun Artwork.toUi(): ArtworkListItem {
     val ratio = if (dims != null && dims.width > 0 && dims.height > 0) {
         dims.width.toFloat() / dims.height.toFloat()
     } else {
-        1f
+        DEFAULT_ASPECT_RATIO
     }
 
     return ArtworkListItem(
