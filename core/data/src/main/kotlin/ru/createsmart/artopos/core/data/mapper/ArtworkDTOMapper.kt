@@ -5,6 +5,8 @@ import ru.createsmart.artopos.core.model.Coordinates
 import ru.createsmart.artopos.core.model.ImageDimensions
 import ru.createsmart.artopos.core.network.model.ArtworkDTO
 
+private val YEAR_REGEX = Regex("\\d{4}")
+
 fun ArtworkDTO.toDBO(): ArtworkDBO {
     // Logic: Extract only "Artist" role, join names
     val artistName = artists
@@ -28,9 +30,8 @@ fun ArtworkDTO.toDBO(): ArtworkDBO {
     }
 
     // Parsing: Extract year from string (e.g., "Circa 1880" -> 1880) for sorting
-    val yearRegex = Regex("\\d{4}")
     val parsedYear = date?.let {
-        yearRegex.find(it)?.value?.toIntOrNull()
+        YEAR_REGEX.find(it)?.value?.toIntOrNull()
     }
 
     val coordinates: Coordinates? = null // TODO(Coordinate): Implement coordinate parsing later
