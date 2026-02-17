@@ -16,6 +16,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -55,6 +56,15 @@ fun ArtworksView(
         onRefresh = onRefresh,
         state = pullToRefreshState,
         modifier = Modifier.fillMaxSize(),
+        indicator = {
+            PullToRefreshDefaults.Indicator(
+                state = pullToRefreshState,
+                isRefreshing = isRefreshing,
+                containerColor = MaterialTheme.colorScheme.surface,
+                color = MaterialTheme.colorScheme.secondary,
+                modifier = Modifier.align(Alignment.TopCenter),
+            )
+        },
     ) {
         LazyVerticalStaggeredGrid(
             columns = StaggeredGridCells.Fixed(2),
