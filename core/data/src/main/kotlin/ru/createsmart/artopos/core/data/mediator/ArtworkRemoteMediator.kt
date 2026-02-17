@@ -11,7 +11,6 @@ import ru.createsmart.artopos.core.database.model.ArtworkDBO
 import ru.createsmart.artopos.core.database.model.ArtworkRemoteKeysEntity
 import ru.createsmart.artopos.core.network.api.HarvardAPI
 import ru.createsmart.artopos.core.network.model.ArtworkDTO
-import ru.createsmart.artopos.core.network.model.NetworkResponse
 import java.io.IOException
 
 /**
@@ -64,10 +63,11 @@ class ArtworkRemoteMediator(
                 page = page,
                 size = state.config.pageSize,
             )
+            val validRecords = apiResponse.records.filter { !it.images.isNullOrEmpty() }
 
-            val endOfPaginationReached = apiResponse.records.isEmpty() || apiResponse.info.nextUrl == null
+            val endOfPaginationReached = apiResponse.info.nextUrl == null || apiResponse.records.isEmpty()
 
-            updateDatabase(loadType, page, apiResponse, state, endOfPaginationReached)
+            updateDatabase(loadType, page, validRecords, state, endOfPaginationReached)
 
             MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)
         } catch (exception: IOException) {
@@ -78,12 +78,10 @@ class ArtworkRemoteMediator(
     private suspend fun updateDatabase(
         loadType: LoadType,
         page: Int,
-        apiResponse: NetworkResponse<ArtworkDTO>,
+        validRecords: List<ArtworkDTO>,
         state: PagingState<Int, ArtworkDBO>,
         endOfPaginationReached: Boolean,
     ) {
-        val validRecords = apiResponse.records.filter { !it.images.isNullOrEmpty() } // Only paintings with size
-
         database.withTransaction {
             if (loadType == LoadType.REFRESH) {
                 // Clear cache only on full Refresh (Pull-to-Refresh or initial load)
