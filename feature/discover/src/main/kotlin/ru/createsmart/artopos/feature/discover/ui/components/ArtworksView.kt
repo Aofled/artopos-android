@@ -66,49 +66,68 @@ fun ArtworksView(
             )
         },
     ) {
-        LazyVerticalStaggeredGrid(
-            columns = StaggeredGridCells.Fixed(2),
-            contentPadding = PaddingValues(
-                // Add System Bars padding + extra spacing for design
-                top = contentPadding.calculateTopPadding() + 8.dp,
-                bottom = contentPadding.calculateBottomPadding() + 8.dp,
-                start = 16.dp,
-                end = 16.dp,
-            ),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalItemSpacing = 16.dp,
-            modifier = Modifier.fillMaxSize(),
-        ) {
+        ArtworksGrid(
+            artworks = artworks,
+            contentVersion = contentVersion,
+            contentPadding = contentPadding,
+            onArtworkClick = onArtworkClick,
+            onShowMessage = onShowMessage,
+            onRetry = onRetry,
+        )
+    }
+}
+
+@Composable
+private fun ArtworksGrid(
+    artworks: LazyPagingItems<ArtworkListItem>,
+    contentVersion: Int,
+    contentPadding: PaddingValues,
+    onArtworkClick: (Int) -> Unit,
+    onShowMessage: (UiText) -> Unit,
+    onRetry: () -> Unit,
+) {
+    LazyVerticalStaggeredGrid(
+        columns = StaggeredGridCells.Fixed(2),
+        contentPadding = PaddingValues(
+            // Add System Bars padding + extra spacing for design
+            top = contentPadding.calculateTopPadding() + 8.dp,
+            bottom = contentPadding.calculateBottomPadding() + 8.dp,
+            start = 16.dp,
+            end = 16.dp,
+        ),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalItemSpacing = 16.dp,
+        modifier = Modifier.fillMaxSize(),
+    ) {
+        item(span = StaggeredGridItemSpan.FullLine) {
+            TopAppBar()
+        }
+        items(
+            count = artworks.itemCount,
+            // Optimization: Stable keys prevent unnecessary recompositions when new pages load.
+            key = artworks.itemKey { it.id },
+            contentType = artworks.itemContentType { "artwork" },
+        ) { index ->
+            val artwork = artworks[index]
+            if (artwork != null) {
+                ArtworkCard(
+                    artwork = artwork,
+                    contentVersion = contentVersion,
+                    onClick = { onArtworkClick(artwork.id) },
+                    onShowMessage = onShowMessage,
+                )
+            }
+        }
+
+        if (artworks.loadState.append is LoadState.Loading) {
             item(span = StaggeredGridItemSpan.FullLine) {
-                TopAppBar()
+                BottomProgress()
             }
-            items(
-                count = artworks.itemCount,
-                // Optimization: Stable keys prevent unnecessary recompositions when new pages load.
-                key = artworks.itemKey { it.id },
-                contentType = artworks.itemContentType { "artwork" },
-            ) { index ->
-                val artwork = artworks[index]
-                if (artwork != null) {
-                    ArtworkCard(
-                        artwork = artwork,
-                        contentVersion = contentVersion,
-                        onClick = { onArtworkClick(artwork.id) },
-                        onShowMessage = onShowMessage,
-                    )
-                }
-            }
+        }
 
-            if (artworks.loadState.append is LoadState.Loading) {
-                item(span = StaggeredGridItemSpan.FullLine) {
-                    BottomProgress()
-                }
-            }
-
-            if (artworks.loadState.append is LoadState.Error) {
-                item(span = StaggeredGridItemSpan.FullLine) {
-                    ErrorFooter(onRetry = onRetry)
-                }
+        if (artworks.loadState.append is LoadState.Error) {
+            item(span = StaggeredGridItemSpan.FullLine) {
+                ErrorFooter(onRetry = onRetry)
             }
         }
     }
