@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="btn_retry">Retry</string>
+    <string name="btn_filter">Filters</string>
     <string name="label_wrong">Something went wrong</string>
 
     <string name="error_load_image">Failed to load image</string>
