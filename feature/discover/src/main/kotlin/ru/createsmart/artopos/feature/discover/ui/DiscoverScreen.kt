@@ -2,13 +2,15 @@ package ru.createsmart.artopos.feature.discover.ui
 
 import UiText
 import android.content.res.Configuration
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -31,6 +33,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import ru.createsmart.artopos.core.ui.theme.ArtoposTheme
+import ru.createsmart.artopos.core.ui.theme.components.FilterFloatingActionButton
 import ru.createsmart.artopos.feature.discover.DiscoverViewModel
 import ru.createsmart.artopos.feature.discover.model.ArtworkListItem
 import ru.createsmart.artopos.feature.discover.ui.components.ArtworksView
@@ -64,6 +67,9 @@ fun DiscoverRoute(
         onArtworkClick = onArtworkClick,
         effectFlow = viewModel.uiEffect,
         onError = viewModel::onError,
+        onFilterClick = {
+            // TODO(BottomSheet): Open BottomSheet
+        },
     )
 }
 
@@ -76,6 +82,7 @@ fun DiscoverScreen(
     onArtworkClick: (Int) -> Unit,
     effectFlow: Flow<UiText>? = null,
     onError: (Throwable) -> Unit,
+    onFilterClick: () -> Unit,
 ) {
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
@@ -108,43 +115,76 @@ fun DiscoverScreen(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.background,
+        contentWindowInsets = WindowInsets.systemBars,
         snackbarHost = {
             SnackbarHost(
                 hostState = snackbarHostState,
-                modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars),
             )
         },
-        contentWindowInsets = WindowInsets.statusBars,
+
+        floatingActionButton = {
+            val showFab = pagingItems.loadState.refresh !is LoadState.Loading
+
+            AnimatedVisibility(
+                visible = showFab,
+                enter = scaleIn(),
+                exit = scaleOut(),
+            ) {
+                FilterFloatingActionButton(onFilterClick)
+            }
+        },
+
     ) { innerPadding ->
-        val refreshState = pagingItems.loadState.refresh
-        val isListEmpty = pagingItems.itemCount == 0
+        DiscoverScreenContent(
+            pagingItems = pagingItems,
+            contentVersion = contentVersion,
+            innerPadding = innerPadding,
+            onRefresh = onRefresh,
+            onRetry = onRetry,
+            onArtworkClick = onArtworkClick,
+            onShowMessage = { showSnackbar(it) },
+        )
+    }
+}
 
-        when {
-            !isListEmpty -> {
-                val isRefreshing = refreshState is LoadState.Loading
+@Composable
+private fun DiscoverScreenContent(
+    pagingItems: LazyPagingItems<ArtworkListItem>,
+    contentVersion: Int,
+    innerPadding: PaddingValues,
+    onRefresh: () -> Unit,
+    onRetry: () -> Unit,
+    onArtworkClick: (Int) -> Unit,
+    onShowMessage: (UiText) -> Unit,
+) {
+    val refreshState = pagingItems.loadState.refresh
+    val isListEmpty = pagingItems.itemCount == 0
 
-                ArtworksView(
-                    artworks = pagingItems,
-                    contentVersion = contentVersion,
-                    isRefreshing = isRefreshing,
-                    onRefresh = onRefresh,
-                    onRetry = onRetry,
-                    onArtworkClick = onArtworkClick,
-                    contentPadding = innerPadding,
-                    onShowMessage = { msg -> showSnackbar(msg) },
-                )
+    when {
+        !isListEmpty -> {
+            val isRefreshing = refreshState is LoadState.Loading
+
+            ArtworksView(
+                artworks = pagingItems,
+                contentVersion = contentVersion,
+                isRefreshing = isRefreshing,
+                onRefresh = onRefresh,
+                onRetry = onRetry,
+                onArtworkClick = onArtworkClick,
+                contentPadding = innerPadding,
+                onShowMessage = onShowMessage,
+            )
+        }
+
+        refreshState is LoadState.Error && isListEmpty -> {
+            Box(modifier = Modifier.padding(innerPadding)) {
+                ErrorView(onRetry = onRetry)
             }
+        }
 
-            refreshState is LoadState.Error && isListEmpty -> {
-                Box(modifier = Modifier.padding(innerPadding)) {
-                    ErrorView(onRetry = onRetry)
-                }
-            }
-
-            else -> {
-                Box(modifier = Modifier.padding(innerPadding)) {
-                    LoadingView()
-                }
+        else -> {
+            Box(modifier = Modifier.padding(innerPadding)) {
+                LoadingView()
             }
         }
     }
@@ -165,6 +205,7 @@ fun DiscoverScreenPreview(
             contentVersion = 0,
             onRetry = { },
             onError = { },
+            onFilterClick = { },
         )
     }
 }

@@ -147,7 +147,7 @@ private fun BottomProgress() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(8.dp),
         contentAlignment = Alignment.Center,
     ) {
         CustomCircularProgressIndicator()
@@ -158,8 +158,7 @@ private fun BottomProgress() {
 private fun ErrorFooter(onRetry: () -> Unit) {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 40.dp),
+            .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
