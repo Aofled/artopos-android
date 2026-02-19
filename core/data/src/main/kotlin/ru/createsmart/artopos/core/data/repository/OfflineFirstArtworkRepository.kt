@@ -12,6 +12,7 @@ import ru.createsmart.artopos.core.data.mediator.ArtworkRemoteMediator
 import ru.createsmart.artopos.core.database.HarvardDatabase
 import ru.createsmart.artopos.core.domain.repository.ArtworkRepository
 import ru.createsmart.artopos.core.model.Artwork
+import ru.createsmart.artopos.core.model.FilterParams
 import ru.createsmart.artopos.core.network.api.HarvardAPI
 import javax.inject.Inject
 
@@ -32,13 +33,16 @@ class OfflineFirstArtworkRepository @Inject constructor(
     )
 
     @OptIn(ExperimentalPagingApi::class)
-    override fun getPagedArtworks(): Flow<PagingData<Artwork>> {
+    override fun getPagedArtworks(
+        params: FilterParams,
+    ): Flow<PagingData<Artwork>> {
         return Pager(
             config = pagingConfig,
             // 1. Check DB -> 2. If empty/more needed -> Call API -> 3. Save to DB -> 4. UI updates automatically
             remoteMediator = ArtworkRemoteMediator(
                 database = database,
                 api = api,
+                params = params,
             ),
             pagingSourceFactory = {
                 database.artworkDao().getArtworks()

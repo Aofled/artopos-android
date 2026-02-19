@@ -9,6 +9,7 @@ import ru.createsmart.artopos.core.data.mapper.toDBO
 import ru.createsmart.artopos.core.database.HarvardDatabase
 import ru.createsmart.artopos.core.database.model.ArtworkDBO
 import ru.createsmart.artopos.core.database.model.ArtworkRemoteKeysEntity
+import ru.createsmart.artopos.core.model.FilterParams
 import ru.createsmart.artopos.core.network.api.HarvardAPI
 import ru.createsmart.artopos.core.network.model.ArtworkDTO
 import java.io.IOException
@@ -21,6 +22,7 @@ import java.io.IOException
 class ArtworkRemoteMediator(
     private val database: HarvardDatabase,
     private val api: HarvardAPI,
+    private val params: FilterParams,
 ) : RemoteMediator<Int, ArtworkDBO>() {
     @Suppress("ReturnCount")
     override suspend fun load(
@@ -62,6 +64,9 @@ class ArtworkRemoteMediator(
             val apiResponse = api.getArtworks(
                 page = page,
                 size = state.config.pageSize,
+                classification = params.classification,
+                century = params.century,
+                culture = params.culture,
             )
             val validRecords = apiResponse.records.filter { !it.images.isNullOrEmpty() }
 
