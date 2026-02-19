@@ -10,6 +10,7 @@ import dagger.hilt.components.SingletonComponent
 import ru.createsmart.artopos.core.database.HarvardDatabase
 import ru.createsmart.artopos.core.database.dao.ArtworkDao
 import ru.createsmart.artopos.core.database.dao.ArtworkRemoteKeysDao
+import ru.createsmart.artopos.core.database.dao.FilterItemDao
 import javax.inject.Singleton
 
 @Module
@@ -40,5 +41,10 @@ object DatabaseModule {
     @Provides
     fun provideArtworkRemoteKeysDao(database: HarvardDatabase): ArtworkRemoteKeysDao {
         return database.artworkRemoteKeysDao()
+    }
+
+    @Provides
+    fun provideFilterDao(database: HarvardDatabase): FilterItemDao {
+        return database.filterItemDao()
     }
 }
