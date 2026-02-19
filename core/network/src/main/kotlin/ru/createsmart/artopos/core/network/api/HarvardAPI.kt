@@ -3,6 +3,7 @@ package ru.createsmart.artopos.core.network.api
 import retrofit2.http.GET
 import retrofit2.http.Query
 import ru.createsmart.artopos.core.network.model.ArtworkDTO
+import ru.createsmart.artopos.core.network.model.FilterItemDTO
 import ru.createsmart.artopos.core.network.model.NetworkResponse
 
 /**
@@ -24,4 +25,25 @@ interface HarvardAPI {
             "fields",
         ) fields: String = "id,title,dated,technique,primaryimageurl,description,url,people,images,places",
     ): NetworkResponse<ArtworkDTO>
+
+    @GET("classification")
+    suspend fun getClassification(
+        @Query("sort") sort: String = "objectcount",
+        @Query("sortorder") sortOrder: String = "desc",
+        @Query("size") size: Int = 250,
+    ): NetworkResponse<FilterItemDTO>
+
+    @GET("century")
+    suspend fun getCentury(
+        @Query("sort") sort: String = "objectcount",
+        @Query("sortorder") sortOrder: String = "desc",
+        @Query("size") size: Int = 250,
+    ): NetworkResponse<FilterItemDTO>
+
+    @GET("culture")
+    suspend fun getCulture(
+        @Query("sort") sort: String = "objectcount",
+        @Query("sortorder") sortOrder: String = "desc",
+        @Query("size") size: Int = 250,
+    ): NetworkResponse<FilterItemDTO>
 }
