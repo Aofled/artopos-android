@@ -13,7 +13,9 @@ interface HarvardAPI {
     @GET("object")
     suspend fun getArtworks(
         // Default filters for the main feed (Public Paintings with Images)
-        @Query("classification") classification: String = "Paintings",
+        @Query("classification") classification: String? = null,
+        @Query("century") century: String? = null,
+        @Query("culture") culture: String? = null,
         @Query("hasimage") hasImage: Int = 1,
         @Query("permission") permission: Int = 0,
         @Query("sort") sort: String = "rank",
