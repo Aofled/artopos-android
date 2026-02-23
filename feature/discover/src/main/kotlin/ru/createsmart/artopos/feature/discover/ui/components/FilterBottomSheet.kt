@@ -34,8 +34,10 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -44,6 +46,7 @@ import ru.createsmart.artopos.core.model.FilterType
 import ru.createsmart.artopos.feature.discover.R
 import ru.createsmart.artopos.feature.discover.model.FilterListItem
 import ru.createsmart.artopos.feature.discover.model.FiltersUiState
+import ru.createsmart.artopos.feature.discover.util.FilterNameHelper
 
 private const val TIGHT_SCREEN_THRESHOLD_RATIO = 0.75f
 private const val FILTER_GRID_ROWS = 3
@@ -132,6 +135,12 @@ private fun FilterSectionHeader(
     selectedItemName: String?,
     modifier: Modifier = Modifier,
 ) {
+    val context = LocalContext.current
+
+    val localizedName = remember(selectedItemName) {
+        FilterNameHelper.getLocalizedName(context, selectedItemName ?: "")
+    }
+
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -160,7 +169,7 @@ private fun FilterSectionHeader(
                     )
 
                     Text(
-                        text = selectedItemName,
+                        text = localizedName,
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Medium,
                         color = MaterialTheme.colorScheme.primary,
@@ -207,13 +216,24 @@ private fun FilterHorizontalGridSection(
             }
 
             items(items = items, key = { it.id }) { item ->
+
+                val context = LocalContext.current
+
+                val localizedName = remember(item.name) {
+                    FilterNameHelper.getLocalizedName(context, item.name)
+                }
+
                 FilterChip(
                     selected = item.isSelected,
                     onClick = {
                         val newValue = if (item.isSelected) null else item.name
                         onSelect(type, newValue)
                     },
-                    label = { Text("${item.name} (${item.count})") },
+                    label = {
+                        Text(
+                            localizedName, // "$localizedName (${item.count})",
+                        )
+                    },
                 )
             }
         }
