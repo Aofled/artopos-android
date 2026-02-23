@@ -11,15 +11,20 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,12 +37,16 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import ru.createsmart.artopos.core.model.FilterType
 import ru.createsmart.artopos.core.ui.theme.ArtoposTheme
 import ru.createsmart.artopos.core.ui.theme.components.FilterFloatingActionButton
 import ru.createsmart.artopos.feature.discover.DiscoverViewModel
 import ru.createsmart.artopos.feature.discover.model.ArtworkListItem
+import ru.createsmart.artopos.feature.discover.model.DiscoverActions
+import ru.createsmart.artopos.feature.discover.model.FiltersUiState
 import ru.createsmart.artopos.feature.discover.ui.components.ArtworksView
 import ru.createsmart.artopos.feature.discover.ui.components.ErrorView
+import ru.createsmart.artopos.feature.discover.ui.components.FilterBottomSheet
 import ru.createsmart.artopos.feature.discover.ui.components.LoadingView
 import ru.createsmart.artopos.feature.discover.ui.preview.DiscoverStateProvider
 
@@ -51,65 +60,64 @@ fun DiscoverRoute(
 
     val contentVersion by viewModel.contentVersion.collectAsStateWithLifecycle()
 
+    val filtersState by viewModel.filtersUiState.collectAsStateWithLifecycle()
+
     DiscoverScreen(
         pagingItems = pagingItems,
+        filtersState = filtersState,
         contentVersion = contentVersion,
-        onRefresh = {
-            if (viewModel.onRefresh()) {
-                pagingItems.refresh()
-            }
-        },
-        onRetry = {
-            if (viewModel.onRetryAction()) {
-                pagingItems.retry()
-            }
-        },
-        onArtworkClick = onArtworkClick,
         effectFlow = viewModel.uiEffect,
-        onError = viewModel::onError,
-        onFilterClick = {
-            // TODO(BottomSheet): Open BottomSheet
-        },
+        actions = DiscoverActions(
+            onRefresh = {
+                if (viewModel.onRefresh()) {
+                    pagingItems.refresh()
+                }
+            },
+            onRetry = {
+                if (viewModel.onRetryAction()) {
+                    pagingItems.retry()
+                }
+            },
+            onArtworkClick = onArtworkClick,
+            onError = viewModel::onError,
+            onFilterSelected = viewModel::onFilterSelect,
+            onFilterReset = viewModel::onFilterReset,
+            onFilterApply = viewModel::onFilterApply,
+            onFilterOpen = viewModel::onFilterOpen,
+        ),
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DiscoverScreen(
     pagingItems: LazyPagingItems<ArtworkListItem>,
+    filtersState: FiltersUiState,
     contentVersion: Int,
-    onRefresh: () -> Unit,
-    onRetry: () -> Unit,
-    onArtworkClick: (Int) -> Unit,
     effectFlow: Flow<UiText>? = null,
-    onError: (Throwable) -> Unit,
-    onFilterClick: () -> Unit,
+    actions: DiscoverActions,
 ) {
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
 
+    var showFilterSheet by rememberSaveable { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
     val scope = rememberCoroutineScope()
 
-    fun showSnackbar(message: UiText) {
+    val onShowSnackbar: (UiText) -> Unit = { message ->
         scope.launch {
             snackbarHostState.currentSnackbarData?.dismiss()
-            val text = message.asString(context)
-            snackbarHostState.showSnackbar(text)
+            snackbarHostState.showSnackbar(message.asString(context))
         }
     }
 
-    LaunchedEffect(effectFlow) {
-        effectFlow?.collect { message ->
-            showSnackbar(message)
-        }
-    }
-
-    LaunchedEffect(pagingItems.loadState) { // Global Error Handling
-        val state = pagingItems.loadState
-
-        (state.refresh as? LoadState.Error)?.error?.let { onError(it) }
-
-        (state.append as? LoadState.Error)?.error?.let { onError(it) }
-    }
+    DiscoverScreenEffects(
+        effectFlow = effectFlow,
+        pagingItems = pagingItems,
+        onShowSnackbar = onShowSnackbar,
+        onError = actions.onError,
+    )
 
     // Scaffold handles system bars (Status/Nav Bar) automatically via contentWindowInsets
     Scaffold(
@@ -123,15 +131,14 @@ fun DiscoverScreen(
         },
 
         floatingActionButton = {
-            val showFab = pagingItems.loadState.refresh !is LoadState.Loading
-
-            AnimatedVisibility(
-                visible = showFab,
-                enter = scaleIn(),
-                exit = scaleOut(),
-            ) {
-                FilterFloatingActionButton(onFilterClick)
-            }
+            DiscoverFloatingButton(
+                pagingItems = pagingItems,
+                filtersState = filtersState,
+                onFilterClick = {
+                    actions.onFilterOpen()
+                    showFilterSheet = true
+                },
+            )
         },
 
     ) { innerPadding ->
@@ -139,11 +146,59 @@ fun DiscoverScreen(
             pagingItems = pagingItems,
             contentVersion = contentVersion,
             innerPadding = innerPadding,
-            onRefresh = onRefresh,
-            onRetry = onRetry,
-            onArtworkClick = onArtworkClick,
-            onShowMessage = { showSnackbar(it) },
+            onShowMessage = { onShowSnackbar(it) },
+            actions = actions,
         )
+
+        if (showFilterSheet) {
+            FilterBottomSheet(
+                sheetState = sheetState,
+                filtersState = filtersState,
+                onFilterSelected = actions.onFilterSelected,
+                onReset = actions.onFilterReset,
+                onDismiss = {
+                    showFilterSheet = false
+                    actions.onFilterApply()
+                },
+            )
+        }
+    }
+}
+
+@Composable
+private fun DiscoverScreenEffects(
+    effectFlow: Flow<UiText>?,
+    pagingItems: LazyPagingItems<ArtworkListItem>,
+    onError: (Throwable) -> Unit,
+    onShowSnackbar: (UiText) -> Unit,
+) {
+    LaunchedEffect(effectFlow) {
+        effectFlow?.collect { message -> onShowSnackbar(message) }
+    }
+
+    LaunchedEffect(pagingItems.loadState) {
+        val state = pagingItems.loadState
+        (state.refresh as? LoadState.Error)?.error?.let { onError(it) }
+        (state.append as? LoadState.Error)?.error?.let { onError(it) }
+    }
+}
+
+@Composable
+private fun DiscoverFloatingButton(
+    pagingItems: LazyPagingItems<ArtworkListItem>,
+    filtersState: FiltersUiState,
+    onFilterClick: () -> Unit,
+) {
+    val isListReady = pagingItems.loadState.refresh !is LoadState.Loading
+    val hasContent = pagingItems.itemCount > 0
+    val showFab = isListReady && hasContent && filtersState.isAvailable
+
+    AnimatedVisibility(
+        visible = showFab,
+        enter = scaleIn(),
+        exit = scaleOut(),
+    ) {
+        FilterFloatingActionButton(onFilterClick = onFilterClick)
     }
 }
 
@@ -152,10 +207,8 @@ private fun DiscoverScreenContent(
     pagingItems: LazyPagingItems<ArtworkListItem>,
     contentVersion: Int,
     innerPadding: PaddingValues,
-    onRefresh: () -> Unit,
-    onRetry: () -> Unit,
-    onArtworkClick: (Int) -> Unit,
     onShowMessage: (UiText) -> Unit,
+    actions: DiscoverActions,
 ) {
     val refreshState = pagingItems.loadState.refresh
     val isListEmpty = pagingItems.itemCount == 0
@@ -168,17 +221,15 @@ private fun DiscoverScreenContent(
                 artworks = pagingItems,
                 contentVersion = contentVersion,
                 isRefreshing = isRefreshing,
-                onRefresh = onRefresh,
-                onRetry = onRetry,
-                onArtworkClick = onArtworkClick,
                 contentPadding = innerPadding,
                 onShowMessage = onShowMessage,
+                actions = actions,
             )
         }
 
         refreshState is LoadState.Error && isListEmpty -> {
             Box(modifier = Modifier.padding(innerPadding)) {
-                ErrorView(onRetry = onRetry)
+                ErrorView(onRetry = actions.onRetry)
             }
         }
 
@@ -200,12 +251,24 @@ fun DiscoverScreenPreview(
     ArtoposTheme {
         DiscoverScreen(
             pagingItems = pagingItems,
-            onRefresh = { },
-            onArtworkClick = { id -> println("Clicked id: $id") },
             contentVersion = 0,
-            onRetry = { },
-            onError = { },
-            onFilterClick = { },
+            effectFlow = null,
+            filtersState = FiltersUiState(
+                emptyList(),
+                emptyList(),
+                emptyList(),
+                false,
+            ),
+            actions = DiscoverActions(
+                onRefresh = { },
+                onRetry = { },
+                onArtworkClick = { id -> println("Clicked id: $id") },
+                onError = { },
+                onFilterSelected = { filterType: FilterType, query: String? -> },
+                onFilterApply = { },
+                onFilterReset = { },
+                onFilterOpen = { },
+            ),
         )
     }
 }

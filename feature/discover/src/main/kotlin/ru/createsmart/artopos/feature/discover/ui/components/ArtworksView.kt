@@ -35,6 +35,7 @@ import ru.createsmart.artopos.core.ui.theme.ArtoposTheme
 import ru.createsmart.artopos.core.ui.theme.components.CustomCircularProgressIndicator
 import ru.createsmart.artopos.feature.discover.R
 import ru.createsmart.artopos.feature.discover.model.ArtworkListItem
+import ru.createsmart.artopos.feature.discover.model.DiscoverActions
 import ru.createsmart.artopos.core.ui.R as UiR
 
 @Composable
@@ -42,18 +43,16 @@ fun ArtworksView(
     artworks: LazyPagingItems<ArtworkListItem>,
     contentVersion: Int,
     isRefreshing: Boolean,
-    onRefresh: () -> Unit,
-    onRetry: () -> Unit,
-    onArtworkClick: (Int) -> Unit,
     contentPadding: PaddingValues,
     onShowMessage: (UiText) -> Unit,
+    actions: DiscoverActions,
 ) {
     val pullToRefreshState = rememberPullToRefreshState()
 
     // Material 3 Pull-to-Refresh container
     PullToRefreshBox(
         isRefreshing = isRefreshing,
-        onRefresh = onRefresh,
+        onRefresh = actions.onRefresh,
         state = pullToRefreshState,
         modifier = Modifier.fillMaxSize(),
         indicator = {
@@ -70,9 +69,9 @@ fun ArtworksView(
             artworks = artworks,
             contentVersion = contentVersion,
             contentPadding = contentPadding,
-            onArtworkClick = onArtworkClick,
+            onArtworkClick = actions.onArtworkClick,
             onShowMessage = onShowMessage,
-            onRetry = onRetry,
+            onRetry = actions.onRetry,
         )
     }
 }
@@ -187,11 +186,18 @@ private fun ArtworksViewPreview() {
             artworks = artworks,
             contentVersion = 0,
             isRefreshing = false,
-            onRefresh = { },
-            onRetry = { },
-            onArtworkClick = { },
-            onShowMessage = { },
             contentPadding = PaddingValues(0.dp),
+            onShowMessage = { },
+            actions = DiscoverActions(
+                onRefresh = {},
+                onRetry = {},
+                onArtworkClick = {},
+                onError = {},
+                onFilterSelected = { _, _ -> },
+                onFilterApply = {},
+                onFilterReset = {},
+                onFilterOpen = {},
+            ),
         )
     }
 }

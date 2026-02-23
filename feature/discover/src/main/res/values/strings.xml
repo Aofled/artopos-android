@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="label_discover">Discover</string>
+
+    <string name="title_filters">Filters</string>
+    <string name="filter_classification">Type</string>
+    <string name="filter_century">Time Period</string>
+    <string name="filter_culture">Culture</string>
+    <string name="btn_reset">Reset</string>
+    <string name="item_any">Any</string>
 </resources>

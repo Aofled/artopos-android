@@ -1,6 +1,7 @@
 package ru.createsmart.artopos.feature.discover
 
 import UiText
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
@@ -10,6 +11,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
@@ -26,6 +28,7 @@ import ru.createsmart.artopos.core.model.FilterType
 import ru.createsmart.artopos.core.ui.R
 import ru.createsmart.artopos.core.ui.theme.components.toUiText
 import ru.createsmart.artopos.feature.discover.mapper.toUi
+import ru.createsmart.artopos.feature.discover.model.FiltersUiState
 import javax.inject.Inject
 
 private const val ERROR_DEBOUNCE_MS = 3000L
@@ -47,30 +50,51 @@ class DiscoverViewModel @Inject constructor(
     private var lastEmittedMessage: UiText? = null
     private var lastEmittedTime: Long = 0L
 
-    private val _filterParams = MutableStateFlow(FilterParams())
-    val filterParams = _filterParams.asStateFlow()
+    private val _activeFilterParams = MutableStateFlow(FilterParams())
+    private val _draftFilterParams = MutableStateFlow(FilterParams())
 
-    val classifications = combine(
+    // --- UI FLOWS (Depends on DRAFT) ---
+
+    private val _classificationsFlow = combine(
         getFiltersUseCase(FilterType.CLASSIFICATION),
-        _filterParams,
-    ) { list, state -> list.toUi(state.classification) }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+        _draftFilterParams,
+    ) { list, params ->
+        list.toUi(params.classification)
+    }
 
-    val centuries = combine(
+    private val _centuriesFlow = combine(
         getFiltersUseCase(FilterType.CENTURY),
-        _filterParams,
-    ) { list, state -> list.toUi(state.century) }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+        _draftFilterParams,
+    ) { list, params ->
+        list.toUi(params.century)
+    }
 
-    val cultures = combine(
+    private val _culturesFlow = combine(
         getFiltersUseCase(FilterType.CULTURE),
-        _filterParams,
-    ) { list, state -> list.toUi(state.culture) }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+        _draftFilterParams,
+    ) { list, params ->
+        list.toUi(params.culture)
+    }
+
+    val filtersUiState: StateFlow<FiltersUiState> = combine(
+        _classificationsFlow,
+        _centuriesFlow,
+        _culturesFlow,
+    ) { classList, centList, cultList ->
+        FiltersUiState(
+            classifications = classList,
+            centuries = centList,
+            cultures = cultList,
+            isAvailable = classList.isNotEmpty() && centList.isNotEmpty() && cultList.isNotEmpty(),
+        )
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), FiltersUiState())
+
+    // --- PAGING FLOW (Depends on ACTIVE) ---
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val artworksFlow = _filterParams
+    val artworksFlow = _activeFilterParams
         .flatMapLatest { params ->
+            Log.d("artworksFlow", " $params")
             getArtworks(params) // It depends on the filter
         }
         .map { pagingData -> pagingData.map { it.toUi() } }
@@ -82,13 +106,32 @@ class DiscoverViewModel @Inject constructor(
         }
     }
 
-    fun onFilterChanged(type: FilterType, value: String?) {
-        _filterParams.value = when (type) {
-            FilterType.CLASSIFICATION -> _filterParams.value.copy(classification = value)
-            FilterType.CENTURY -> _filterParams.value.copy(century = value)
-            FilterType.CULTURE -> _filterParams.value.copy(culture = value)
+    // --- ACTIONS ---
+
+    fun onFilterSelect(type: FilterType, value: String?) {
+        val currentDraft = _draftFilterParams.value
+        _draftFilterParams.value = when (type) {
+            FilterType.CLASSIFICATION -> currentDraft.copy(classification = value)
+            FilterType.CENTURY -> currentDraft.copy(century = value)
+            FilterType.CULTURE -> currentDraft.copy(culture = value)
         }
     }
+
+    fun onFilterReset() {
+        _draftFilterParams.value = FilterParams()
+    }
+
+    fun onFilterApply() {
+        if (_activeFilterParams.value != _draftFilterParams.value) {
+            _activeFilterParams.value = _draftFilterParams.value
+        }
+    }
+
+    fun onFilterOpen() {
+        _draftFilterParams.value = _activeFilterParams.value
+    }
+
+    // --- ERROR HANDLING ---
 
     fun onRefresh(): Boolean {
         if (!checkInternetAndNotify()) return false
