@@ -53,6 +53,8 @@ class DiscoverViewModel @Inject constructor(
     private val _activeFilterParams = MutableStateFlow(FilterParams())
     private val _draftFilterParams = MutableStateFlow(FilterParams())
 
+    val activeFilterParams = _activeFilterParams.asStateFlow() // For TopAppBar
+
     // --- UI FLOWS (Depends on DRAFT) ---
 
     private val _classificationsFlow = combine(
@@ -129,6 +131,19 @@ class DiscoverViewModel @Inject constructor(
 
     fun onFilterOpen() {
         _draftFilterParams.value = _activeFilterParams.value
+    }
+
+    fun onRemoveFilter(type: FilterType) { // For TopAppBar
+        val current = _activeFilterParams.value
+
+        val newParams = when (type) {
+            FilterType.CLASSIFICATION -> current.copy(classification = null)
+            FilterType.CENTURY -> current.copy(century = null)
+            FilterType.CULTURE -> current.copy(culture = null)
+        }
+
+        _activeFilterParams.value = newParams
+        _draftFilterParams.value = newParams
     }
 
     // --- ERROR HANDLING ---

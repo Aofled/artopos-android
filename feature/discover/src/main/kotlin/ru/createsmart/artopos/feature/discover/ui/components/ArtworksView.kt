@@ -9,18 +9,27 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.InputChip
+import androidx.compose.material3.InputChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -31,11 +40,14 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import kotlinx.coroutines.flow.flowOf
+import ru.createsmart.artopos.core.model.FilterParams
+import ru.createsmart.artopos.core.model.FilterType
 import ru.createsmart.artopos.core.ui.theme.ArtoposTheme
 import ru.createsmart.artopos.core.ui.theme.components.CustomCircularProgressIndicator
 import ru.createsmart.artopos.feature.discover.R
 import ru.createsmart.artopos.feature.discover.model.ArtworkListItem
 import ru.createsmart.artopos.feature.discover.model.DiscoverActions
+import ru.createsmart.artopos.feature.discover.util.FilterNameHelper
 import ru.createsmart.artopos.core.ui.R as UiR
 
 @Composable
@@ -45,6 +57,7 @@ fun ArtworksView(
     isRefreshing: Boolean,
     contentPadding: PaddingValues,
     onShowMessage: (UiText) -> Unit,
+    filterParams: FilterParams,
     actions: DiscoverActions,
 ) {
     val pullToRefreshState = rememberPullToRefreshState()
@@ -69,9 +82,9 @@ fun ArtworksView(
             artworks = artworks,
             contentVersion = contentVersion,
             contentPadding = contentPadding,
-            onArtworkClick = actions.onArtworkClick,
             onShowMessage = onShowMessage,
-            onRetry = actions.onRetry,
+            filterParams = filterParams,
+            actions = actions,
         )
     }
 }
@@ -81,9 +94,9 @@ private fun ArtworksGrid(
     artworks: LazyPagingItems<ArtworkListItem>,
     contentVersion: Int,
     contentPadding: PaddingValues,
-    onArtworkClick: (Int) -> Unit,
     onShowMessage: (UiText) -> Unit,
-    onRetry: () -> Unit,
+    filterParams: FilterParams,
+    actions: DiscoverActions,
 ) {
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(2),
@@ -99,7 +112,10 @@ private fun ArtworksGrid(
         modifier = Modifier.fillMaxSize(),
     ) {
         item(span = StaggeredGridItemSpan.FullLine) {
-            TopAppBar()
+            TopAppBar(
+                filterParams = filterParams,
+                onRemoveFilter = actions.onRemoveFilter,
+            )
         }
         items(
             count = artworks.itemCount,
@@ -112,7 +128,7 @@ private fun ArtworksGrid(
                 ArtworkCard(
                     artwork = artwork,
                     contentVersion = contentVersion,
-                    onClick = { onArtworkClick(artwork.id) },
+                    onClick = { actions.onArtworkClick(artwork.id) },
                     onShowMessage = onShowMessage,
                 )
             }
@@ -126,19 +142,57 @@ private fun ArtworksGrid(
 
         if (artworks.loadState.append is LoadState.Error) {
             item(span = StaggeredGridItemSpan.FullLine) {
-                ErrorFooter(onRetry = onRetry)
+                ErrorFooter(onRetry = actions.onRetry)
             }
         }
     }
 }
 
 @Composable
-private fun TopAppBar() {
-    Text(
-        text = stringResource(R.string.label_discover),
-        style = MaterialTheme.typography.displaySmall,
-        color = MaterialTheme.colorScheme.onBackground,
-    )
+private fun TopAppBar(
+    filterParams: FilterParams,
+    onRemoveFilter: (FilterType) -> Unit,
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Text(
+            text = stringResource(R.string.label_discover),
+            style = MaterialTheme.typography.displaySmall,
+            color = MaterialTheme.colorScheme.onBackground,
+        )
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(horizontal = 2.dp),
+        ) {
+            if (filterParams.classification != null) {
+                item {
+                    ActiveFilterChip(
+                        rawName = filterParams.classification!!,
+                        onRemove = { onRemoveFilter(FilterType.CLASSIFICATION) },
+                    )
+                }
+            }
+
+            if (filterParams.century != null) {
+                item {
+                    ActiveFilterChip(
+                        rawName = filterParams.century!!,
+                        onRemove = { onRemoveFilter(FilterType.CENTURY) },
+                    )
+                }
+            }
+
+            if (filterParams.culture != null) {
+                item {
+                    ActiveFilterChip(
+                        rawName = filterParams.culture!!,
+                        onRemove = { onRemoveFilter(FilterType.CULTURE) },
+                    )
+                }
+            }
+        }
+    }
 }
 
 @Composable
@@ -156,8 +210,7 @@ private fun BottomProgress() {
 @Composable
 private fun ErrorFooter(onRetry: () -> Unit) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
@@ -169,6 +222,38 @@ private fun ErrorFooter(onRetry: () -> Unit) {
             )
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ActiveFilterChip(
+    rawName: String,
+    onRemove: () -> Unit,
+) {
+    val context = LocalContext.current
+
+    val localizedName = remember(rawName) {
+        FilterNameHelper.getLocalizedName(context, rawName)
+    }
+
+    InputChip(
+        selected = true,
+        onClick = onRemove,
+        label = { Text(localizedName) },
+        trailingIcon = {
+            Icon(
+                painter = painterResource(id = UiR.drawable.close),
+                contentDescription = stringResource(R.string.btn_reset),
+                modifier = Modifier.size(16.dp),
+            )
+        },
+        colors = InputChipDefaults.inputChipColors(
+            selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+            selectedLabelColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            selectedTrailingIconColor = MaterialTheme.colorScheme.onSecondaryContainer,
+        ),
+        border = null,
+    )
 }
 
 @Preview(showBackground = true, name = "Discover States", uiMode = Configuration.UI_MODE_NIGHT_NO)
@@ -188,6 +273,7 @@ private fun ArtworksViewPreview() {
             isRefreshing = false,
             contentPadding = PaddingValues(0.dp),
             onShowMessage = { },
+            filterParams = FilterParams(),
             actions = DiscoverActions(
                 onRefresh = {},
                 onRetry = {},
@@ -197,6 +283,7 @@ private fun ArtworksViewPreview() {
                 onFilterApply = {},
                 onFilterReset = {},
                 onFilterOpen = {},
+                onRemoveFilter = { _ -> },
             ),
         )
     }

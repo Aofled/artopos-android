@@ -37,6 +37,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import ru.createsmart.artopos.core.model.FilterParams
 import ru.createsmart.artopos.core.model.FilterType
 import ru.createsmart.artopos.core.ui.theme.ArtoposTheme
 import ru.createsmart.artopos.core.ui.theme.components.FilterFloatingActionButton
@@ -62,11 +63,14 @@ fun DiscoverRoute(
 
     val filtersState by viewModel.filtersUiState.collectAsStateWithLifecycle()
 
+    val activeParams by viewModel.activeFilterParams.collectAsStateWithLifecycle()
+
     DiscoverScreen(
         pagingItems = pagingItems,
         filtersState = filtersState,
         contentVersion = contentVersion,
         effectFlow = viewModel.uiEffect,
+        filterParams = activeParams,
         actions = DiscoverActions(
             onRefresh = {
                 if (viewModel.onRefresh()) {
@@ -84,6 +88,7 @@ fun DiscoverRoute(
             onFilterReset = viewModel::onFilterReset,
             onFilterApply = viewModel::onFilterApply,
             onFilterOpen = viewModel::onFilterOpen,
+            onRemoveFilter = viewModel::onRemoveFilter,
         ),
     )
 }
@@ -95,6 +100,7 @@ fun DiscoverScreen(
     filtersState: FiltersUiState,
     contentVersion: Int,
     effectFlow: Flow<UiText>? = null,
+    filterParams: FilterParams,
     actions: DiscoverActions,
 ) {
     val context = LocalContext.current
@@ -124,11 +130,7 @@ fun DiscoverScreen(
         modifier = Modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.background,
         contentWindowInsets = WindowInsets.systemBars,
-        snackbarHost = {
-            SnackbarHost(
-                hostState = snackbarHostState,
-            )
-        },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
 
         floatingActionButton = {
             DiscoverFloatingButton(
@@ -147,6 +149,7 @@ fun DiscoverScreen(
             contentVersion = contentVersion,
             innerPadding = innerPadding,
             onShowMessage = { onShowSnackbar(it) },
+            filterParams = filterParams,
             actions = actions,
         )
 
@@ -208,6 +211,7 @@ private fun DiscoverScreenContent(
     contentVersion: Int,
     innerPadding: PaddingValues,
     onShowMessage: (UiText) -> Unit,
+    filterParams: FilterParams,
     actions: DiscoverActions,
 ) {
     val refreshState = pagingItems.loadState.refresh
@@ -223,6 +227,7 @@ private fun DiscoverScreenContent(
                 isRefreshing = isRefreshing,
                 contentPadding = innerPadding,
                 onShowMessage = onShowMessage,
+                filterParams = filterParams,
                 actions = actions,
             )
         }
@@ -259,6 +264,7 @@ fun DiscoverScreenPreview(
                 emptyList(),
                 false,
             ),
+            filterParams = FilterParams(),
             actions = DiscoverActions(
                 onRefresh = { },
                 onRetry = { },
@@ -268,6 +274,7 @@ fun DiscoverScreenPreview(
                 onFilterApply = { },
                 onFilterReset = { },
                 onFilterOpen = { },
+                onRemoveFilter = { _ -> },
             ),
         )
     }

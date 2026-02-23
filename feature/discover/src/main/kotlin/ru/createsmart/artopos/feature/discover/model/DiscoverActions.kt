@@ -13,4 +13,5 @@ data class DiscoverActions(
     val onFilterApply: () -> Unit,
     val onFilterReset: () -> Unit,
     val onFilterOpen: () -> Unit,
+    val onRemoveFilter: (FilterType) -> Unit,
 )
