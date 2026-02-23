@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -25,6 +26,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -98,8 +100,17 @@ private fun ArtworksGrid(
     filterParams: FilterParams,
     actions: DiscoverActions,
 ) {
+    val listState = rememberLazyStaggeredGridState()
+
+    LaunchedEffect(artworks.loadState.refresh) { // Auto-scroll up when data is updated
+        if (artworks.loadState.refresh is LoadState.NotLoading && artworks.itemCount > 0) {
+            listState.scrollToItem(0)
+        }
+    }
+
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(2),
+        state = listState,
         contentPadding = PaddingValues(
             // Add System Bars padding + extra spacing for design
             top = contentPadding.calculateTopPadding() + 8.dp,
