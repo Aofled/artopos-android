@@ -217,14 +217,16 @@ private fun DiscoverScreenContent(
     val refreshState = pagingItems.loadState.refresh
     val isListEmpty = pagingItems.itemCount == 0
 
+    val hasActiveFilters = filterParams.classification != null ||
+        filterParams.century != null ||
+        filterParams.culture != null
+
     when {
         !isListEmpty -> {
-            val isRefreshing = refreshState is LoadState.Loading
-
             ArtworksView(
                 artworks = pagingItems,
                 contentVersion = contentVersion,
-                isRefreshing = isRefreshing,
+                isRefreshing = refreshState is LoadState.Loading,
                 contentPadding = innerPadding,
                 onShowMessage = onShowMessage,
                 filterParams = filterParams,
@@ -232,10 +234,22 @@ private fun DiscoverScreenContent(
             )
         }
 
-        refreshState is LoadState.Error && isListEmpty -> {
+        refreshState is LoadState.Error -> {
             Box(modifier = Modifier.padding(innerPadding)) {
                 ErrorView(onRetry = actions.onRetry)
             }
+        }
+
+        hasActiveFilters -> { // For filters if the result is empty
+            ArtworksView(
+                artworks = pagingItems,
+                contentVersion = contentVersion,
+                isRefreshing = refreshState is LoadState.Loading,
+                contentPadding = innerPadding,
+                onShowMessage = onShowMessage,
+                filterParams = filterParams,
+                actions = actions,
+            )
         }
 
         else -> {

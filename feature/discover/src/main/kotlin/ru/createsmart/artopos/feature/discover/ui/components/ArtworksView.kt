@@ -6,11 +6,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridScope
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
@@ -101,6 +104,7 @@ private fun ArtworksGrid(
     actions: DiscoverActions,
 ) {
     val listState = rememberLazyStaggeredGridState()
+    val isEmptyResult = artworks.itemCount == 0 && artworks.loadState.refresh !is LoadState.Loading
 
     LaunchedEffect(artworks.loadState.refresh) { // Auto-scroll up when data is updated
         if (artworks.loadState.refresh is LoadState.NotLoading && artworks.itemCount > 0) {
@@ -108,54 +112,40 @@ private fun ArtworksGrid(
         }
     }
 
+    val gridPadding = PaddingValues( // Add System Bars padding + extra spacing for design
+        top = contentPadding.calculateTopPadding() + 8.dp,
+        bottom = contentPadding.calculateBottomPadding() + 8.dp,
+        start = 16.dp,
+        end = 16.dp,
+    )
+
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(2),
         state = listState,
-        contentPadding = PaddingValues(
-            // Add System Bars padding + extra spacing for design
-            top = contentPadding.calculateTopPadding() + 8.dp,
-            bottom = contentPadding.calculateBottomPadding() + 8.dp,
-            start = 16.dp,
-            end = 16.dp,
-        ),
+        contentPadding = gridPadding,
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalItemSpacing = 16.dp,
         modifier = Modifier.fillMaxSize(),
     ) {
         item(span = StaggeredGridItemSpan.FullLine) {
-            TopAppBar(
-                filterParams = filterParams,
-                onRemoveFilter = actions.onRemoveFilter,
+            TopAppBar(filterParams = filterParams, onRemoveFilter = actions.onRemoveFilter)
+        }
+
+        if (isEmptyResult) {
+            item(span = StaggeredGridItemSpan.FullLine) { EmptyDataView() }
+        } else {
+            artworkItems(
+                artworks = artworks,
+                contentVersion = contentVersion,
+                onArtworkClick = actions.onArtworkClick,
+                onShowMessage = onShowMessage,
             )
         }
-        items(
-            count = artworks.itemCount,
-            // Optimization: Stable keys prevent unnecessary recompositions when new pages load.
-            key = artworks.itemKey { it.id },
-            contentType = artworks.itemContentType { "artwork" },
-        ) { index ->
-            val artwork = artworks[index]
-            if (artwork != null) {
-                ArtworkCard(
-                    artwork = artwork,
-                    contentVersion = contentVersion,
-                    onClick = { actions.onArtworkClick(artwork.id) },
-                    onShowMessage = onShowMessage,
-                )
-            }
-        }
 
-        if (artworks.loadState.append is LoadState.Loading) {
-            item(span = StaggeredGridItemSpan.FullLine) {
-                BottomProgress()
-            }
-        }
-
-        if (artworks.loadState.append is LoadState.Error) {
-            item(span = StaggeredGridItemSpan.FullLine) {
-                ErrorFooter(onRetry = actions.onRetry)
-            }
-        }
+        pagingFooters(
+            loadState = artworks.loadState.append,
+            onRetry = actions.onRetry,
+        )
     }
 }
 
@@ -202,6 +192,71 @@ private fun TopAppBar(
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun EmptyDataView() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 48.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = stringResource(UiR.string.label_no_results),
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = stringResource(UiR.string.incorrect_filters),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+private fun LazyStaggeredGridScope.artworkItems(
+    artworks: LazyPagingItems<ArtworkListItem>,
+    contentVersion: Int,
+    onArtworkClick: (Int) -> Unit,
+    onShowMessage: (UiText) -> Unit,
+) {
+    items(
+        count = artworks.itemCount,
+        // Optimization: Stable keys prevent unnecessary recompositions when new pages load.
+        key = artworks.itemKey { it.id },
+        contentType = artworks.itemContentType { "artwork" },
+    ) { index ->
+        val artwork = artworks[index]
+        if (artwork != null) {
+            ArtworkCard(
+                artwork = artwork,
+                contentVersion = contentVersion,
+                onClick = { onArtworkClick(artwork.id) },
+                onShowMessage = onShowMessage,
+            )
+        }
+    }
+}
+
+private fun LazyStaggeredGridScope.pagingFooters(
+    loadState: LoadState,
+    onRetry: () -> Unit,
+) {
+    if (loadState is LoadState.Loading) {
+        item(span = StaggeredGridItemSpan.FullLine) {
+            BottomProgress()
+        }
+    }
+
+    if (loadState is LoadState.Error) {
+        item(span = StaggeredGridItemSpan.FullLine) {
+            ErrorFooter(onRetry = onRetry)
         }
     }
 }
