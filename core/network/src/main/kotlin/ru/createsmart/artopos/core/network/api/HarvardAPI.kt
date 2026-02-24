@@ -18,7 +18,7 @@ interface HarvardAPI {
         @Query("culture") culture: String? = null,
         @Query("hasimage") hasImage: Int = 1,
         @Query("permission") permission: Int = 0,
-        @Query("sort") sort: String = "rank",
+        @Query("sort") sort: String = "random", // random, rank
         @Query("sortorder") sortOrder: String = "desc",
         @Query("size") size: Int = 50,
         @Query("page") page: Int = 1,

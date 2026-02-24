@@ -82,11 +82,13 @@ class DiscoverViewModel @Inject constructor(
         _classificationsFlow,
         _centuriesFlow,
         _culturesFlow,
-    ) { classList, centList, cultList ->
+        _draftFilterParams,
+    ) { classList, centList, cultList, draftParams ->
         FiltersUiState(
             classifications = classList,
             centuries = centList,
             cultures = cultList,
+            sort = draftParams.sort,
             isAvailable = classList.isNotEmpty() && centList.isNotEmpty() && cultList.isNotEmpty(),
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), FiltersUiState())
@@ -144,6 +146,12 @@ class DiscoverViewModel @Inject constructor(
 
         _activeFilterParams.value = newParams
         _draftFilterParams.value = newParams
+    }
+
+    fun onToggleFilterSort() {
+        val currentDraft = _draftFilterParams.value
+        val newSort = if (currentDraft.sort == "random") "rank" else "random"
+        _draftFilterParams.value = currentDraft.copy(sort = newSort)
     }
 
     // --- ERROR HANDLING ---

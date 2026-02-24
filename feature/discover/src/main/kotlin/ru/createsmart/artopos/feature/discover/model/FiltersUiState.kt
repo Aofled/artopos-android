@@ -8,4 +8,8 @@ data class FiltersUiState(
     val centuries: List<FilterListItem> = emptyList(),
     val cultures: List<FilterListItem> = emptyList(),
     val isAvailable: Boolean = false,
-)
+    val sort: String = "rank",
+) {
+    val isRandomSort: Boolean
+        get() = sort == "random"
+}

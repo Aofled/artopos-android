@@ -89,6 +89,7 @@ fun DiscoverRoute(
             onFilterApply = viewModel::onFilterApply,
             onFilterOpen = viewModel::onFilterOpen,
             onRemoveFilter = viewModel::onRemoveFilter,
+            onToggleFilterSort = viewModel::onToggleFilterSort,
         ),
     )
 }
@@ -163,6 +164,7 @@ fun DiscoverScreen(
                     showFilterSheet = false
                     actions.onFilterApply()
                 },
+                onToggleSort = actions.onToggleFilterSort,
             )
         }
     }
@@ -288,6 +290,7 @@ fun DiscoverScreenPreview(
                 onFilterReset = { },
                 onFilterOpen = { },
                 onRemoveFilter = { _ -> },
+                onToggleFilterSort = { },
             ),
         )
     }

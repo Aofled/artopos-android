@@ -350,6 +350,7 @@ private fun ArtworksViewPreview() {
                 onFilterReset = {},
                 onFilterOpen = {},
                 onRemoveFilter = { _ -> },
+                onToggleFilterSort = {},
             ),
         )
     }

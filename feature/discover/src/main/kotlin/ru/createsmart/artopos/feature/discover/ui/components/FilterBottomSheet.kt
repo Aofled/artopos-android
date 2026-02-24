@@ -27,6 +27,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
@@ -38,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -47,6 +50,7 @@ import ru.createsmart.artopos.feature.discover.R
 import ru.createsmart.artopos.feature.discover.model.FilterListItem
 import ru.createsmart.artopos.feature.discover.model.FiltersUiState
 import ru.createsmart.artopos.feature.discover.util.FilterNameHelper
+import ru.createsmart.artopos.core.ui.R as UiR
 
 private val FILTER_GRID_HEIGHT = 135.dp
 private val FILTER_SECTION_HEADER_HEIGHT = 50.dp
@@ -62,6 +66,7 @@ fun FilterBottomSheet(
     filtersState: FiltersUiState,
     onFilterSelected: (FilterType, String?) -> Unit,
     onReset: () -> Unit,
+    onToggleSort: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     val configuration = LocalConfiguration.current
@@ -92,7 +97,11 @@ fun FilterBottomSheet(
                 .padding(bottom = 16.dp)
                 .padding(WindowInsets.navigationBars.asPaddingValues()),
         ) {
-            FilterSheetHeader(onReset = onReset)
+            FilterSheetHeader(
+                onReset = onReset,
+                isRandomSort = filtersState.isRandomSort,
+                onToggleSort = onToggleSort,
+            )
             Spacer(modifier = Modifier.height(8.dp))
 
             val context = LocalContext.current
@@ -128,6 +137,8 @@ fun FilterBottomSheet(
 private fun FilterSheetHeader(
     onReset: () -> Unit,
     modifier: Modifier = Modifier,
+    isRandomSort: Boolean,
+    onToggleSort: () -> Unit,
 ) {
     Row(
         modifier = modifier
@@ -142,8 +153,33 @@ private fun FilterSheetHeader(
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface,
         )
-        TextButton(onClick = onReset) {
-            Text(stringResource(R.string.btn_reset))
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            TextButton(onClick = onReset) {
+                Text(stringResource(R.string.btn_reset))
+            }
+
+            IconButton(onClick = onToggleSort) {
+                val painter = if (isRandomSort) {
+                    painterResource(id = UiR.drawable.shuffle)
+                } else {
+                    painterResource(id = UiR.drawable.sort)
+                }
+
+                val tint = if (isRandomSort) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                }
+
+                Icon(
+                    painter = painter,
+                    contentDescription = stringResource(R.string.sort_filters),
+                    tint = tint,
+                )
+            }
         }
     }
 }

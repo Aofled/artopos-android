@@ -29,6 +29,14 @@ class ArtworkRemoteMediator(
         loadType: LoadType,
         state: PagingState<Int, ArtworkDBO>,
     ): MediatorResult {
+        val hasFilters = params.classification != null || params.century != null || params.culture != null
+
+        val effectiveSort = if (hasFilters) {
+            params.sort // For the "rank" and "random" filters, "rank" is the default.
+        } else {
+            "random" // For the main page, always "random"
+        }
+
         val page = when (loadType) {
             LoadType.REFRESH -> {
                 // Logic: Find the page key closest to the current scroll position.
@@ -67,6 +75,7 @@ class ArtworkRemoteMediator(
                 classification = params.classification,
                 century = params.century,
                 culture = params.culture,
+                sort = effectiveSort,
             )
             val validRecords = apiResponse.records.filter { !it.images.isNullOrEmpty() }
 

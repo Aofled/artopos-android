@@ -7,5 +7,6 @@
     <string name="filter_century">Time Period</string>
     <string name="filter_culture">Culture</string>
     <string name="btn_reset">Reset</string>
+    <string name="sort_filters">Sort filters</string>
     <string name="item_any">Any</string>
 </resources>
