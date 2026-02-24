@@ -193,8 +193,7 @@ private fun DiscoverFloatingButton(
     onFilterClick: () -> Unit,
 ) {
     val isListReady = pagingItems.loadState.refresh !is LoadState.Loading
-    val hasContent = pagingItems.itemCount > 0
-    val showFab = isListReady && hasContent && filtersState.isAvailable
+    val showFab = isListReady && filtersState.isAvailable
 
     AnimatedVisibility(
         visible = showFab,
