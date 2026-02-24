@@ -20,7 +20,7 @@ interface HarvardAPI {
         @Query("permission") permission: Int = 0,
         @Query("sort") sort: String = "rank",
         @Query("sortorder") sortOrder: String = "desc",
-        @Query("size") size: Int = 20,
+        @Query("size") size: Int = 50,
         @Query("page") page: Int = 1,
         // Optimization: Request only necessary fields to save traffic/bandwidth
         @Query(

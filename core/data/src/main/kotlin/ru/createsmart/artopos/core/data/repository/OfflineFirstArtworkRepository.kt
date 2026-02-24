@@ -26,9 +26,9 @@ class OfflineFirstArtworkRepository @Inject constructor(
 ) : ArtworkRepository {
 
     private val pagingConfig = PagingConfig(
-        pageSize = 20,
-        initialLoadSize = 20,
-        prefetchDistance = 6,
+        pageSize = 50,
+        initialLoadSize = 50,
+        prefetchDistance = 20,
         enablePlaceholders = true,
     )
 
