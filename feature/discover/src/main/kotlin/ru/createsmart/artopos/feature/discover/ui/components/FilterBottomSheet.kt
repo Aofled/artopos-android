@@ -2,6 +2,7 @@ package ru.createsmart.artopos.feature.discover.ui.components
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
@@ -34,6 +35,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -44,12 +46,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ru.createsmart.artopos.core.model.FilterSortOption
 import ru.createsmart.artopos.core.model.FilterType
+import ru.createsmart.artopos.core.ui.theme.ArtoposTheme
 import ru.createsmart.artopos.feature.discover.R
 import ru.createsmart.artopos.feature.discover.model.FilterListItem
 import ru.createsmart.artopos.feature.discover.model.FiltersUiState
+import ru.createsmart.artopos.feature.discover.ui.preview.FilterPreviewData
 import ru.createsmart.artopos.feature.discover.util.FilterNameHelper
 import ru.createsmart.artopos.core.ui.R as UiR
 
@@ -296,4 +301,30 @@ private fun AnyFilterChip(isSelected: Boolean, onClick: () -> Unit) {
             selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
         ),
     )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Composable
+private fun FilterBottomSheetPreview() {
+    val previewState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true,
+    )
+
+    ArtoposTheme {
+        FilterBottomSheet(
+            sheetState = previewState,
+            filtersState = FiltersUiState(
+                classifications = FilterPreviewData.classifications,
+                centuries = FilterPreviewData.centuries,
+                cultures = FilterPreviewData.cultures,
+                isAvailable = true,
+                sort = FilterSortOption.RANK,
+            ),
+            onFilterSelected = { _, _ -> },
+            onReset = { },
+            onToggleSort = { },
+            onDismiss = { },
+        )
+    }
 }
