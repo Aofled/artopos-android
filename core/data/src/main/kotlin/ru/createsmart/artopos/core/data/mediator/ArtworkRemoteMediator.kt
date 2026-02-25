@@ -4,6 +4,7 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
+import androidx.paging.RemoteMediator.MediatorResult
 import androidx.room.withTransaction
 import ru.createsmart.artopos.core.data.mapper.toDBO
 import ru.createsmart.artopos.core.database.HarvardDatabase
@@ -35,17 +36,7 @@ class ArtworkRemoteMediator(
         loadType: LoadType,
         state: PagingState<Int, ArtworkDBO>,
     ): MediatorResult {
-        val hasFilters = params.classification != null || params.century != null || params.culture != null
-
-        val effectiveSort = if (hasFilters) {
-            when (params.sort) { // For the "rank", "totalpageviews" and "random" filters, "rank" is the default.
-                FilterSortOption.RANK -> FILTER_RANK
-                FilterSortOption.TOTAL_PAGE_VIEWS -> FILTER_TOTAL_PAGE_VIEWS
-                FilterSortOption.RANDOM -> FILTER_RANDOM
-            }
-        } else {
-            "random" // For the main page, always "random"
-        }
+        val effectiveSort = resolveEffectiveSort()
 
         val page = when (loadType) {
             LoadType.REFRESH -> {
@@ -96,6 +87,19 @@ class ArtworkRemoteMediator(
             MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)
         } catch (exception: IOException) {
             MediatorResult.Error(exception)
+        }
+    }
+
+    private fun resolveEffectiveSort(): String {
+        val hasFilters = params.classification != null || params.century != null || params.culture != null
+        return if (hasFilters) {
+            when (params.sort) { // For the "rank", "totalpageviews" and "random" filters, "rank" is the default.
+                FilterSortOption.RANK -> FILTER_RANK
+                FilterSortOption.TOTAL_PAGE_VIEWS -> FILTER_TOTAL_PAGE_VIEWS
+                FilterSortOption.RANDOM -> FILTER_RANDOM
+            }
+        } else {
+            FILTER_RANDOM // For the main page, always "random"
         }
     }
 
