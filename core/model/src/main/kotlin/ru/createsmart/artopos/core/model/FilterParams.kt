@@ -4,5 +4,5 @@ data class FilterParams(
     val classification: String? = null,
     val century: String? = null,
     val culture: String? = null,
-    val sort: String = "rank",
+    val sort: FilterSortOption = FilterSortOption.RANK,
 )

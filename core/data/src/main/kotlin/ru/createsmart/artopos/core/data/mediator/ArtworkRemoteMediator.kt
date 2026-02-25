@@ -10,6 +10,7 @@ import ru.createsmart.artopos.core.database.HarvardDatabase
 import ru.createsmart.artopos.core.database.model.ArtworkDBO
 import ru.createsmart.artopos.core.database.model.ArtworkRemoteKeysEntity
 import ru.createsmart.artopos.core.model.FilterParams
+import ru.createsmart.artopos.core.model.FilterSortOption
 import ru.createsmart.artopos.core.network.api.HarvardAPI
 import ru.createsmart.artopos.core.network.model.ArtworkDTO
 import java.io.IOException
@@ -18,6 +19,11 @@ import java.io.IOException
  * Orchestrates loading data from Network into the Database.
  * Handles pagination keys (next/prev pages) and caching strategy.
  */
+
+private const val FILTER_RANK = "rank"
+private const val FILTER_TOTAL_PAGE_VIEWS = "totalpageviews"
+private const val FILTER_RANDOM = "random"
+
 @OptIn(ExperimentalPagingApi::class)
 class ArtworkRemoteMediator(
     private val database: HarvardDatabase,
@@ -32,7 +38,11 @@ class ArtworkRemoteMediator(
         val hasFilters = params.classification != null || params.century != null || params.culture != null
 
         val effectiveSort = if (hasFilters) {
-            params.sort // For the "rank" and "random" filters, "rank" is the default.
+            when (params.sort) { // For the "rank", "totalpageviews" and "random" filters, "rank" is the default.
+                FilterSortOption.RANK -> FILTER_RANK
+                FilterSortOption.TOTAL_PAGE_VIEWS -> FILTER_TOTAL_PAGE_VIEWS
+                FilterSortOption.RANDOM -> FILTER_RANDOM
+            }
         } else {
             "random" // For the main page, always "random"
         }

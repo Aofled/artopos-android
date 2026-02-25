@@ -24,6 +24,7 @@ import ru.createsmart.artopos.core.domain.usecase.GetArtworksUseCase
 import ru.createsmart.artopos.core.domain.usecase.GetFiltersUseCase
 import ru.createsmart.artopos.core.domain.usecase.InitializeFiltersUseCase
 import ru.createsmart.artopos.core.model.FilterParams
+import ru.createsmart.artopos.core.model.FilterSortOption
 import ru.createsmart.artopos.core.model.FilterType
 import ru.createsmart.artopos.core.ui.R
 import ru.createsmart.artopos.core.ui.theme.components.toUiText
@@ -150,7 +151,13 @@ class DiscoverViewModel @Inject constructor(
 
     fun onToggleFilterSort() {
         val currentDraft = _draftFilterParams.value
-        val newSort = if (currentDraft.sort == "random") "rank" else "random"
+
+        val newSort = when (currentDraft.sort) {
+            FilterSortOption.RANK -> FilterSortOption.TOTAL_PAGE_VIEWS
+            FilterSortOption.TOTAL_PAGE_VIEWS -> FilterSortOption.RANDOM
+            FilterSortOption.RANDOM -> FilterSortOption.RANK
+        }
+
         _draftFilterParams.value = currentDraft.copy(sort = newSort)
     }
 

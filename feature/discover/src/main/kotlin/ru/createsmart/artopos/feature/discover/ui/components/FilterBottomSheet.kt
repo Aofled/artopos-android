@@ -45,6 +45,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import ru.createsmart.artopos.core.model.FilterSortOption
 import ru.createsmart.artopos.core.model.FilterType
 import ru.createsmart.artopos.feature.discover.R
 import ru.createsmart.artopos.feature.discover.model.FilterListItem
@@ -99,7 +100,7 @@ fun FilterBottomSheet(
         ) {
             FilterSheetHeader(
                 onReset = onReset,
-                isRandomSort = filtersState.isRandomSort,
+                sort = filtersState.sort,
                 onToggleSort = onToggleSort,
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -137,7 +138,7 @@ fun FilterBottomSheet(
 private fun FilterSheetHeader(
     onReset: () -> Unit,
     modifier: Modifier = Modifier,
-    isRandomSort: Boolean,
+    sort: FilterSortOption,
     onToggleSort: () -> Unit,
 ) {
     Row(
@@ -162,16 +163,16 @@ private fun FilterSheetHeader(
             }
 
             IconButton(onClick = onToggleSort) {
-                val painter = if (isRandomSort) {
-                    painterResource(id = UiR.drawable.shuffle)
-                } else {
-                    painterResource(id = UiR.drawable.sort)
-                }
-
-                val tint = if (isRandomSort) {
-                    MaterialTheme.colorScheme.primary
-                } else {
-                    MaterialTheme.colorScheme.onSurfaceVariant
+                val (painter, tint) = when (sort) {
+                    FilterSortOption.RANK -> {
+                        painterResource(id = UiR.drawable.sort) to MaterialTheme.colorScheme.onSurfaceVariant
+                    }
+                    FilterSortOption.TOTAL_PAGE_VIEWS -> {
+                        painterResource(id = UiR.drawable.person_heart) to MaterialTheme.colorScheme.primary
+                    }
+                    FilterSortOption.RANDOM -> {
+                        painterResource(id = UiR.drawable.shuffle) to MaterialTheme.colorScheme.primary
+                    }
                 }
 
                 Icon(
