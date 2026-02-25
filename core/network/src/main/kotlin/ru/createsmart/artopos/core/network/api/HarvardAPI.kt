@@ -32,20 +32,20 @@ interface HarvardAPI {
     suspend fun getClassification(
         @Query("sort") sort: String = "objectcount",
         @Query("sortorder") sortOrder: String = "desc",
-        @Query("size") size: Int = 250,
+        @Query("size") size: Int = 300, // Total records - 63
     ): NetworkResponse<FilterItemDTO>
 
     @GET("century")
     suspend fun getCentury(
         @Query("sort") sort: String = "objectcount",
         @Query("sortorder") sortOrder: String = "desc",
-        @Query("size") size: Int = 250,
+        @Query("size") size: Int = 300, // Total records - 47
     ): NetworkResponse<FilterItemDTO>
 
     @GET("culture")
     suspend fun getCulture(
         @Query("sort") sort: String = "objectcount",
         @Query("sortorder") sortOrder: String = "desc",
-        @Query("size") size: Int = 250,
+        @Query("size") size: Int = 300, // Total records - 255
     ): NetworkResponse<FilterItemDTO>
 }
