@@ -3,6 +3,7 @@ package ru.createsmart.artopos.feature.discover.ui.components
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Configuration
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
@@ -26,10 +27,11 @@ import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
@@ -167,24 +169,29 @@ private fun FilterSheetHeader(
                 Text(stringResource(R.string.btn_reset))
             }
 
-            IconButton(onClick = onToggleSort) {
-                val (painter, tint) = when (sort) {
-                    FilterSortOption.RANK -> {
-                        painterResource(id = UiR.drawable.sort) to MaterialTheme.colorScheme.onSurfaceVariant
-                    }
-                    FilterSortOption.TOTAL_PAGE_VIEWS -> {
-                        painterResource(id = UiR.drawable.person_heart) to MaterialTheme.colorScheme.primary
-                    }
-                    FilterSortOption.RANDOM -> {
-                        painterResource(id = UiR.drawable.shuffle) to MaterialTheme.colorScheme.primary
-                    }
-                }
+            val containerColor = when (sort) {
+                FilterSortOption.RANK -> MaterialTheme.colorScheme.secondaryContainer
+                FilterSortOption.TOTAL_PAGE_VIEWS -> MaterialTheme.colorScheme.tertiaryContainer
+                FilterSortOption.RANDOM -> MaterialTheme.colorScheme.primaryContainer
+            }
 
-                Icon(
-                    painter = painter,
-                    contentDescription = stringResource(R.string.sort_filters),
-                    tint = tint,
-                )
+            FilledTonalIconButton(
+                onClick = onToggleSort,
+                colors = IconButtonDefaults.filledTonalIconButtonColors(
+                    containerColor = containerColor,
+                ),
+            ) {
+                AnimatedContent(targetState = sort, label = "sort_icon") { targetSort ->
+                    val iconRes = when (targetSort) {
+                        FilterSortOption.RANK -> UiR.drawable.sort
+                        FilterSortOption.TOTAL_PAGE_VIEWS -> UiR.drawable.person_heart
+                        FilterSortOption.RANDOM -> UiR.drawable.shuffle
+                    }
+                    Icon(
+                        painter = painterResource(id = iconRes),
+                        contentDescription = stringResource(R.string.sort_filters),
+                    )
+                }
             }
         }
     }
@@ -299,6 +306,12 @@ private fun AnyFilterChip(isSelected: Boolean, onClick: () -> Unit) {
         label = { Text(text = stringResource(R.string.item_any)) },
         colors = FilterChipDefaults.filterChipColors(
             selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+        ),
+        border = FilterChipDefaults.filterChipBorder(
+            enabled = true,
+            selected = isSelected,
+            borderColor = MaterialTheme.colorScheme.outline,
+            borderWidth = 1.dp,
         ),
     )
 }
