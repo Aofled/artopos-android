@@ -2,8 +2,10 @@ package ru.createsmart.artopos.core.data.repository
 
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
 import ru.createsmart.artopos.core.data.mapper.toDBO
 import ru.createsmart.artopos.core.data.mapper.toDomain
@@ -34,16 +36,23 @@ class OfflineFirstFilterRepository @Inject constructor(
             }
 
             try {
-                val classifications = api.getClassification()
-                val centuries = api.getCentury()
-                val cultures = api.getCulture()
+                supervisorScope {
+                    val classificationsDeferred = async { api.getClassification() }
+                    val centuriesDeferred = async { api.getCentury() }
+                    val culturesDeferred = async { api.getCulture() }
 
-                val allFilters = mutableListOf<FilterItemDBO>()
-                allFilters.addAll(classifications.records.map { it.toDBO(FilterType.CLASSIFICATION) })
-                allFilters.addAll(centuries.records.map { it.toDBO(FilterType.CENTURY) })
-                allFilters.addAll(cultures.records.map { it.toDBO(FilterType.CULTURE) })
+                    val cResult = classificationsDeferred.await()
+                    val cenResult = centuriesDeferred.await()
+                    val culResult = culturesDeferred.await()
 
-                dao.insertFilters(allFilters)
+                    val allFilters = mutableListOf<FilterItemDBO>()
+
+                    allFilters.addAll(cResult.records.map { it.toDBO(FilterType.CLASSIFICATION) })
+                    allFilters.addAll(cenResult.records.map { it.toDBO(FilterType.CENTURY) })
+                    allFilters.addAll(culResult.records.map { it.toDBO(FilterType.CULTURE) })
+
+                    dao.insertFilters(allFilters)
+                }
             } catch (e: IOException) {
                 Log.e("Filters", "Network error", e)
             } catch (e: SQLException) {
