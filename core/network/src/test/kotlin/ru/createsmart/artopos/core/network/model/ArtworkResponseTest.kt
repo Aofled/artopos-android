@@ -12,7 +12,7 @@ import java.io.File
  * 2. Parse using kotlinx.serialization.
  * 3. Assert ID, Title, and Images are correct.
  */
-class NetworkResponseTest {
+class ArtworkResponseTest {
 
     private val json = Json {
         ignoreUnknownKeys = true // Stability: Don't crash if API adds new fields
