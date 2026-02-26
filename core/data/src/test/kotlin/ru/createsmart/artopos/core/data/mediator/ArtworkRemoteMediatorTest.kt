@@ -21,6 +21,7 @@ import org.junit.runner.RunWith
 import ru.createsmart.artopos.core.database.HarvardDatabase
 import ru.createsmart.artopos.core.database.model.ArtworkDBO
 import ru.createsmart.artopos.core.database.model.ArtworkRemoteKeysEntity
+import ru.createsmart.artopos.core.model.FilterParams
 import ru.createsmart.artopos.core.network.api.HarvardAPI
 import ru.createsmart.artopos.core.network.model.ArtworkDTO
 import ru.createsmart.artopos.core.network.model.ImageDTO
@@ -34,6 +35,7 @@ class ArtworkRemoteMediatorTest {
 
     private val api: HarvardAPI = mockk()
     private lateinit var database: HarvardDatabase
+    private lateinit var param: FilterParams
     private lateinit var mediator: ArtworkRemoteMediator
 
     @Before
@@ -44,7 +46,13 @@ class ArtworkRemoteMediatorTest {
             .allowMainThreadQueries()
             .build()
 
-        mediator = ArtworkRemoteMediator(database, api)
+        param = FilterParams(
+            classification = null,
+            century = null,
+            culture = null,
+        )
+
+        mediator = ArtworkRemoteMediator(database, api, param)
     }
 
     @After
@@ -64,7 +72,16 @@ class ArtworkRemoteMediatorTest {
             info = PageInfo(page = 1, totalPages = 10, totalRecords = 100, nextUrl = "next"),
             records = listOf(mockDto),
         )
-        coEvery { api.getArtworks(page = 1, size = 20) } returns networkResponse
+        coEvery {
+            api.getArtworks(
+                page = 1,
+                size = 20,
+                classification = any(),
+                century = any(),
+                culture = any(),
+                sort = any(),
+            )
+        } returns networkResponse
 
         // Mock the PagingState
         val pagingState = PagingState<Int, ArtworkDBO>(
@@ -84,6 +101,7 @@ class ArtworkRemoteMediatorTest {
         val cachedArtworks = database.artworkDao().getAllArtworksForTest()
         assertEquals(1, cachedArtworks.size)
         assertEquals("Test Artwork", cachedArtworks.first().title)
+        assertEquals(0, cachedArtworks.first().sortingIndex)
 
         // Verify Keys: Check if next page key (2) is calculated correctly
         val key = database.artworkRemoteKeysDao().remoteKeyArtworkId(1)
@@ -107,7 +125,16 @@ class ArtworkRemoteMediatorTest {
             images = listOf(ImageDTO(100, 100, "url2")),
         )
         // Expect call for Page 2
-        coEvery { api.getArtworks(page = 2, size = 20) } returns NetworkResponse(
+        coEvery {
+            api.getArtworks(
+                page = 2,
+                size = 20,
+                classification = any(),
+                century = any(),
+                culture = any(),
+                sort = any(),
+            )
+        } returns NetworkResponse(
             info = PageInfo(page = 2, totalPages = 10, totalRecords = 100, nextUrl = "url"),
             records = listOf(nextDto),
         )
@@ -131,6 +158,7 @@ class ArtworkRemoteMediatorTest {
 
         // THEN
         assertTrue(result is RemoteMediator.MediatorResult.Success)
+
         val key = database.artworkRemoteKeysDao().remoteKeyArtworkId(2)
         assertEquals(1, key?.prevKey)
         assertEquals(3, key?.nextKey)
@@ -139,7 +167,20 @@ class ArtworkRemoteMediatorTest {
     @Test
     fun `refresh load error returns mediator result error`() = runTest {
         // GIVEN
-        coEvery { api.getArtworks(any(), any()) } throws IOException("No internet")
+        coEvery {
+            api.getArtworks(
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+            )
+        } throws IOException("No internet")
 
         val pagingState = PagingState<Int, ArtworkDBO>(
             pages = listOf(),
