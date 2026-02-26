@@ -2,7 +2,6 @@ package ru.createsmart.artopos.core.data.mapper
 
 import ru.createsmart.artopos.core.database.model.ArtworkDBO
 import ru.createsmart.artopos.core.model.Artwork
-import ru.createsmart.artopos.core.model.ImageDimensions
 
 fun ArtworkDBO.toDomain(): Artwork {
     return Artwork(
@@ -10,7 +9,7 @@ fun ArtworkDBO.toDomain(): Artwork {
         title = title,
         artist = artist,
         imageUrl = imageUrl,
-        imageDimensions = imageDimensions ?: ImageDimensions(1, 1),
+        imageDimensions = imageDimensions,
         date = date ?: "",
         yearInt = yearInt,
         technique = technique,
