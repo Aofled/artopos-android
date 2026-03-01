@@ -9,4 +9,7 @@ interface ArtworkRepository {
     fun getPagedArtworks(
         params: FilterParams,
     ): Flow<PagingData<Artwork>>
+
+    fun getArtwork(id: Int): Flow<Artwork?>
+    suspend fun syncArtworkDetails(id: Int)
 }
