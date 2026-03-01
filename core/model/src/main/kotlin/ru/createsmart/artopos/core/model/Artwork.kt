@@ -9,9 +9,21 @@ data class Artwork(
     val date: String?,
     val yearInt: Int?,
     val technique: String?,
-    val coordinates: Coordinates?,
     val description: String?,
     val url: String?,
+    // Details
+    val provenance: String? = null,
+    val creditLine: String? = null,
+    val classification: String? = null,
+    val century: String? = null,
+    val culture: String? = null,
+    val images: List<ArtworkImage> = emptyList(),
+    val medium: String? = null,
+    val period: String? = null,
+    val style: String? = null,
+    val dimensions: String? = null,
+    val copyright: String? = null,
+    val galleryLocation: String? = null,
 )
 
 data class ImageDimensions(
@@ -19,7 +31,11 @@ data class ImageDimensions(
     val height: Int,
 )
 
-data class Coordinates(
-    val lat: Double,
-    val lon: Double,
-)
+data class ArtworkImage(
+    val url: String,
+    val width: Int,
+    val height: Int,
+) {
+    val aspectRatio: Float
+        get() = if (height > 0) width.toFloat() / height.toFloat() else 1f
+}
