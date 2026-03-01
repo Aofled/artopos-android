@@ -1,6 +1,7 @@
 package ru.createsmart.artopos.core.network.api
 
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 import ru.createsmart.artopos.core.network.model.ArtworkDTO
 import ru.createsmart.artopos.core.network.model.FilterItemDTO
@@ -27,6 +28,11 @@ interface HarvardAPI {
             "fields",
         ) fields: String = "id,title,dated,technique,primaryimageurl,description,url,people,images,places",
     ): NetworkResponse<ArtworkDTO>
+
+    @GET("object/{id}")
+    suspend fun getArtworkDetails(
+        @Path("id") id: Int,
+    ): ArtworkDTO
 
     @GET("classification")
     suspend fun getClassification(
