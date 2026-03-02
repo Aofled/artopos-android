@@ -1,12 +1,17 @@
 package ru.createsmart.artopos.core.data.repository
 
+import android.util.Log
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
+import ru.createsmart.artopos.core.data.mapper.toDetailsDBO
 import ru.createsmart.artopos.core.data.mapper.toDomain
 import ru.createsmart.artopos.core.data.mediator.ArtworkRemoteMediator
 import ru.createsmart.artopos.core.database.HarvardDatabase
@@ -14,6 +19,8 @@ import ru.createsmart.artopos.core.domain.repository.ArtworkRepository
 import ru.createsmart.artopos.core.model.Artwork
 import ru.createsmart.artopos.core.model.FilterParams
 import ru.createsmart.artopos.core.network.api.HarvardAPI
+import java.io.IOException
+import java.sql.SQLException
 import javax.inject.Inject
 
 /**
@@ -24,6 +31,8 @@ class OfflineFirstArtworkRepository @Inject constructor(
     private val database: HarvardDatabase,
     private val api: HarvardAPI,
 ) : ArtworkRepository {
+
+    private val dao get() = database.artworkDao()
 
     private val pagingConfig = PagingConfig(
         pageSize = 50,
@@ -51,5 +60,27 @@ class OfflineFirstArtworkRepository @Inject constructor(
             .map { pagingData ->
                 pagingData.map { it.toDomain() }
             }
+    }
+
+    override fun getArtwork(id: Int): Flow<Artwork?> {
+        return dao.getArtworkWithDetails(id)
+            .map { relation ->
+                relation?.toDomain()
+            }
+            .flowOn(Dispatchers.IO)
+    }
+
+    override suspend fun syncArtworkDetails(id: Int) {
+        withContext(Dispatchers.IO) {
+            try {
+                val dto = api.getArtworkDetails(id)
+                val detailsEntity = dto.toDetailsDBO()
+                dao.insertDetails(detailsEntity)
+            } catch (e: IOException) {
+                Log.e("Filters", "Network error", e)
+            } catch (e: SQLException) {
+                Log.e("Filters", "Database error", e)
+            }
+        }
     }
 }
