@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    <string name="details_date">Date</string>
+    <string name="details_culture">Culture</string>
+    <string name="details_period">Period</string>
+    <string name="details_style">Style</string>
+    <string name="details_classification">Classification</string>
+    <string name="details_century">Century</string>
+    <string name="details_medium">Medium</string>
+    <string name="details_dimensions">Dimensions</string>
+    <string name="details_gallery">Gallery</string>
+    <string name="details_credit_line">Credit Line"</string>
+    <string name="details_provenance">Provenance</string>
 </resources>
