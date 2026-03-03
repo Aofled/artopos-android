@@ -20,9 +20,12 @@ import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 import ru.createsmart.artopos.core.ui.theme.components.RetryDecision
 import ru.createsmart.artopos.core.ui.theme.components.RetryPlaceholder
+import ru.createsmart.artopos.core.ui.theme.components.ShimmerBox
 import ru.createsmart.artopos.core.ui.theme.components.analyzeRetry
 import ru.createsmart.artopos.feature.discover.model.ArtworkListItem
 import ru.createsmart.artopos.core.ui.R as UiR
+
+private const val RETRY_HASH = "retry_hash"
 
 @Composable
 internal fun ArtworkImage(
@@ -38,7 +41,7 @@ internal fun ArtworkImage(
         ImageRequest.Builder(context)
             .data(artwork.imageUrl)
             // Combine Global (Pull-to-Refresh) and Local (Tap) signals to force reload
-            .setParameter("retry_hash", globalVersion + localRetry, memoryCacheKey = null)
+            .setParameter(RETRY_HASH, globalVersion + localRetry, memoryCacheKey = null)
             .crossfade(true)
             .listener(
                 onSuccess = { _, _ -> lastError = null },

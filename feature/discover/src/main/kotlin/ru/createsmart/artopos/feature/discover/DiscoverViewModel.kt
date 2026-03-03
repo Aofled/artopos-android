@@ -6,6 +6,7 @@ import androidx.paging.cachedIn
 import androidx.paging.map
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import ru.createsmart.artopos.core.domain.usecase.GetArtworksUseCase
@@ -23,6 +25,7 @@ import ru.createsmart.artopos.core.model.FilterSortOption
 import ru.createsmart.artopos.core.model.FilterType
 import ru.createsmart.artopos.core.ui.theme.components.toUiText
 import ru.createsmart.artopos.feature.discover.mapper.toUi
+import ru.createsmart.artopos.feature.discover.model.DiscoverEvent
 import ru.createsmart.artopos.feature.discover.model.FiltersUiState
 import javax.inject.Inject
 
@@ -38,6 +41,9 @@ class DiscoverViewModel @Inject constructor(
     val contentVersion = _contentVersion.asStateFlow() // Exposed to UI to force image reload on Pull-to-Refresh
 
     val uiEffect = messageManager.uiEffect
+
+    private val _actions = Channel<DiscoverEvent>(Channel.BUFFERED)
+    val actions = _actions.receiveAsFlow()
 
     private val _activeFilterParams = MutableStateFlow(FilterParams())
     private val _draftFilterParams = MutableStateFlow(FilterParams())
@@ -116,6 +122,10 @@ class DiscoverViewModel @Inject constructor(
     fun onFilterApply() {
         if (_activeFilterParams.value != _draftFilterParams.value) {
             _activeFilterParams.value = _draftFilterParams.value
+
+            viewModelScope.launch {
+                _actions.send(DiscoverEvent.ScrollToTop)
+            }
         }
     }
 

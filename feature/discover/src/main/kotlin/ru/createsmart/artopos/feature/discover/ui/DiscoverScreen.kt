@@ -36,6 +36,7 @@ import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
 import ru.createsmart.artopos.core.model.FilterParams
 import ru.createsmart.artopos.core.model.FilterType
@@ -44,6 +45,7 @@ import ru.createsmart.artopos.core.ui.theme.components.FilterFloatingActionButto
 import ru.createsmart.artopos.feature.discover.DiscoverViewModel
 import ru.createsmart.artopos.feature.discover.model.ArtworkListItem
 import ru.createsmart.artopos.feature.discover.model.DiscoverActions
+import ru.createsmart.artopos.feature.discover.model.DiscoverEvent
 import ru.createsmart.artopos.feature.discover.model.FiltersUiState
 import ru.createsmart.artopos.feature.discover.ui.components.ArtworksView
 import ru.createsmart.artopos.feature.discover.ui.components.ErrorView
@@ -91,6 +93,7 @@ fun DiscoverRoute(
             onRemoveFilter = viewModel::onRemoveFilter,
             onToggleFilterSort = viewModel::onToggleFilterSort,
         ),
+        scrollUp = viewModel.actions,
     )
 }
 
@@ -103,6 +106,7 @@ fun DiscoverScreen(
     effectFlow: Flow<UiText>? = null,
     filterParams: FilterParams,
     actions: DiscoverActions,
+    scrollUp: Flow<DiscoverEvent>,
 ) {
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
@@ -152,6 +156,7 @@ fun DiscoverScreen(
             onShowMessage = { onShowSnackbar(it) },
             filterParams = filterParams,
             actions = actions,
+            scrollUp = scrollUp,
         )
 
         if (showFilterSheet) {
@@ -214,6 +219,7 @@ private fun DiscoverScreenContent(
     onShowMessage: (UiText) -> Unit,
     filterParams: FilterParams,
     actions: DiscoverActions,
+    scrollUp: Flow<DiscoverEvent>,
 ) {
     val refreshState = pagingItems.loadState.refresh
     val isListEmpty = pagingItems.itemCount == 0
@@ -232,6 +238,7 @@ private fun DiscoverScreenContent(
                 onShowMessage = onShowMessage,
                 filterParams = filterParams,
                 actions = actions,
+                scrollUp = scrollUp,
             )
         }
 
@@ -250,6 +257,7 @@ private fun DiscoverScreenContent(
                 onShowMessage = onShowMessage,
                 filterParams = filterParams,
                 actions = actions,
+                scrollUp = scrollUp,
             )
         }
 
@@ -292,6 +300,7 @@ fun DiscoverScreenPreview(
                 onRemoveFilter = { _ -> },
                 onToggleFilterSort = { },
             ),
+            scrollUp = emptyFlow(),
         )
     }
 }

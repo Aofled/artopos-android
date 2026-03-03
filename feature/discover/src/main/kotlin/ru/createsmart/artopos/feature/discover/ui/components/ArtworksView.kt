@@ -39,6 +39,8 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import ru.createsmart.artopos.core.model.FilterParams
 import ru.createsmart.artopos.core.model.FilterType
@@ -48,6 +50,7 @@ import ru.createsmart.artopos.core.ui.theme.components.CustomInputChip
 import ru.createsmart.artopos.feature.discover.R
 import ru.createsmart.artopos.feature.discover.model.ArtworkListItem
 import ru.createsmart.artopos.feature.discover.model.DiscoverActions
+import ru.createsmart.artopos.feature.discover.model.DiscoverEvent
 import ru.createsmart.artopos.feature.discover.util.FilterNameHelper
 import ru.createsmart.artopos.core.ui.R as UiR
 
@@ -60,6 +63,7 @@ fun ArtworksView(
     onShowMessage: (UiText) -> Unit,
     filterParams: FilterParams,
     actions: DiscoverActions,
+    scrollUp: Flow<DiscoverEvent>,
 ) {
     val pullToRefreshState = rememberPullToRefreshState()
 
@@ -86,6 +90,7 @@ fun ArtworksView(
             onShowMessage = onShowMessage,
             filterParams = filterParams,
             actions = actions,
+            scrollUp = scrollUp,
         )
     }
 }
@@ -98,13 +103,18 @@ private fun ArtworksGrid(
     onShowMessage: (UiText) -> Unit,
     filterParams: FilterParams,
     actions: DiscoverActions,
+    scrollUp: Flow<DiscoverEvent>,
 ) {
     val listState = rememberLazyStaggeredGridState()
     val isEmptyResult = artworks.itemCount == 0 && artworks.loadState.refresh !is LoadState.Loading
 
     LaunchedEffect(artworks.loadState.refresh) { // Auto-scroll up when data is updated
-        if (artworks.loadState.refresh is LoadState.NotLoading && artworks.itemCount > 0) {
-            listState.scrollToItem(0)
+        scrollUp.collect { action ->
+            when (action) {
+                is DiscoverEvent.ScrollToTop -> {
+                    listState.scrollToItem(0)
+                }
+            }
         }
     }
 
@@ -305,7 +315,7 @@ private fun ActiveFilterChip(
     )
 }
 
-@Preview(showBackground = true, name = "Discover States", uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(showBackground = true, name = "Discover", uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
 private fun ArtworksViewPreview() {
     val mockData = listOf(
@@ -335,6 +345,7 @@ private fun ArtworksViewPreview() {
                 onRemoveFilter = { _ -> },
                 onToggleFilterSort = {},
             ),
+            scrollUp = emptyFlow(),
         )
     }
 }
