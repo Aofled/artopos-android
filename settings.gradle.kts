@@ -1,4 +1,4 @@
-enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS") // Enables syntax: projects.feature.home (instead of project(":feature:home"))
 
 pluginManagement {
     repositories {
@@ -35,5 +35,6 @@ include(":core:data")
 include(":core:domain")
 include(":core:ui")
 include(":core:common")
+include(":core:navigation")
 include(":feature:discover")
 include(":feature:details")

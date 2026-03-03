@@ -14,6 +14,7 @@ espressoCore = "3.7.0"
 appcompat = "1.7.1"
 material = "1.13.0"
 activityCompose = "1.12.2"
+navigationCompose = "2.9.7"
 composeBom = "2026.01.00"
 lifecycleRuntimeCompose = "2.10.0"
 detekt = "1.23.8"
@@ -54,6 +55,7 @@ androidx-compose-material3 = { group = "androidx.compose.material3", name = "mat
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycleRuntimeCompose" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 detekt-formatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detekt" }
 detekt-gradlePlugin = { group = "io.gitlab.arturbosch.detekt", name = "detekt-gradle-plugin", version.ref = "detekt" }
 ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "symbol-processing-gradle-plugin", version.ref = "ksp" }
@@ -98,6 +100,7 @@ compose = [
     "androidx-ui-graphics",
     "androidx-ui-tooling-preview",
     "androidx-compose-material3",
+    "androidx-navigation-compose",
 ]
 
 compose-debug = [
@@ -122,7 +125,7 @@ room = [
 benchmark = [
     "androidx-junit",
     "androidx-uiautomator",
-    "androidx-benchmark-macro-junit4",
+    "androidx-benchmark-macro-junit4"
 ]
 
 test-unit-minimal = [
@@ -135,5 +138,5 @@ test-unit-full = [
     "test-robolectric",
     "test-coroutines",
     "test-mockk",
-    "test-turbine",
+    "test-turbine"
 ]
