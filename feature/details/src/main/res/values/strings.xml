@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="details_specifications">Specifications</string>
     <string name="details_date">Date</string>
     <string name="details_culture">Culture</string>
     <string name="details_period">Period</string>

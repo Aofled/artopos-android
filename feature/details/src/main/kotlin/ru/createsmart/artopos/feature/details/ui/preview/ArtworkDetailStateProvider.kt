@@ -29,18 +29,11 @@ val artworkPreview = ArtworkDetailUi(
     description = "Pair of scrolls depicting blossoming plum trees. " +
         " The right scroll depicts an old plum tree covered lightly in snow." +
         " Both images are juxtaposed against a light gray wash indicating early evening.",
+    classification = "Paintings",
+    century = "18 th -19 th century",
+    culture = "Japanese",
     webUrl = "https://www.harvardartmuseums.org/collections/object/357597",
     details = listOf(
-        DetailItem(
-            label = UiText.StringResource(R.string.details_date),
-            value = "late 18th-early 19th century",
-            isWide = false,
-        ),
-        DetailItem(
-            label = UiText.StringResource(R.string.details_culture),
-            value = "Japanese",
-            isWide = false,
-        ),
         DetailItem(
             label = UiText.StringResource(R.string.details_period),
             value = "Edo period 1615 - 1868",
@@ -57,8 +50,8 @@ val artworkPreview = ArtworkDetailUi(
             isWide = false,
         ),
         DetailItem(
-            label = UiText.StringResource(R.string.details_century),
-            value = "18 th -19 th century",
+            label = UiText.StringResource(R.string.details_date),
+            value = "late 18th-early 19th century",
             isWide = false,
         ),
         DetailItem(
@@ -115,6 +108,4 @@ val artworkPreview = ArtworkDetailUi(
         ),
     ),
     copyright = null,
-    date = "late 18th-early 19th century",
-    culture = "Japanese",
 )

@@ -11,11 +11,12 @@ data class ArtworkDetailUi(
     val imageUrl: String,
     val description: String?,
     val webUrl: String?,
+    val classification: String?,
+    val century: String?,
+    val culture: String?,
     val details: List<DetailItem>,
     val images: List<GalleryImageUi> = emptyList(),
     val copyright: String? = null,
-    val date: String?,
-    val culture: String?,
 )
 
 @Immutable
