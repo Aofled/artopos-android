@@ -4,9 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import ru.createsmart.artopos.core.ui.theme.ArtoposTheme
-import ru.createsmart.artopos.feature.discover.ui.DiscoverRoute
+import ru.createsmart.artopos.navigation.AppNavGraph
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -15,11 +16,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ArtoposTheme {
-                DiscoverRoute(
-                    onArtworkClick = { id ->
-                        // TODO(ArtworkClick): Navigation to the details screen will be here
-                    },
-                )
+                val navController = rememberNavController()
+                AppNavGraph(navController = navController)
             }
         }
     }

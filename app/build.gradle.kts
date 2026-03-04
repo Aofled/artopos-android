@@ -37,7 +37,9 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     implementation(projects.core.data)
     implementation(projects.core.ui)
-    implementation(projects.feature.discover)
     implementation(projects.core.database)
     implementation(projects.core.network)
+    implementation(projects.core.navigation)
+    implementation(projects.feature.discover)
+    implementation(projects.feature.details)
 }

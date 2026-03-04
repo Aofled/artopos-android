@@ -13,6 +13,9 @@ dependencies {
     implementation(projects.core.domain)
     implementation(projects.core.model)
     implementation(projects.core.ui)
+    implementation(projects.core.navigation)
+
+    implementation(libs.androidx.hilt.navigation.compose)
 
     testImplementation(libs.bundles.test.unit.minimal)
 }
