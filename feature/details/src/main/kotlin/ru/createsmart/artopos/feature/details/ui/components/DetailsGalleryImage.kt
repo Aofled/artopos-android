@@ -17,9 +17,9 @@ import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
+import ru.createsmart.artopos.core.ui.theme.components.FullscreenShimmerBox
 import ru.createsmart.artopos.core.ui.theme.components.RetryDecision
 import ru.createsmart.artopos.core.ui.theme.components.RetryPlaceholder
-import ru.createsmart.artopos.core.ui.theme.components.ShimmerBox
 import ru.createsmart.artopos.core.ui.theme.components.analyzeRetry
 import ru.createsmart.artopos.core.ui.R as UiR
 
@@ -61,7 +61,7 @@ fun DetailsGalleryImage(
             contentScale = contentScale,
             modifier = Modifier.fillMaxSize(),
             loading = {
-                ShimmerBox(
+                FullscreenShimmerBox(
                     modifier = Modifier.fillMaxSize(),
                 )
             },
