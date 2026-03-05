@@ -17,5 +17,7 @@ dependencies {
 
     implementation(libs.androidx.hilt.navigation.compose)
 
+    implementation(libs.zoomable)
+
     testImplementation(libs.bundles.test.unit.minimal)
 }
