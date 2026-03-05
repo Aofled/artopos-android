@@ -6,7 +6,7 @@ import javax.inject.Inject
 class InitializeFiltersUseCase @Inject constructor(
     private val repository: FilterRepository,
 ) {
-    suspend operator fun invoke() {
-        repository.initializeFilters()
+    suspend operator fun invoke(): Result<Unit> {
+        return repository.initializeFilters()
     }
 }

@@ -1,6 +1,5 @@
 package ru.createsmart.artopos.core.data.repository
 
-import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
@@ -15,8 +14,6 @@ import ru.createsmart.artopos.core.domain.repository.FilterRepository
 import ru.createsmart.artopos.core.model.FilterItem
 import ru.createsmart.artopos.core.model.FilterType
 import ru.createsmart.artopos.core.network.api.HarvardAPI
-import java.io.IOException
-import java.sql.SQLException
 import javax.inject.Inject
 
 class OfflineFirstFilterRepository @Inject constructor(
@@ -28,14 +25,13 @@ class OfflineFirstFilterRepository @Inject constructor(
             .map { list -> list.map { it.toDomain() } }
     }
 
-    override suspend fun initializeFilters() {
-        withContext(Dispatchers.IO) {
-            val count = dao.hasAllCategories()
-            if (count) {
-                return@withContext
-            }
-
-            try {
+    override suspend fun initializeFilters(): Result<Unit> {
+        return runCatching {
+            withContext(Dispatchers.IO) {
+                val count = dao.hasAllCategories()
+                if (count) {
+                    return@withContext
+                }
                 supervisorScope {
                     val classificationsDeferred = async { api.getClassification() }
                     val centuriesDeferred = async { api.getCentury() }
@@ -53,10 +49,6 @@ class OfflineFirstFilterRepository @Inject constructor(
 
                     dao.insertFilters(allFilters)
                 }
-            } catch (e: IOException) {
-                Log.e("Filters", "Network error", e)
-            } catch (e: SQLException) {
-                Log.e("Filters", "Database error", e)
             }
         }
     }

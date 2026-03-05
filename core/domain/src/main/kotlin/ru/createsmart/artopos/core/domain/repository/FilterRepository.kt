@@ -7,5 +7,5 @@ import ru.createsmart.artopos.core.model.FilterType
 interface FilterRepository {
     fun getFilters(type: FilterType): Flow<List<FilterItem>>
 
-    suspend fun initializeFilters()
+    suspend fun initializeFilters(): Result<Unit>
 }

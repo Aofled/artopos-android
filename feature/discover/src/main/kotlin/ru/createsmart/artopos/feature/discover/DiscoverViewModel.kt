@@ -30,7 +30,7 @@ import javax.inject.Inject
 class DiscoverViewModel @Inject constructor(
     getArtworks: GetArtworksUseCase,
     getFiltersUseCase: GetFiltersUseCase,
-    private val initializeFiltersUseCase: InitializeFiltersUseCase,
+    private val initializeFilters: InitializeFiltersUseCase,
     private val messageManager: UiMessageManager,
 ) : ViewModel() {
 
@@ -94,7 +94,7 @@ class DiscoverViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            initializeFiltersUseCase()
+            initializeFilters()
         }
     }
 
@@ -154,7 +154,11 @@ class DiscoverViewModel @Inject constructor(
         if (!messageManager.checkInternetAndNotify()) return false
 
         viewModelScope.launch {
-            initializeFiltersUseCase()
+            val result = initializeFilters()
+
+            result.onFailure { error ->
+                messageManager.sendSideEffect(error.toUiText())
+            }
         }
 
         _contentVersion.value++
@@ -166,7 +170,11 @@ class DiscoverViewModel @Inject constructor(
     fun onRetryAction(): Boolean {
         if (messageManager.checkInternetAndNotify()) {
             viewModelScope.launch {
-                initializeFiltersUseCase()
+                val result = initializeFilters()
+
+                result.onFailure { error ->
+                    messageManager.sendSideEffect(error.toUiText())
+                }
             }
             return true
         }
