@@ -1,23 +1,33 @@
 package ru.createsmart.artopos.feature.details.ui
 
+import UiText
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 import ru.createsmart.artopos.core.ui.theme.ArtoposTheme
 import ru.createsmart.artopos.core.ui.theme.components.BackButton
 import ru.createsmart.artopos.feature.details.ArtworkDetailUiState
@@ -38,7 +48,8 @@ fun DetailsScreenRoute(
     DetailsScreen(
         state = state,
         contentVersion = contentVersion,
-        onRefresh = viewModel::refresh,
+        effectFlow = viewModel.uiEffect,
+        onRefresh = viewModel::onRefresh,
         onBackClick = onBackClick,
         isRefreshing = isRefreshing,
     )
@@ -48,13 +59,32 @@ fun DetailsScreenRoute(
 fun DetailsScreen(
     state: ArtworkDetailUiState,
     contentVersion: Int,
+    effectFlow: Flow<UiText>? = null,
     onRefresh: () -> Unit,
     onBackClick: () -> Unit,
     isRefreshing: Boolean,
 ) {
+    val context = LocalContext.current
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    val scope = rememberCoroutineScope()
+
+    val onShowSnackbar: (UiText) -> Unit = { message ->
+        scope.launch {
+            snackbarHostState.currentSnackbarData?.dismiss()
+            snackbarHostState.showSnackbar(message.asString(context))
+        }
+    }
+
+    DiscoverScreenEffects(
+        effectFlow = effectFlow,
+        onShowSnackbar = onShowSnackbar,
+    )
+
     Scaffold(
-        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         containerColor = MaterialTheme.colorScheme.background,
+        contentWindowInsets = WindowInsets.systemBars,
+        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { innerPadding ->
         Box(
             modifier = Modifier
@@ -82,6 +112,7 @@ fun DetailsScreen(
                     DetailsContent(
                         state.artwork,
                         contentVersion = contentVersion,
+                        onShowMessage = { onShowSnackbar(it) },
                         onRefresh = onRefresh,
                         isRefreshing = isRefreshing,
                     )
@@ -90,6 +121,16 @@ fun DetailsScreen(
 
             BackButton(onBackClick)
         }
+    }
+}
+
+@Composable
+private fun DiscoverScreenEffects(
+    effectFlow: Flow<UiText>?,
+    onShowSnackbar: (UiText) -> Unit,
+) {
+    LaunchedEffect(effectFlow) {
+        effectFlow?.collect { message -> onShowSnackbar(message) }
     }
 }
 
@@ -102,6 +143,7 @@ fun DiscoverScreenPreview(
         DetailsScreen(
             state = state,
             contentVersion = 0,
+            effectFlow = null,
             onRefresh = { },
             onBackClick = { },
             isRefreshing = true,

@@ -16,6 +16,8 @@ import kotlinx.coroutines.launch
 import ru.createsmart.artopos.core.domain.usecase.GetArtworkDetailsUseCase
 import ru.createsmart.artopos.core.domain.usecase.SyncArtworkDetailsUseCase
 import ru.createsmart.artopos.core.navigation.DetailsRoute
+import ru.createsmart.artopos.core.ui.theme.components.toUiText
+import ru.createsmart.artopos.core.ui.theme.manager.UiMessageManager
 import ru.createsmart.artopos.feature.details.mapper.toDetailUi
 import javax.inject.Inject
 
@@ -24,12 +26,15 @@ class DetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     getArtworkDetails: GetArtworkDetailsUseCase,
     private val syncArtworkDetails: SyncArtworkDetailsUseCase,
+    private val messageManager: UiMessageManager,
 ) : ViewModel() {
     private val routeArgs = savedStateHandle.toRoute<DetailsRoute>()
     private val artworkId = routeArgs.artworkId
 
     private val _contentVersion = MutableStateFlow(0)
     val contentVersion = _contentVersion.asStateFlow()
+
+    val uiEffect = messageManager.uiEffect
 
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing = _isRefreshing.asStateFlow()
@@ -56,14 +61,20 @@ class DetailsViewModel @Inject constructor(
         }
     }
 
-    fun refresh() {
+    fun onRefresh() {
+        if (!messageManager.checkInternetAndNotify()) return
         viewModelScope.launch {
             _isRefreshing.value = true
 
-            _contentVersion.value++
-            syncArtworkDetails(artworkId)
+            val result = syncArtworkDetails(artworkId)
+
+            result.onFailure { error ->
+                messageManager.sendSideEffect(error.toUiText())
+            }
 
             _isRefreshing.value = false
         }
+        _contentVersion.value++
+        messageManager.resetLastEmittedMessage() // Reset debounce history so new errors can be shown fresh
     }
 }

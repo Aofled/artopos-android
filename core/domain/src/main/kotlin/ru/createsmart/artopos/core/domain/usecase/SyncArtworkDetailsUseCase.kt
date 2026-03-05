@@ -6,7 +6,7 @@ import javax.inject.Inject
 class SyncArtworkDetailsUseCase @Inject constructor(
     private val repository: ArtworkRepository,
 ) {
-    suspend operator fun invoke(id: Int) {
-        repository.syncArtworkDetails(id)
+    suspend operator fun invoke(id: Int): Result<Unit> {
+        return repository.syncArtworkDetails(id)
     }
 }

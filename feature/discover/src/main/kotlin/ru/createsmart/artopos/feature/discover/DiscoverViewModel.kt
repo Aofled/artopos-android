@@ -24,6 +24,7 @@ import ru.createsmart.artopos.core.model.FilterParams
 import ru.createsmart.artopos.core.model.FilterSortOption
 import ru.createsmart.artopos.core.model.FilterType
 import ru.createsmart.artopos.core.ui.theme.components.toUiText
+import ru.createsmart.artopos.core.ui.theme.manager.UiMessageManager
 import ru.createsmart.artopos.feature.discover.mapper.toUi
 import ru.createsmart.artopos.feature.discover.model.DiscoverEvent
 import ru.createsmart.artopos.feature.discover.model.FiltersUiState
@@ -42,7 +43,7 @@ class DiscoverViewModel @Inject constructor(
 
     val uiEffect = messageManager.uiEffect
 
-    private val _actions = Channel<DiscoverEvent>(Channel.BUFFERED)
+    private val _actions = Channel<DiscoverEvent>(Channel.BUFFERED) // ScrollToTop
     val actions = _actions.receiveAsFlow()
 
     private val _activeFilterParams = MutableStateFlow(FilterParams())

@@ -1,5 +1,6 @@
 package ru.createsmart.artopos.feature.details.ui.components
 
+import UiText
 import android.content.res.Configuration
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.animateScrollBy
@@ -39,6 +40,7 @@ const val HEIGHT_ANIMATION_DELAY = 300
 fun DetailsContent(
     artwork: ArtworkDetailUi,
     contentVersion: Int,
+    onShowMessage: (UiText) -> Unit,
     onRefresh: () -> Unit,
     isRefreshing: Boolean,
 ) {
@@ -70,6 +72,7 @@ fun DetailsContent(
                 pagerState = pagerState,
                 isScrolledDown = isScrolledDown,
                 contentVersion = contentVersion,
+                onShowMessage = onShowMessage,
             )
         }
     }
@@ -80,10 +83,11 @@ private fun LazyListScope.detailsItems(
     pagerState: PagerState,
     isScrolledDown: Boolean,
     contentVersion: Int,
+    onShowMessage: (UiText) -> Unit,
 ) {
     // 1. Gallery
     item {
-        GalleryHeader(artwork.images, pagerState, isScrolledDown, contentVersion)
+        GalleryHeader(artwork.images, pagerState, isScrolledDown, contentVersion, onShowMessage)
     }
 
     // 2. Artist and title
@@ -136,6 +140,7 @@ private fun ArtworksViewPreview() {
         DetailsContent(
             artwork = artworkPreview,
             contentVersion = 1,
+            onShowMessage = { },
             onRefresh = { },
             isRefreshing = true,
         )

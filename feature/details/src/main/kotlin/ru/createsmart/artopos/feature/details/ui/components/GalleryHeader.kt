@@ -1,5 +1,6 @@
 package ru.createsmart.artopos.feature.details.ui.components
 
+import UiText
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -31,6 +32,7 @@ fun GalleryHeader(
     pagerState: PagerState,
     isScrolledDown: Boolean,
     contentVersion: Int,
+    onShowMessage: (UiText) -> Unit,
 ) {
     if (images.isEmpty()) return
 
@@ -56,7 +58,8 @@ fun GalleryHeader(
         ) { page ->
             DetailsGalleryImage(
                 imageUrl = images[page].url,
-                contentVersion = contentVersion,
+                globalVersion = contentVersion,
+                onShowMessage = onShowMessage,
                 contentScale = ContentScale.Crop,
             )
         }

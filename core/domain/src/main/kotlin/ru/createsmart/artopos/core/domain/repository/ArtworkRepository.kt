@@ -11,5 +11,5 @@ interface ArtworkRepository {
     ): Flow<PagingData<Artwork>>
 
     fun getArtwork(id: Int): Flow<Artwork?>
-    suspend fun syncArtworkDetails(id: Int)
+    suspend fun syncArtworkDetails(id: Int): Result<Unit>
 }
