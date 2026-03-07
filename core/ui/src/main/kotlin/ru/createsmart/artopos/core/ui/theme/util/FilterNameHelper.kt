@@ -14,6 +14,9 @@ object FilterNameHelper {
         "dictionaries/classifications.json",
         "dictionaries/century.json",
         "dictionaries/cultures.json",
+        "dictionaries/medium.json",
+        "dictionaries/technique.json",
+        "dictionaries/period.json",
     )
 
     /**
