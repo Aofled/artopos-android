@@ -47,11 +47,11 @@ import ru.createsmart.artopos.core.model.FilterType
 import ru.createsmart.artopos.core.ui.theme.ArtoposTheme
 import ru.createsmart.artopos.core.ui.theme.components.CustomCircularProgressIndicator
 import ru.createsmart.artopos.core.ui.theme.components.CustomInputChip
+import ru.createsmart.artopos.core.ui.theme.util.FilterNameHelper
 import ru.createsmart.artopos.feature.discover.R
 import ru.createsmart.artopos.feature.discover.model.ArtworkListItem
 import ru.createsmart.artopos.feature.discover.model.DiscoverActions
 import ru.createsmart.artopos.feature.discover.model.DiscoverEvent
-import ru.createsmart.artopos.feature.discover.util.FilterNameHelper
 import ru.createsmart.artopos.core.ui.R as UiR
 
 @Composable
