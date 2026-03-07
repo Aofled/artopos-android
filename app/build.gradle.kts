@@ -40,6 +40,7 @@ dependencies {
     implementation(projects.core.database)
     implementation(projects.core.network)
     implementation(projects.core.navigation)
+    implementation(projects.core.translation)
     implementation(projects.feature.discover)
     implementation(projects.feature.details)
 }
