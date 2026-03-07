@@ -20,6 +20,7 @@ import kotlinx.coroutines.launch
 import ru.createsmart.artopos.core.domain.usecase.GetArtworksUseCase
 import ru.createsmart.artopos.core.domain.usecase.GetFiltersUseCase
 import ru.createsmart.artopos.core.domain.usecase.InitializeFiltersUseCase
+import ru.createsmart.artopos.core.domain.usecase.PreloadTranslationModelUseCase
 import ru.createsmart.artopos.core.model.FilterParams
 import ru.createsmart.artopos.core.model.FilterSortOption
 import ru.createsmart.artopos.core.model.FilterType
@@ -35,6 +36,7 @@ class DiscoverViewModel @Inject constructor(
     getArtworks: GetArtworksUseCase,
     getFiltersUseCase: GetFiltersUseCase,
     private val initializeFiltersUseCase: InitializeFiltersUseCase,
+    private val preloadTranslationModelUseCase: PreloadTranslationModelUseCase,
     private val messageManager: UiMessageManager,
 ) : ViewModel() {
 
@@ -102,6 +104,10 @@ class DiscoverViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             initializeFiltersUseCase()
+        }
+
+        viewModelScope.launch {
+            preloadTranslationModelUseCase() // ML Kit Translation dictionary preloading
         }
     }
 
