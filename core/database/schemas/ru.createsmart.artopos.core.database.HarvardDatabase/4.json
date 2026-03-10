@@ -1,0 +1,228 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 4,
+    "identityHash": "2697f7b77ca268bf7f3c5ca5c26bde21",
+    "entities": [
+      {
+        "tableName": "artworks",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `sorting_index` INTEGER NOT NULL, `title` TEXT NOT NULL, `artist` TEXT NOT NULL, `image_url` TEXT NOT NULL, `date` TEXT, `year_int` INTEGER, `technique` TEXT, `description` TEXT, `url` TEXT, `image_dimensions_width` INTEGER, `image_dimensions_height` INTEGER, `coordinates_lat` REAL, `coordinates_lon` REAL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sortingIndex",
+            "columnName": "sorting_index",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "artist",
+            "columnName": "artist",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "imageUrl",
+            "columnName": "image_url",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "yearInt",
+            "columnName": "year_int",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "technique",
+            "columnName": "technique",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "url",
+            "columnName": "url",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "imageDimensions.width",
+            "columnName": "image_dimensions_width",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "imageDimensions.height",
+            "columnName": "image_dimensions_height",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "coordinates.lat",
+            "columnName": "coordinates_lat",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "coordinates.lon",
+            "columnName": "coordinates_lon",
+            "affinity": "REAL"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "artwork_remote_keys",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`artworkId` INTEGER NOT NULL, `prevKey` INTEGER, `nextKey` INTEGER, PRIMARY KEY(`artworkId`))",
+        "fields": [
+          {
+            "fieldPath": "artworkId",
+            "columnName": "artworkId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "prevKey",
+            "columnName": "prevKey",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "nextKey",
+            "columnName": "nextKey",
+            "affinity": "INTEGER"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "artworkId"
+          ]
+        }
+      },
+      {
+        "tableName": "artwork_details",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `description` TEXT, `provenance` TEXT, `credit_line` TEXT, `classification` TEXT, `century` TEXT, `culture` TEXT, `images` TEXT, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "provenance",
+            "columnName": "provenance",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "creditLine",
+            "columnName": "credit_line",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "classification",
+            "columnName": "classification",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "century",
+            "columnName": "century",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "culture",
+            "columnName": "culture",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "images",
+            "columnName": "images",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "filters",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `server_id` INTEGER NOT NULL, `type` TEXT NOT NULL, `name` TEXT NOT NULL, `count` INTEGER NOT NULL, `order` INTEGER)",
+        "fields": [
+          {
+            "fieldPath": "uId",
+            "columnName": "uId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "server_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "count",
+            "columnName": "count",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "order",
+            "columnName": "order",
+            "affinity": "INTEGER"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "uId"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2697f7b77ca268bf7f3c5ca5c26bde21')"
+    ]
+  }
+}

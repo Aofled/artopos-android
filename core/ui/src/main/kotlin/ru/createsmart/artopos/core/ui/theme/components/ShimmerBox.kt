@@ -1,4 +1,4 @@
-package ru.createsmart.artopos.feature.discover.ui.components
+package ru.createsmart.artopos.core.ui.theme.components
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode

@@ -4,7 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import ru.createsmart.artopos.core.model.Coordinates
+import ru.createsmart.artopos.core.database.converters.StoredImage
 import ru.createsmart.artopos.core.model.ImageDimensions
 
 @Entity(tableName = "artworks")
@@ -18,7 +18,7 @@ data class ArtworkDBO(
     @ColumnInfo(name = "date") val date: String?,
     @ColumnInfo(name = "year_int") val yearInt: Int?,
     @ColumnInfo(name = "technique") val technique: String?,
-    @Embedded(prefix = "coordinates_") val coordinates: Coordinates?,
     @ColumnInfo(name = "description") val description: String?,
     @ColumnInfo(name = "url") val url: String?,
+    @ColumnInfo(name = "gallery_images") val galleryImages: List<StoredImage>?,
 )

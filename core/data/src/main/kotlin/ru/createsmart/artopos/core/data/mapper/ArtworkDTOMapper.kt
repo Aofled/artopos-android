@@ -1,7 +1,7 @@
 package ru.createsmart.artopos.core.data.mapper
 
+import ru.createsmart.artopos.core.database.converters.StoredImage
 import ru.createsmart.artopos.core.database.model.ArtworkDBO
-import ru.createsmart.artopos.core.model.Coordinates
 import ru.createsmart.artopos.core.model.ImageDimensions
 import ru.createsmart.artopos.core.network.model.ArtworkDTO
 
@@ -34,7 +34,13 @@ fun ArtworkDTO.toDBO(): ArtworkDBO {
         YEAR_REGEX.find(it)?.value?.toIntOrNull()
     }
 
-    val coordinates: Coordinates? = null // TODO(Coordinate): Implement coordinate parsing later
+    val gallery = images?.map { img ->
+        StoredImage(
+            url = img.url ?: "",
+            width = img.width,
+            height = img.height,
+        )
+    }
 
     return ArtworkDBO(
         id = id,
@@ -45,8 +51,8 @@ fun ArtworkDTO.toDBO(): ArtworkDBO {
         date = date,
         yearInt = parsedYear,
         technique = technique,
-        coordinates = coordinates,
         description = description,
         url = webUrl,
+        galleryImages = gallery,
     )
 }

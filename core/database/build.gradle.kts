@@ -2,6 +2,7 @@ plugins {
     id("artopos.android.library")
     id("artopos.di.hilt")
     id("artopos.convention.room")
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -10,4 +11,5 @@ android {
 
 dependencies {
     implementation(projects.core.model)
+    implementation(libs.kotlinx.serialization.json)
 }

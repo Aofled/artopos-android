@@ -17,6 +17,18 @@ data class ArtworkDTO(
     @SerialName("people") val artists: List<PersonDTO>? = null,
     @SerialName("images") val images: List<ImageDTO>? = null,
     @SerialName("places") val places: List<PlaceDTO>? = null,
+    // Details
+    @SerialName("provenance") val provenance: String? = null,
+    @SerialName("creditline") val creditLine: String? = null,
+    @SerialName("classification") val classification: String? = null,
+    @SerialName("century") val century: String? = null,
+    @SerialName("culture") val culture: String? = null,
+    @SerialName("medium") val medium: String? = null, // "Ink on paper"
+    @SerialName("period") val period: String? = null, // "Edo period"
+    @SerialName("style") val style: String? = null, // "Shijo"
+    @SerialName("dimensions") val dimensions: String? = null, // "20 x 30 cm"
+    @SerialName("copyright") val copyright: String? = null,
+    @SerialName("gallery") val gallery: GalleryDTO? = null,
 )
 
 @Serializable
@@ -35,4 +47,10 @@ data class ImageDTO(
 @Serializable
 data class PlaceDTO(
     @SerialName("displayname") val name: String? = null, // "Paris, France"
+)
+
+@Serializable
+data class GalleryDTO(
+    @SerialName("gallerynumber") val number: String? = null,
+    @SerialName("name") val name: String? = null,
 )

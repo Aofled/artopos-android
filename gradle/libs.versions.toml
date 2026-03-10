@@ -14,6 +14,7 @@ espressoCore = "3.7.0"
 appcompat = "1.7.1"
 material = "1.13.0"
 activityCompose = "1.12.2"
+navigationCompose = "2.9.7"
 composeBom = "2026.01.00"
 lifecycleRuntimeCompose = "2.10.0"
 detekt = "1.23.8"
@@ -27,9 +28,11 @@ room = "2.8.4"
 javaxInject = "1"
 kotlinxCoroutines = "1.10.2"
 coil = "2.7.0"
+zoomable = "2.11.0"
 benchmarkMacro = "1.4.1"
 uiautomator = "2.3.0"
 paging = "3.3.6"
+mlkitTranslate = "17.0.3"
 mockk = "1.14.9"
 turbine = "1.2.1"
 robolectric = "4.16"
@@ -54,6 +57,8 @@ androidx-compose-material3 = { group = "androidx.compose.material3", name = "mat
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycleRuntimeCompose" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+zoomable = { group = "net.engawapg.lib", name = "zoomable", version.ref = "zoomable" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 detekt-formatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detekt" }
 detekt-gradlePlugin = { group = "io.gitlab.arturbosch.detekt", name = "detekt-gradle-plugin", version.ref = "detekt" }
 ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "symbol-processing-gradle-plugin", version.ref = "ksp" }
@@ -75,6 +80,8 @@ paging-compose = {group = "androidx.paging", name = "paging-compose", version.re
 paging-common = {group = "androidx.paging", name = "paging-common", version.ref = "paging"}
 javax-inject = { group = "javax.inject", name = "javax.inject", version.ref = "javaxInject" }
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
+kotlinx-coroutines-play-services = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-play-services", version.ref = "kotlinxCoroutines" }
+google-mlkit-translate = { group = "com.google.mlkit", name = "translate", version.ref = "mlkitTranslate" }
 androidx-benchmark-macro-junit4 = { group = "androidx.benchmark", name = "benchmark-macro-junit4", version.ref = "benchmarkMacro" }
 androidx-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "uiautomator" }
 test-mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
@@ -98,6 +105,7 @@ compose = [
     "androidx-ui-graphics",
     "androidx-ui-tooling-preview",
     "androidx-compose-material3",
+    "androidx-navigation-compose",
 ]
 
 compose-debug = [
@@ -122,7 +130,7 @@ room = [
 benchmark = [
     "androidx-junit",
     "androidx-uiautomator",
-    "androidx-benchmark-macro-junit4",
+    "androidx-benchmark-macro-junit4"
 ]
 
 test-unit-minimal = [
@@ -135,5 +143,5 @@ test-unit-full = [
     "test-robolectric",
     "test-coroutines",
     "test-mockk",
-    "test-turbine",
+    "test-turbine"
 ]

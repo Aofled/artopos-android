@@ -10,4 +10,7 @@ android {
 dependencies {
     implementation(libs.androidx.ui.text.google.fonts)
     implementation(projects.core.common)
+    // Architecture: Standard Java annotations (@Inject).
+    // Allows Dependency Injection without depending on the heavy Hilt library.
+    implementation(libs.javax.inject)
 }

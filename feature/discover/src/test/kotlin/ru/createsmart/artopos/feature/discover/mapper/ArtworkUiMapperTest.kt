@@ -22,7 +22,6 @@ class ArtworkUiMapperTest {
             date = "late 18th-early 19th century",
             yearInt = null,
             technique = null,
-            coordinates = null,
             description = null,
             url = "https://www.harvardartmuseums.org/collections/object/340543",
         )
@@ -48,7 +47,6 @@ class ArtworkUiMapperTest {
             date = null,
             yearInt = null,
             technique = null,
-            coordinates = null,
             description = null,
             url = null,
         )
@@ -70,7 +68,6 @@ class ArtworkUiMapperTest {
             date = "2024",
             yearInt = null,
             technique = null,
-            coordinates = null,
             description = null,
             url = null,
         )
