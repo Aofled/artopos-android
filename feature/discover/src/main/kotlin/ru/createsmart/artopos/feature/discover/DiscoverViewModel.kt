@@ -158,7 +158,9 @@ class DiscoverViewModel @Inject constructor(
 
         val newSort = when (currentDraft.sort) {
             FilterSortOption.RANK -> FilterSortOption.TOTAL_PAGE_VIEWS
-            FilterSortOption.TOTAL_PAGE_VIEWS -> FilterSortOption.RANDOM
+            FilterSortOption.TOTAL_PAGE_VIEWS -> FilterSortOption.ACCESSION_YEAR
+            FilterSortOption.ACCESSION_YEAR -> FilterSortOption.DATE_BEGIN
+            FilterSortOption.DATE_BEGIN -> FilterSortOption.RANDOM
             FilterSortOption.RANDOM -> FilterSortOption.RANK
         }
 

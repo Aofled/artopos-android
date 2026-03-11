@@ -19,8 +19,8 @@ interface HarvardAPI {
         @Query("culture") culture: String? = null,
         @Query("hasimage") hasImage: Int = 1,
         @Query("permission") permission: Int = 0,
-        @Query("sort") sort: String = "random", // random, rank
-        @Query("sortorder") sortOrder: String = "desc",
+        @Query("sort") sort: String = "accessionyear", // random, rank, totalpageviews, accessionyear, datebegin
+        @Query("sortorder") sortOrder: String = "desc", // desc, asc
         @Query("size") size: Int = 50,
         @Query("page") page: Int = 1,
         // Optimization: Request only necessary fields to save traffic/bandwidth

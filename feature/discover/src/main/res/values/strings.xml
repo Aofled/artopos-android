@@ -9,4 +9,10 @@
     <string name="btn_reset">Reset</string>
     <string name="sort_filters">Sort filters</string>
     <string name="item_any">Any</string>
+
+    <string name="sort_rank">Curator\'s Pick</string>
+    <string name="sort_views">Most Viewed</string>
+    <string name="sort_newest">New Arrivals</string>
+    <string name="sort_oldest">Oldest First</string>
+    <string name="sort_random">Shuffle</string>
 </resources>

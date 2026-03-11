@@ -21,17 +21,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.staggeredgrid.LazyHorizontalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
@@ -163,35 +165,63 @@ private fun FilterSheetHeader(
         )
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             TextButton(onClick = onReset) {
                 Text(stringResource(R.string.btn_reset))
             }
 
-            val containerColor = when (sort) {
-                FilterSortOption.RANK -> MaterialTheme.colorScheme.secondaryContainer
-                FilterSortOption.TOTAL_PAGE_VIEWS -> MaterialTheme.colorScheme.tertiaryContainer
-                FilterSortOption.RANDOM -> MaterialTheme.colorScheme.primaryContainer
+            SortToggleButton(sort = sort, onClick = onToggleSort)
+        }
+    }
+}
+
+@Composable
+private fun SortToggleButton(
+    sort: FilterSortOption,
+    onClick: () -> Unit,
+) {
+    val (containerColor, contentColor) = when (sort) {
+        FilterSortOption.RANK ->
+            MaterialTheme.colorScheme.surfaceVariant to MaterialTheme.colorScheme.onSurfaceVariant
+        FilterSortOption.TOTAL_PAGE_VIEWS ->
+            MaterialTheme.colorScheme.primaryContainer to MaterialTheme.colorScheme.onPrimaryContainer
+        FilterSortOption.ACCESSION_YEAR ->
+            MaterialTheme.colorScheme.secondary to MaterialTheme.colorScheme.onSecondary
+        FilterSortOption.DATE_BEGIN ->
+            MaterialTheme.colorScheme.tertiaryContainer to MaterialTheme.colorScheme.onTertiaryContainer
+        FilterSortOption.RANDOM ->
+            MaterialTheme.colorScheme.primary to MaterialTheme.colorScheme.onPrimary
+    }
+
+    FilledTonalButton(
+        onClick = onClick,
+        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
+        colors = ButtonDefaults.filledTonalButtonColors(
+            containerColor = containerColor,
+            contentColor = contentColor,
+        ),
+    ) {
+        AnimatedContent(targetState = sort, label = "sort_anim") { targetSort ->
+            val (iconRes, textRes) = when (targetSort) {
+                FilterSortOption.RANK -> UiR.drawable.sort to R.string.sort_rank // "Curator's Pick"
+                FilterSortOption.TOTAL_PAGE_VIEWS -> UiR.drawable.person_heart to R.string.sort_views // "Most Viewed"
+                FilterSortOption.ACCESSION_YEAR -> UiR.drawable.schedule to R.string.sort_newest // "New Arrivals"
+                FilterSortOption.DATE_BEGIN -> UiR.drawable.hourglass to R.string.sort_oldest // "Oldest First"
+                FilterSortOption.RANDOM -> UiR.drawable.shuffle to R.string.sort_random // "Shuffle"
             }
 
-            FilledTonalIconButton(
-                onClick = onToggleSort,
-                colors = IconButtonDefaults.filledTonalIconButtonColors(
-                    containerColor = containerColor,
-                ),
-            ) {
-                AnimatedContent(targetState = sort, label = "sort_icon") { targetSort ->
-                    val iconRes = when (targetSort) {
-                        FilterSortOption.RANK -> UiR.drawable.sort
-                        FilterSortOption.TOTAL_PAGE_VIEWS -> UiR.drawable.person_heart
-                        FilterSortOption.RANDOM -> UiR.drawable.shuffle
-                    }
-                    Icon(
-                        painter = painterResource(id = iconRes),
-                        contentDescription = stringResource(R.string.sort_filters),
-                    )
-                }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    painter = painterResource(id = iconRes),
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(
+                    text = stringResource(textRes),
+                    style = MaterialTheme.typography.labelLarge,
+                )
             }
         }
     }

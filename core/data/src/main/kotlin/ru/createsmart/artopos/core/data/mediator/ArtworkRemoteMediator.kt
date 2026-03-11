@@ -4,7 +4,6 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
-import androidx.paging.RemoteMediator.MediatorResult
 import androidx.room.withTransaction
 import ru.createsmart.artopos.core.data.mapper.toDBO
 import ru.createsmart.artopos.core.database.HarvardDatabase
@@ -23,7 +22,12 @@ import java.io.IOException
 
 private const val FILTER_RANK = "rank"
 private const val FILTER_TOTAL_PAGE_VIEWS = "totalpageviews"
+private const val FILTER_ACCESSION_YEAR = "accessionyear"
+private const val FILTER_DATE_BEGIN = "datebegin"
 private const val FILTER_RANDOM = "random"
+
+private const val SORT_DESK = "desc"
+private const val SORT_ASC = "asc"
 
 @OptIn(ExperimentalPagingApi::class)
 class ArtworkRemoteMediator(
@@ -36,6 +40,7 @@ class ArtworkRemoteMediator(
         loadType: LoadType,
         state: PagingState<Int, ArtworkDBO>,
     ): MediatorResult {
+        val effectiveOrder = resolveEffectiveOrder()
         val effectiveSort = resolveEffectiveSort()
 
         val page = when (loadType) {
@@ -76,7 +81,8 @@ class ArtworkRemoteMediator(
                 classification = params.classification,
                 century = params.century,
                 culture = params.culture,
-                sort = effectiveSort,
+                sort = effectiveOrder,
+                sortOrder = effectiveSort,
             )
             val validRecords = apiResponse.records.filter { !it.images.isNullOrEmpty() }
 
@@ -90,18 +96,32 @@ class ArtworkRemoteMediator(
         }
     }
 
-    private fun resolveEffectiveSort(): String {
-        val hasFilters = params.classification != null || params.century != null || params.culture != null
-        return if (hasFilters) {
-            when (params.sort) { // For the "rank", "totalpageviews" and "random" filters, "rank" is the default.
+    private fun resolveEffectiveOrder(): String {
+        return if (hasFilters()) {
+            when (params.sort) {
+                // For the "rank", "totalpageviews", accessionyear", "datebegin", "random" filters
+                // "accessionyear" is the default.
                 FilterSortOption.RANK -> FILTER_RANK
                 FilterSortOption.TOTAL_PAGE_VIEWS -> FILTER_TOTAL_PAGE_VIEWS
+                FilterSortOption.ACCESSION_YEAR -> FILTER_ACCESSION_YEAR
+                FilterSortOption.DATE_BEGIN -> FILTER_DATE_BEGIN
                 FilterSortOption.RANDOM -> FILTER_RANDOM
             }
         } else {
-            FILTER_RANDOM // For the main page, always "random"
+            FILTER_ACCESSION_YEAR // For the main page, always "accessionyear"
         }
     }
+
+    private fun resolveEffectiveSort(): String {
+        return if (hasFilters()) {
+            if (params.sort == FilterSortOption.DATE_BEGIN) SORT_ASC else SORT_DESK
+        } else {
+            SORT_DESK // For the main page, always "desk"
+        }
+    }
+
+    private fun hasFilters(): Boolean =
+        params.classification != null || params.century != null || params.culture != null
 
     private suspend fun updateDatabase(
         loadType: LoadType,
