@@ -92,6 +92,7 @@ fun DiscoverRoute(
             onFilterOpen = viewModel::onFilterOpen,
             onRemoveFilter = viewModel::onRemoveFilter,
             onToggleFilterSort = viewModel::onToggleFilterSort,
+            onSearchQueryChanged = viewModel::onSearchQueryChanged,
         ),
         scrollUp = viewModel.actions,
     )
@@ -170,6 +171,7 @@ fun DiscoverScreen(
                     actions.onFilterApply()
                 },
                 onToggleSort = actions.onToggleFilterSort,
+                onSearchQueryChanged = actions.onSearchQueryChanged,
             )
         }
     }
@@ -282,10 +284,11 @@ fun DiscoverScreenPreview(
             contentVersion = 0,
             effectFlow = null,
             filtersState = FiltersUiState(
-                emptyList(),
-                emptyList(),
-                emptyList(),
-                false,
+                classifications = emptyList(),
+                centuries = emptyList(),
+                cultures = emptyList(),
+                searchQuery = "",
+                isAvailable = false,
             ),
             filterParams = FilterParams(),
             actions = DiscoverActions(
@@ -299,6 +302,7 @@ fun DiscoverScreenPreview(
                 onFilterOpen = { },
                 onRemoveFilter = { _ -> },
                 onToggleFilterSort = { },
+                onSearchQueryChanged = { },
             ),
             scrollUp = emptyFlow(),
         )

@@ -344,6 +344,7 @@ private fun ArtworksViewPreview() {
                 onFilterOpen = {},
                 onRemoveFilter = { _ -> },
                 onToggleFilterSort = {},
+                onSearchQueryChanged = { },
             ),
             scrollUp = emptyFlow(),
         )

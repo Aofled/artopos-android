@@ -9,17 +9,17 @@ import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -27,6 +27,8 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyHorizontalStaggeredGri
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,6 +36,8 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
@@ -44,6 +48,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -52,6 +57,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import ru.createsmart.artopos.core.model.FilterSortOption
 import ru.createsmart.artopos.core.model.FilterType
 import ru.createsmart.artopos.core.ui.theme.ArtoposTheme
@@ -62,84 +68,93 @@ import ru.createsmart.artopos.feature.discover.model.FiltersUiState
 import ru.createsmart.artopos.feature.discover.ui.preview.FilterPreviewData
 import ru.createsmart.artopos.core.ui.R as UiR
 
-private val FILTER_GRID_HEIGHT = 135.dp
+private val FILTER_GRID_HEIGHT = 130.dp
 private val FILTER_SECTION_HEADER_HEIGHT = 50.dp
-private val FILTER_HEADER_HEIGHT = 60.dp
+private val FILTER_HEADER_HEIGHT = 120.dp // 60
 private const val TIGHT_SCREEN_THRESHOLD_RATIO = 0.75f
 private const val FILTER_GRID_ROWS = 3
 
-@SuppressLint("ConfigurationScreenWidthHeight")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FilterBottomSheet(
     sheetState: SheetState,
     filtersState: FiltersUiState,
     onFilterSelected: (FilterType, String?) -> Unit,
+    onSearchQueryChanged: (String) -> Unit,
     onReset: () -> Unit,
     onToggleSort: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val configuration = LocalConfiguration.current
-
-    @Suppress("NewApi")
-    val screenHeightDp = configuration.screenHeightDp.dp
-
-    val calculatedContentHeight = remember { // Calculate the content height
-        val sectionHeight = FILTER_GRID_HEIGHT + FILTER_SECTION_HEADER_HEIGHT
-        val headerHeight = FILTER_HEADER_HEIGHT
-        (sectionHeight * FILTER_GRID_ROWS) + headerHeight
-    }
-
-    // Minimum height is 75%, after which the "spring effect" begins
-    val isTightScreen = remember(screenHeightDp) {
-        calculatedContentHeight > (screenHeightDp * TIGHT_SCREEN_THRESHOLD_RATIO) //
-    }
-
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
         containerColor = MaterialTheme.colorScheme.surface,
     ) {
-        Column(
-            modifier = Modifier
-                .then(if (isTightScreen) Modifier.fillMaxHeight() else Modifier) // To avoid the "spring effect"
-                .verticalScroll(rememberScrollState())
-                .padding(bottom = 16.dp)
-                .padding(WindowInsets.navigationBars.asPaddingValues()),
-        ) {
-            FilterSheetHeader(
-                onReset = onReset,
-                sort = filtersState.sort,
-                onToggleSort = onToggleSort,
-            )
-            Spacer(modifier = Modifier.height(8.dp))
+        FilterSheetContent(
+            filtersState = filtersState,
+            onFilterSelected = onFilterSelected,
+            onSearchQueryChanged = onSearchQueryChanged,
+            onReset = onReset,
+            onToggleSort = onToggleSort,
+        )
+    }
+}
 
-            val context = LocalContext.current
+@SuppressLint("ConfigurationScreenWidthHeight")
+@Composable
+private fun FilterSheetContent(
+    filtersState: FiltersUiState,
+    onFilterSelected: (FilterType, String?) -> Unit,
+    onSearchQueryChanged: (String) -> Unit,
+    onReset: () -> Unit,
+    onToggleSort: () -> Unit,
+) {
+    val configuration = LocalConfiguration.current
+    val screenHeightDp = configuration.screenHeightDp.dp
 
-            FilterSection(
-                context = context,
-                title = stringResource(R.string.filter_classification),
-                items = filtersState.classifications,
-                type = FilterType.CLASSIFICATION,
-                onSelect = onFilterSelected,
-            )
+    val isTightScreen = remember(screenHeightDp) {
+        val contentHeight =
+            (FILTER_GRID_HEIGHT + FILTER_SECTION_HEADER_HEIGHT) * FILTER_GRID_ROWS + FILTER_HEADER_HEIGHT
+        contentHeight > (screenHeightDp * TIGHT_SCREEN_THRESHOLD_RATIO)
+    }
 
-            FilterSection(
-                context = context,
-                title = stringResource(R.string.filter_century),
-                items = filtersState.centuries,
-                type = FilterType.CENTURY,
-                onSelect = onFilterSelected,
-            )
+    Column(
+        modifier = Modifier
+            .then(if (isTightScreen) Modifier.fillMaxHeight() else Modifier)
+            .verticalScroll(rememberScrollState())
+            .padding(bottom = 8.dp)
+            .navigationBarsPadding(),
+    ) {
+        FilterSheetHeader(onReset = onReset, sort = filtersState.sort, onToggleSort = onToggleSort)
+        FilterSearchBar(query = filtersState.searchQuery, onQueryChanged = onSearchQueryChanged)
 
-            FilterSection(
-                context = context,
-                title = stringResource(R.string.filter_culture),
-                items = filtersState.cultures,
-                type = FilterType.CULTURE,
-                onSelect = onFilterSelected,
-            )
-        }
+        val context = LocalContext.current
+        val query = filtersState.searchQuery
+
+        FilterSection(
+            context,
+            stringResource(R.string.filter_classification),
+            filtersState.classifications,
+            query,
+            FilterType.CLASSIFICATION,
+            onFilterSelected,
+        )
+        FilterSection(
+            context,
+            stringResource(R.string.filter_century),
+            filtersState.centuries,
+            query,
+            FilterType.CENTURY,
+            onFilterSelected,
+        )
+        FilterSection(
+            context,
+            stringResource(R.string.filter_culture),
+            filtersState.cultures,
+            query,
+            FilterType.CULTURE,
+            onFilterSelected,
+        )
     }
 }
 
@@ -214,7 +229,7 @@ private fun SortToggleButton(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     painter = painterResource(id = iconRes),
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.search_sort),
                     modifier = Modifier.size(16.dp),
                 )
                 Spacer(modifier = Modifier.width(6.dp))
@@ -228,10 +243,97 @@ private fun SortToggleButton(
 }
 
 @Composable
+private fun FilterSearchBar(
+    query: String,
+    onQueryChanged: (String) -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp)
+            .height(40.dp)
+            .background(
+                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                shape = CircleShape,
+            )
+            .padding(horizontal = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            painter = painterResource(id = UiR.drawable.search),
+            contentDescription = stringResource(R.string.search_filters),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.size(20.dp),
+        )
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        SearchInputField(
+            query = query,
+            onQueryChanged = onQueryChanged,
+            modifier = Modifier.weight(1f),
+        )
+    }
+}
+
+@Composable
+private fun SearchInputField(
+    query: String,
+    onQueryChanged: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        BasicTextField(
+            value = query,
+            onValueChange = onQueryChanged,
+            modifier = Modifier.weight(1f),
+            singleLine = true,
+            textStyle = LocalTextStyle.current.copy(
+                color = MaterialTheme.colorScheme.onSurface,
+                fontSize = 14.sp,
+            ),
+            cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+            decorationBox = { innerTextField ->
+                Box(contentAlignment = Alignment.CenterStart) {
+                    if (query.isEmpty()) {
+                        Text(
+                            text = stringResource(R.string.search_filters_placeholder),
+                            style = LocalTextStyle.current.copy(
+                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                                fontSize = 14.sp,
+                            ),
+                        )
+                    }
+                    innerTextField()
+                }
+            },
+        )
+
+        if (query.isNotEmpty()) {
+            IconButton(
+                onClick = { onQueryChanged("") },
+                modifier = Modifier.size(24.dp),
+            ) {
+                Icon(
+                    painter = painterResource(id = UiR.drawable.close),
+                    contentDescription = stringResource(R.string.search_clear),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(16.dp),
+                )
+            }
+        }
+    }
+}
+
+@Composable
 private fun FilterSection(
     context: Context,
     title: String,
     items: List<FilterListItem>,
+    searchQuery: String,
     type: FilterType,
     onSelect: (FilterType, String?) -> Unit,
 ) {
@@ -241,6 +343,17 @@ private fun FilterSection(
 
     val localizedHeaderName = remember(selectedItem) {
         selectedItem?.name?.let { FilterNameHelper.getLocalizedName(context, it) }
+    }
+
+    val displayItems = remember(items, searchQuery) {
+        if (searchQuery.isBlank()) return@remember items
+
+        items.filter { item ->
+            val locName = FilterNameHelper.getLocalizedName(context, item.name)
+            item.isSelected ||
+                locName.contains(searchQuery, ignoreCase = true) ||
+                item.name.contains(searchQuery, ignoreCase = true)
+        }
     }
 
     Column(modifier = Modifier.padding(bottom = 16.dp)) {
@@ -265,7 +378,7 @@ private fun FilterSection(
                 )
             }
 
-            items(items = items, key = { it.id }) { item ->
+            items(items = displayItems, key = { it.id }) { item ->
                 val itemNameLocalized = remember(item.name) {
                     FilterNameHelper.getLocalizedName(context, item.name)
                 }
@@ -276,7 +389,7 @@ private fun FilterSection(
                         val newValue = if (item.isSelected) null else item.name
                         onSelect(type, newValue)
                     },
-                    label = { Text(text = itemNameLocalized) }, // "$itemNameLocalized (${item.count})",
+                    label = { Text(text = itemNameLocalized) },
                 )
             }
         }
@@ -291,7 +404,7 @@ private fun SectionHeaderTitle(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .padding(horizontal = 16.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -365,6 +478,7 @@ private fun FilterBottomSheetPreview() {
                 sort = FilterSortOption.RANK,
             ),
             onFilterSelected = { _, _ -> },
+            onSearchQueryChanged = { },
             onReset = { },
             onToggleSort = { },
             onDismiss = { },

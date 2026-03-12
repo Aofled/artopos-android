@@ -48,6 +48,8 @@ class DiscoverViewModel @Inject constructor(
     private val _actions = Channel<DiscoverEvent>(Channel.BUFFERED) // ScrollToTop
     val actions = _actions.receiveAsFlow()
 
+    private val _searchQuery = MutableStateFlow("")
+
     private val _activeFilterParams = MutableStateFlow(FilterParams())
     private val _draftFilterParams = MutableStateFlow(FilterParams())
 
@@ -81,13 +83,15 @@ class DiscoverViewModel @Inject constructor(
         _centuriesFlow,
         _culturesFlow,
         _draftFilterParams,
-    ) { classList, centList, cultList, draftParams ->
+        _searchQuery,
+    ) { classList, centList, cultList, draftParams, query ->
         FiltersUiState(
             classifications = classList,
             centuries = centList,
             cultures = cultList,
             sort = draftParams.sort,
             isAvailable = classList.isNotEmpty() && centList.isNotEmpty() && cultList.isNotEmpty(),
+            searchQuery = query,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), FiltersUiState())
 
@@ -124,6 +128,7 @@ class DiscoverViewModel @Inject constructor(
 
     fun onFilterReset() {
         _draftFilterParams.value = FilterParams()
+        _searchQuery.value = ""
     }
 
     fun onFilterApply() {
@@ -138,6 +143,11 @@ class DiscoverViewModel @Inject constructor(
 
     fun onFilterOpen() {
         _draftFilterParams.value = _activeFilterParams.value
+        _searchQuery.value = ""
+    }
+
+    fun onSearchQueryChanged(query: String) {
+        _searchQuery.value = query
     }
 
     fun onRemoveFilter(type: FilterType) { // For TopAppBar

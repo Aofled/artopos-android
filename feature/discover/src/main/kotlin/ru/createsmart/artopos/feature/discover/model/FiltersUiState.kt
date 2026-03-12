@@ -8,6 +8,7 @@ data class FiltersUiState(
     val classifications: List<FilterListItem> = emptyList(),
     val centuries: List<FilterListItem> = emptyList(),
     val cultures: List<FilterListItem> = emptyList(),
+    val searchQuery: String = "",
     val isAvailable: Boolean = false, // If ALL filters are in the database
     val sort: FilterSortOption = FilterSortOption.RANK,
 )
