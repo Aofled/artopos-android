@@ -44,9 +44,9 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import ru.createsmart.artopos.core.model.FilterParams
 import ru.createsmart.artopos.core.model.FilterType
-import ru.createsmart.artopos.core.ui.theme.ArtoposTheme
 import ru.createsmart.artopos.core.ui.components.CustomCircularProgressIndicator
 import ru.createsmart.artopos.core.ui.components.CustomInputChip
+import ru.createsmart.artopos.core.ui.theme.ArtoposTheme
 import ru.createsmart.artopos.core.ui.util.FilterNameHelper
 import ru.createsmart.artopos.feature.discover.R
 import ru.createsmart.artopos.feature.discover.model.ArtworkListItem

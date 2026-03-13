@@ -7,8 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import ru.createsmart.artopos.core.ui.theme.ArtoposTheme
 import ru.createsmart.artopos.core.ui.components.CustomCircularProgressIndicator
+import ru.createsmart.artopos.core.ui.theme.ArtoposTheme
 
 @Composable
 fun LoadingView() {

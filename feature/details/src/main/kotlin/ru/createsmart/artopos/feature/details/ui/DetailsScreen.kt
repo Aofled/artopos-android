@@ -28,8 +28,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
-import ru.createsmart.artopos.core.ui.theme.ArtoposTheme
 import ru.createsmart.artopos.core.ui.components.BackButton
+import ru.createsmart.artopos.core.ui.theme.ArtoposTheme
 import ru.createsmart.artopos.feature.details.ArtworkDetailUiState
 import ru.createsmart.artopos.feature.details.DetailsViewModel
 import ru.createsmart.artopos.feature.details.ui.components.DetailsContent

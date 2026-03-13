@@ -40,8 +40,8 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
 import ru.createsmart.artopos.core.model.FilterParams
 import ru.createsmart.artopos.core.model.FilterType
-import ru.createsmart.artopos.core.ui.theme.ArtoposTheme
 import ru.createsmart.artopos.core.ui.components.FilterFloatingActionButton
+import ru.createsmart.artopos.core.ui.theme.ArtoposTheme
 import ru.createsmart.artopos.feature.discover.DiscoverViewModel
 import ru.createsmart.artopos.feature.discover.model.ArtworkListItem
 import ru.createsmart.artopos.feature.discover.model.DiscoverActions
