@@ -13,10 +13,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
+import ru.createsmart.artopos.core.ui.R
 import ru.createsmart.artopos.core.ui.theme.components.FullscreenShimmerBox
 import ru.createsmart.artopos.core.ui.theme.components.RetryDecision
 import ru.createsmart.artopos.core.ui.theme.components.RetryPlaceholder
@@ -57,7 +59,7 @@ fun DetailsGalleryImage(
     ) {
         SubcomposeAsyncImage(
             model = imageRequest,
-            contentDescription = null,
+            contentDescription = stringResource(R.string.description_image),
             contentScale = contentScale,
             modifier = Modifier.fillMaxSize(),
             loading = {

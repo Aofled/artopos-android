@@ -290,7 +290,7 @@ private fun ErrorFooter(onRetry: () -> Unit) {
             onClick = onRetry,
         ) {
             Text(
-                text = stringResource(UiR.string.btn_retry),
+                text = stringResource(UiR.string.description_btn_retry),
             )
         }
     }

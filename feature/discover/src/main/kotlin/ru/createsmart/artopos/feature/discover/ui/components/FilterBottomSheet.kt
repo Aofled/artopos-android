@@ -229,7 +229,7 @@ private fun SortToggleButton(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     painter = painterResource(id = iconRes),
-                    contentDescription = stringResource(R.string.search_sort),
+                    contentDescription = stringResource(R.string.description_search_sort),
                     modifier = Modifier.size(16.dp),
                 )
                 Spacer(modifier = Modifier.width(6.dp))
@@ -261,7 +261,7 @@ private fun FilterSearchBar(
     ) {
         Icon(
             painter = painterResource(id = UiR.drawable.search),
-            contentDescription = stringResource(R.string.search_filters),
+            contentDescription = stringResource(R.string.description_search_filters),
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(20.dp),
         )
@@ -319,7 +319,7 @@ private fun SearchInputField(
             ) {
                 Icon(
                     painter = painterResource(id = UiR.drawable.close),
-                    contentDescription = stringResource(R.string.search_clear),
+                    contentDescription = stringResource(R.string.description_search_clear),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(16.dp),
                 )

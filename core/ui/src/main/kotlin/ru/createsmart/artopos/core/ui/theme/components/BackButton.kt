@@ -27,7 +27,7 @@ fun BackButton(
     ) {
         Icon(
             painter = painterResource(id = R.drawable.arrow_back),
-            contentDescription = stringResource(R.string.btn_back),
+            contentDescription = stringResource(R.string.description_btn_back),
             tint = Color.White,
         )
     }

@@ -15,9 +15,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
+import ru.createsmart.artopos.core.ui.R
 import ru.createsmart.artopos.core.ui.theme.components.RetryDecision
 import ru.createsmart.artopos.core.ui.theme.components.RetryPlaceholder
 import ru.createsmart.artopos.core.ui.theme.components.ShimmerBox
@@ -68,7 +70,7 @@ internal fun ArtworkImage(
     // Note: We use SubcomposeAsyncImage to support Custom Composables (Shimmer)
     SubcomposeAsyncImage(
         model = imageRequest,
-        contentDescription = null,
+        contentDescription = stringResource(R.string.description_image),
         contentScale = ContentScale.Crop,
         modifier = Modifier
             .fillMaxWidth()

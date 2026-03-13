@@ -19,7 +19,7 @@ fun FilterFloatingActionButton(
     ) {
         Icon(
             painter = painterResource(id = R.drawable.filter_list),
-            contentDescription = stringResource(R.string.btn_retry),
+            contentDescription = stringResource(R.string.description_btn_retry),
         )
     }
 }

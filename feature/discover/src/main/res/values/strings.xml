@@ -9,9 +9,9 @@
     <string name="btn_reset">Reset</string>
     <string name="sort_filters">Sort filters</string>
     <string name="search_filters_placeholder">Search filters...</string>
-    <string name="search_filters">Search</string>
-    <string name="search_clear">Clear</string>
-    <string name="search_sort">Sorting</string>
+    <string name="description_search_filters">Search</string>
+    <string name="description_search_clear">Clear</string>
+    <string name="description_search_sort">Sorting</string>
     <string name="item_any">Any</string>
 
     <string name="sort_rank">Curator\'s Pick</string>

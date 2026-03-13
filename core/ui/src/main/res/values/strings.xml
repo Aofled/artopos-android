@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="btn_retry">Retry</string>
     <string name="btn_filter">Filters</string>
-    <string name="btn_back">Back</string>
     <string name="label_wrong">Something went wrong</string>
     <string name="label_no_results">No results!</string>
-    <string name="remove_filter">Remove filter</string>
     <string name="incorrect_filters">Try adjusting your filters</string>
 
+    <string name="description_btn_retry">Retry</string>
+    <string name="description_btn_back">Back</string>
+    <string name="description_remove_filter">Remove filter</string>
     <string name="description_collapse">Collapse</string>
     <string name="description_expand">Expand</string>
+    <string name="description_image">Image</string>
 
     <string name="error_load_image">Failed to load image</string>
     <string name="error_not_found">Image not found (404)</string>

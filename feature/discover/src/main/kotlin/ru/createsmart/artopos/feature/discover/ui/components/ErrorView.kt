@@ -34,7 +34,7 @@ fun ErrorView(onRetry: () -> Unit) {
             modifier = Modifier.padding(top = 16.dp),
         ) {
             Text(
-                text = stringResource(UiR.string.btn_retry),
+                text = stringResource(UiR.string.description_btn_retry),
             )
         }
     }
