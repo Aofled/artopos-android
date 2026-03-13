@@ -19,10 +19,10 @@ import coil.request.ImageRequest
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
 import ru.createsmart.artopos.core.ui.R
-import ru.createsmart.artopos.core.ui.theme.components.FullscreenShimmerBox
-import ru.createsmart.artopos.core.ui.theme.components.RetryDecision
-import ru.createsmart.artopos.core.ui.theme.components.RetryPlaceholder
-import ru.createsmart.artopos.core.ui.theme.components.analyzeRetry
+import ru.createsmart.artopos.core.ui.components.FullscreenShimmerBox
+import ru.createsmart.artopos.core.ui.components.RetryDecision
+import ru.createsmart.artopos.core.ui.components.RetryPlaceholder
+import ru.createsmart.artopos.core.ui.components.analyzeRetry
 import ru.createsmart.artopos.core.ui.R as UiR
 
 private const val RETRY_HASH = "retry_hash"

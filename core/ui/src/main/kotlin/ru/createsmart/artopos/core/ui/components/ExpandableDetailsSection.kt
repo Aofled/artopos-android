@@ -1,4 +1,4 @@
-package ru.createsmart.artopos.core.ui.theme.components
+package ru.createsmart.artopos.core.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically

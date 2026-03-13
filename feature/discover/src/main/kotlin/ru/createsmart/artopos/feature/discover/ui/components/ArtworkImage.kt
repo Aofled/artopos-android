@@ -20,10 +20,10 @@ import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 import ru.createsmart.artopos.core.ui.R
-import ru.createsmart.artopos.core.ui.theme.components.RetryDecision
-import ru.createsmart.artopos.core.ui.theme.components.RetryPlaceholder
-import ru.createsmart.artopos.core.ui.theme.components.ShimmerBox
-import ru.createsmart.artopos.core.ui.theme.components.analyzeRetry
+import ru.createsmart.artopos.core.ui.components.RetryDecision
+import ru.createsmart.artopos.core.ui.components.RetryPlaceholder
+import ru.createsmart.artopos.core.ui.components.ShimmerBox
+import ru.createsmart.artopos.core.ui.components.analyzeRetry
 import ru.createsmart.artopos.feature.discover.model.ArtworkListItem
 import ru.createsmart.artopos.core.ui.R as UiR
 

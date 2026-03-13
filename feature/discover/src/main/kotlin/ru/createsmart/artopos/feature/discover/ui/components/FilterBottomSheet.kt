@@ -61,7 +61,7 @@ import androidx.compose.ui.unit.sp
 import ru.createsmart.artopos.core.model.FilterSortOption
 import ru.createsmart.artopos.core.model.FilterType
 import ru.createsmart.artopos.core.ui.theme.ArtoposTheme
-import ru.createsmart.artopos.core.ui.theme.util.FilterNameHelper
+import ru.createsmart.artopos.core.ui.util.FilterNameHelper
 import ru.createsmart.artopos.feature.discover.R
 import ru.createsmart.artopos.feature.discover.model.FilterListItem
 import ru.createsmart.artopos.feature.discover.model.FiltersUiState

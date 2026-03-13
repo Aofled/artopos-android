@@ -24,8 +24,8 @@ import ru.createsmart.artopos.core.domain.usecase.PreloadTranslationModelUseCase
 import ru.createsmart.artopos.core.model.FilterParams
 import ru.createsmart.artopos.core.model.FilterSortOption
 import ru.createsmart.artopos.core.model.FilterType
-import ru.createsmart.artopos.core.ui.theme.components.toUiText
-import ru.createsmart.artopos.core.ui.theme.manager.UiMessageManager
+import ru.createsmart.artopos.core.ui.components.toUiText
+import ru.createsmart.artopos.core.ui.manager.UiMessageManager
 import ru.createsmart.artopos.feature.discover.mapper.toUi
 import ru.createsmart.artopos.feature.discover.model.DiscoverEvent
 import ru.createsmart.artopos.feature.discover.model.FiltersUiState

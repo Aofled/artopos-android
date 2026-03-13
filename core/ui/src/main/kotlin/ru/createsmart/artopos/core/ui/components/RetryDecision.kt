@@ -1,4 +1,4 @@
-package ru.createsmart.artopos.core.ui.theme.components
+package ru.createsmart.artopos.core.ui.components
 
 import UiText
 import android.content.Context

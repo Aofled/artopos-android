@@ -1,4 +1,4 @@
-package ru.createsmart.artopos.core.ui.theme.util
+package ru.createsmart.artopos.core.ui.util
 
 import android.annotation.SuppressLint
 import android.content.Context

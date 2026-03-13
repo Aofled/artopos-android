@@ -27,7 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ru.createsmart.artopos.core.ui.theme.ArtoposTheme
-import ru.createsmart.artopos.core.ui.theme.components.ExpandableDetailsSection
+import ru.createsmart.artopos.core.ui.components.ExpandableDetailsSection
 import ru.createsmart.artopos.feature.details.R
 import ru.createsmart.artopos.feature.details.model.ArtworkDetailUi
 import ru.createsmart.artopos.feature.details.ui.preview.artworkPreview

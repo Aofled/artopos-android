@@ -1,4 +1,4 @@
-package ru.createsmart.artopos.core.ui.theme.manager
+package ru.createsmart.artopos.core.ui.manager
 
 import UiText
 import kotlinx.coroutines.channels.Channel
