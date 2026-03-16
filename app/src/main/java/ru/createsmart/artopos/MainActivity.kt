@@ -4,10 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import ru.createsmart.artopos.core.ui.theme.ArtoposTheme
-import ru.createsmart.artopos.navigation.AppNavGraph
+import ru.createsmart.artopos.ui.ArtoposApp
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -16,8 +15,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ArtoposTheme {
-                val navController = rememberNavController()
-                AppNavGraph(navController = navController)
+                ArtoposApp()
             }
         }
     }

@@ -15,3 +15,6 @@ val MapLand = Color(0xFF2C2C2C)
 val MapWater = Color(0xFF000000)
 
 val ErrorRed = Color(0xFFBA1A1A)
+
+val DarkGlass = Color(0xFF121212)
+val LightGlass = Color(0xFFFFFFFF)

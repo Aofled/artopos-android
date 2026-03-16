@@ -1,18 +1,27 @@
 package ru.createsmart.artopos.navigation
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavHostController
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import ru.createsmart.artopos.core.navigation.ArtoposAppState
 import ru.createsmart.artopos.core.navigation.DetailsRoute
 import ru.createsmart.artopos.core.navigation.DiscoverRoute
+import ru.createsmart.artopos.core.navigation.FavoritesRoute
+import ru.createsmart.artopos.core.navigation.SettingsRoute
 import ru.createsmart.artopos.feature.details.ui.DetailsScreenRoute
 import ru.createsmart.artopos.feature.discover.ui.DiscoverRoute
 
 @Composable
 fun AppNavGraph(
-    navController: NavHostController,
+    appState: ArtoposAppState,
 ) {
+    val navController = appState.navController
+
     NavHost(
         navController = navController,
         startDestination = DiscoverRoute,
@@ -21,20 +30,34 @@ fun AppNavGraph(
         composable<DiscoverRoute> {
             DiscoverRoute(
                 onArtworkClick = { id ->
-                    navController.navigate(
-                        DetailsRoute(
-                            artworkId = id,
-                        ),
-                    )
+                    appState.navigateToArtworkDetails(id)
                 },
             )
         }
 
-        // 2. Details Screen
+        // 2. FAVORITES Screen (Plug)
+        composable<FavoritesRoute> {
+            EmptyScreen("Favorites")
+        }
+
+        // 3. SETTINGS Screen (Plug)
+        composable<SettingsRoute> {
+            EmptyScreen("Settings")
+        }
+
+        // 4. DETAILS Screen (NESTED SCREEN)
         composable<DetailsRoute> { backStackEntry ->
             DetailsScreenRoute(
                 onBackClick = { navController.popBackStack() },
             )
         }
+    }
+}
+
+// TODO(Plug) Temporary placeholder for unimplemented tabs
+@Composable
+private fun EmptyScreen(title: String) {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Text(title)
     }
 }

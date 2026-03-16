@@ -120,7 +120,7 @@ private fun ArtworksGrid(
 
     val gridPadding = PaddingValues( // Add System Bars padding + extra spacing for design
         top = contentPadding.calculateTopPadding() + 8.dp,
-        bottom = contentPadding.calculateBottomPadding() + 8.dp,
+        bottom = contentPadding.calculateBottomPadding() + 98.dp, // This is the height of the BottomBar 48dp + gap
         start = 16.dp,
         end = 16.dp,
     )

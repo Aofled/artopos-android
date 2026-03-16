@@ -1,5 +1,6 @@
 plugins {
     id("artopos.android.library")
+    id("artopos.android.library.compose")
     alias(libs.plugins.kotlin.serialization)
 }
 
@@ -8,5 +9,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.ui)
+
     implementation(libs.kotlinx.serialization.json)
 }

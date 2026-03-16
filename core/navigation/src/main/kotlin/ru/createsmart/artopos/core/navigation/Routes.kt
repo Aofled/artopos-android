@@ -6,6 +6,12 @@ import kotlinx.serialization.Serializable
 object DiscoverRoute
 
 @Serializable
+object FavoritesRoute
+
+@Serializable
+object SettingsRoute
+
+@Serializable
 data class DetailsRoute(
     val artworkId: Int,
 )
