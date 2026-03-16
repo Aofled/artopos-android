@@ -23,8 +23,17 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -37,18 +46,48 @@ import ru.createsmart.artopos.navigation.AppNavGraph
 
 private const val BOTTOM_BAR_ALPHA = 0.85f
 private const val BOTTOM_BAR_ANIMATION = 400
+private const val SCROLL_THRESHOLD = 5f
 
 @Composable
 fun ArtoposApp(
     appState: ArtoposAppState = rememberArtoposAppState(),
 ) {
+    var isBottomBarVisible by remember { mutableStateOf(true) }
+
+    // When you go back (PopBackStack) or switch to a new tab the menu will always be in place
+    val currentDestination = appState.currentDestination
+    LaunchedEffect(currentDestination) {
+        isBottomBarVisible = true
+    }
+
+    // To listen to swipes
+    val nestedScrollConnection = remember {
+        object : NestedScrollConnection {
+            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+                // If we swipe UP (the content moves down, dy > 0) -> Show the menu
+                if (available.y > SCROLL_THRESHOLD) {
+                    isBottomBarVisible = true
+                }
+                // If we swipe DOWN (content moves up, dy < 0) -> Hide the menu
+                else if (available.y < -SCROLL_THRESHOLD) {
+                    isBottomBarVisible = false
+                }
+                return Offset.Zero
+            }
+        }
+    }
+
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .nestedScroll(nestedScrollConnection),
         containerColor = MaterialTheme.colorScheme.background,
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         bottomBar = {
+            val showBar = appState.shouldShowBottomBar && isBottomBarVisible
+
             AnimatedVisibility(
-                visible = appState.shouldShowBottomBar,
+                visible = showBar,
                 enter = slideInVertically(
                     animationSpec = tween(durationMillis = BOTTOM_BAR_ANIMATION, easing = FastOutSlowInEasing),
                 ) { it },
