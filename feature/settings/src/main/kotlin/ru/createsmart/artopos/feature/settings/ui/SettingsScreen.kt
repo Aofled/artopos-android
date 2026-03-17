@@ -43,6 +43,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.Flow
 import ru.createsmart.artopos.core.ui.theme.ArtoposTheme
@@ -58,9 +61,24 @@ fun SettingsRoute(
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val cacheSizeMb by viewModel.cacheSizeMb.collectAsStateWithLifecycle()
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) { // Recalculate the occupied cache
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.calculateCacheSize()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     SettingsScreen(
         uiState = uiState,
+        cacheSizeMb = cacheSizeMb,
         effectFlow = viewModel.uiEffect,
         onClearCache = viewModel::clearImageCache,
     )
@@ -69,6 +87,7 @@ fun SettingsRoute(
 @Composable
 fun SettingsScreen(
     uiState: SettingsUiState,
+    cacheSizeMb: Long?,
     effectFlow: Flow<UiText>?,
     onClearCache: () -> Unit,
 ) {
@@ -105,6 +124,7 @@ fun SettingsScreen(
             is SettingsUiState.Success -> {
                 SettingsContent(
                     modifier = Modifier.padding(innerPadding),
+                    cacheSizeMb = cacheSizeMb,
                     onClearCacheClick = { showClearCacheDialog = true },
                 )
 
@@ -142,6 +162,7 @@ private fun SettingsTopAppBar() {
 @Composable
 private fun SettingsContent(
     modifier: Modifier = Modifier,
+    cacheSizeMb: Long?,
     onClearCacheClick: () -> Unit,
 ) {
     LazyColumn(modifier = modifier.fillMaxSize()) {
@@ -152,10 +173,17 @@ private fun SettingsContent(
         }
 
         item {
+        item {
+            val cacheSubtitle = if (cacheSizeMb == null) {
+                stringResource(R.string.settings_cache_calculating)
+            } else {
+                stringResource(R.string.settings_cache_size_used, cacheSizeMb)
+            }
+
             SettingsItem(
                 painter = painterResource(UiR.drawable.delete_outline),
                 title = stringResource(R.string.setting_cache),
-                subtitle = stringResource(R.string.subtitle_clear_cache),
+                subtitle = cacheSubtitle,
                 onClick = onClearCacheClick,
             )
         }
@@ -224,6 +252,7 @@ fun SettingsScreenPreview(
     ArtoposTheme {
         SettingsScreen(
             uiState = state,
+            cacheSizeMb = 142L,
             effectFlow = null,
             onClearCache = { },
         )

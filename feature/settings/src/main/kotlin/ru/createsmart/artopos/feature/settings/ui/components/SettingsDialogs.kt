@@ -19,7 +19,7 @@ fun ClearCacheConfirmationDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         icon = { Icon(painterResource(UiR.drawable.delete_outline), null) },
-        title = { Text(stringResource(R.string.clear_cache_title)) },
+        title = { Text(stringResource(R.string.setting_cache)) },
         text = { Text(stringResource(R.string.clear_cache_description)) },
         confirmButton = {
             TextButton(onClick = onConfirm) {

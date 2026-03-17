@@ -5,7 +5,7 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import ru.createsmart.artopos.core.domain.repository.ImageCacheRepository
-import ru.createsmart.artopos.core.network.ImageCacheManager
+import ru.createsmart.artopos.core.network.image.ImageCacheManager
 import javax.inject.Singleton
 
 @Module
