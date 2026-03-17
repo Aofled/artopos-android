@@ -44,4 +44,5 @@ dependencies {
     implementation(projects.core.translation)
     implementation(projects.feature.discover)
     implementation(projects.feature.details)
+    implementation(projects.feature.settings)
 }
