@@ -39,6 +39,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hasRoute
 import ru.createsmart.artopos.core.navigation.ArtoposAppState
+import ru.createsmart.artopos.core.navigation.DiscoverRoute
+import ru.createsmart.artopos.core.navigation.FavoritesRoute
 import ru.createsmart.artopos.core.navigation.rememberArtoposAppState
 import ru.createsmart.artopos.core.ui.theme.DarkGlass
 import ru.createsmart.artopos.core.ui.theme.LightGlass
@@ -46,7 +48,7 @@ import ru.createsmart.artopos.navigation.AppNavGraph
 
 private const val BOTTOM_BAR_ALPHA = 0.85f
 private const val BOTTOM_BAR_ANIMATION = 400
-private const val SCROLL_THRESHOLD = 5f
+private const val SCROLL_THRESHOLD = 10f
 
 @Composable
 fun ArtoposApp(
@@ -60,10 +62,16 @@ fun ArtoposApp(
         isBottomBarVisible = true
     }
 
+    val canHideBottomBar = currentDestination?.hasRoute(DiscoverRoute::class) == true ||
+        currentDestination?.hasRoute(FavoritesRoute::class) == true
+
     // To listen to swipes
-    val nestedScrollConnection = remember {
+
+    val nestedScrollConnection = remember(canHideBottomBar) {
         object : NestedScrollConnection {
+            @Suppress("SameReturnValue")
             override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+                if (!canHideBottomBar) return Offset.Zero
                 // If we swipe UP (the content moves down, dy > 0) -> Show the menu
                 if (available.y > SCROLL_THRESHOLD) {
                     isBottomBarVisible = true
