@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_settings">Settings</string>
+    <string name="title_appearance">Appearance</string>
+    <string name="title_storage">Storage</string>
+
+    <string name="setting_cache">Clear Image Cache</string>
+
+    <string name="action_cancel">"Cancel""</string>
+    <string name="action_clear">"Clear""</string>
+
+    <string name="clear_cache_title">Clear Image Cache?</string>
+    <string name="clear_cache_description">This will remove all downloaded images from your device. They will be downloaded again when you view them.</string>
+    <string name="subtitle_clear_cache">Free up device storage</string>
+
+    <string name="msg_clearing_cache">Clearing cache...</string>
+    <string name="msg_cache_cleared">Cleared %1$d MB of images</string>
+    <string name="msg_cache_empty">Cache is already empty</string>
+</resources>

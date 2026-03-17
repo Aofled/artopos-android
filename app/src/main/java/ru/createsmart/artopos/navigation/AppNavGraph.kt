@@ -15,6 +15,7 @@ import ru.createsmart.artopos.core.navigation.FavoritesRoute
 import ru.createsmart.artopos.core.navigation.SettingsRoute
 import ru.createsmart.artopos.feature.details.ui.DetailsScreenRoute
 import ru.createsmart.artopos.feature.discover.ui.DiscoverRoute
+import ru.createsmart.artopos.feature.settings.ui.SettingsRoute
 
 @Composable
 fun AppNavGraph(
@@ -40,9 +41,9 @@ fun AppNavGraph(
             EmptyScreen("Favorites")
         }
 
-        // 3. SETTINGS Screen (Plug)
+        // 3. SETTINGS Screen
         composable<SettingsRoute> {
-            EmptyScreen("Settings")
+            SettingsRoute()
         }
 
         // 4. DETAILS Screen (NESTED SCREEN)

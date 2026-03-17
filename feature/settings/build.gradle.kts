@@ -13,4 +13,7 @@ dependencies {
     implementation(projects.core.model)
     implementation(projects.core.datastore)
     implementation(projects.core.common)
+    implementation(projects.core.domain)
+
+    implementation(libs.androidx.hilt.navigation.compose)
 }
