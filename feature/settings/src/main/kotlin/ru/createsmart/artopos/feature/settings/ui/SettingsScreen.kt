@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -25,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,11 +50,15 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.Flow
+import ru.createsmart.artopos.core.model.settings.ThemeConfig
+import ru.createsmart.artopos.core.model.settings.UserSettings
 import ru.createsmart.artopos.core.ui.theme.ArtoposTheme
 import ru.createsmart.artopos.feature.settings.R
 import ru.createsmart.artopos.feature.settings.SettingsUiState
 import ru.createsmart.artopos.feature.settings.SettingsViewModel
 import ru.createsmart.artopos.feature.settings.ui.components.ClearCacheConfirmationDialog
+import ru.createsmart.artopos.feature.settings.ui.components.ThemeSelectionDialog
+import ru.createsmart.artopos.feature.settings.ui.components.getThemeDisplayName
 import ru.createsmart.artopos.feature.settings.ui.preview.ArtworkSettingsStateProvider
 import ru.createsmart.artopos.core.ui.R as UiR
 
@@ -80,6 +86,7 @@ fun SettingsRoute(
         uiState = uiState,
         cacheSizeMb = cacheSizeMb,
         effectFlow = viewModel.uiEffect,
+        onThemeChange = viewModel::updateTheme,
         onClearCache = viewModel::clearImageCache,
     )
 }
@@ -89,11 +96,13 @@ fun SettingsScreen(
     uiState: SettingsUiState,
     cacheSizeMb: Long?,
     effectFlow: Flow<UiText>?,
+    onThemeChange: (ThemeConfig) -> Unit,
     onClearCache: () -> Unit,
 ) {
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
 
+    var showThemeDialog by remember { mutableStateOf(false) }
     var showClearCacheDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(effectFlow) {
@@ -124,9 +133,22 @@ fun SettingsScreen(
             is SettingsUiState.Success -> {
                 SettingsContent(
                     modifier = Modifier.padding(innerPadding),
+                    settings = uiState.settings,
                     cacheSizeMb = cacheSizeMb,
+                    onThemeClick = { showThemeDialog = true },
                     onClearCacheClick = { showClearCacheDialog = true },
                 )
+
+                if (showThemeDialog) {
+                    ThemeSelectionDialog(
+                        currentTheme = uiState.settings.themeConfig,
+                        onThemeSelected = {
+                            onThemeChange(it)
+                            showThemeDialog = false
+                        },
+                        onDismiss = { showThemeDialog = false },
+                    )
+                }
 
                 if (showClearCacheDialog) {
                     ClearCacheConfirmationDialog(
@@ -162,17 +184,29 @@ private fun SettingsTopAppBar() {
 @Composable
 private fun SettingsContent(
     modifier: Modifier = Modifier,
+    settings: UserSettings,
     cacheSizeMb: Long?,
+    onThemeClick: () -> Unit,
     onClearCacheClick: () -> Unit,
 ) {
     LazyColumn(modifier = modifier.fillMaxSize()) {
+        item { SettingsSectionTitle(stringResource(R.string.title_appearance)) }
+
         item {
-            SettingsSectionTitle(
-                stringResource(R.string.title_appearance),
+            SettingsItem(
+                painter = painterResource(UiR.drawable.color_lens),
+                title = stringResource(R.string.setting_theme),
+                subtitle = getThemeDisplayName(settings.themeConfig),
+                onClick = onThemeClick,
             )
         }
 
         item {
+        item {
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+            SettingsSectionTitle(stringResource(R.string.title_storage))
+        }
+
         item {
             val cacheSubtitle = if (cacheSizeMb == null) {
                 stringResource(R.string.settings_cache_calculating)
@@ -254,6 +288,7 @@ fun SettingsScreenPreview(
             uiState = state,
             cacheSizeMb = 142L,
             effectFlow = null,
+            onThemeChange = { },
             onClearCache = { },
         )
     }

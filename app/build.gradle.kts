@@ -39,6 +39,7 @@ dependencies {
     implementation(projects.core.ui)
     implementation(projects.core.database)
     implementation(projects.core.datastore)
+    implementation(projects.core.model)
     implementation(projects.core.network)
     implementation(projects.core.navigation)
     implementation(projects.core.translation)
