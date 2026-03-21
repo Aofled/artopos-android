@@ -17,7 +17,7 @@ class MainViewModel @Inject constructor(
 
     val uiState: StateFlow<MainActivityUiState> = settingsRepository.userSettingsStream
         .map { settings ->
-            MainActivityUiState.Success(settings.themeConfig)
+            MainActivityUiState.Success(settings)
         }
         .stateIn(
             scope = viewModelScope,

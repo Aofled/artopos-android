@@ -5,10 +5,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import ru.createsmart.artopos.core.model.settings.ThemeConfig
+import ru.createsmart.artopos.core.ui.locale.LocaleProvider
 import ru.createsmart.artopos.core.ui.theme.ArtoposTheme
 import ru.createsmart.artopos.ui.ArtoposApp
 
@@ -22,17 +25,25 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-            val currentState = uiState
 
-            val config = if (currentState is MainActivityUiState.Success) {
-                currentState.themeConfig
-            } else {
-                ThemeConfig.FOLLOW_SYSTEM
-            }
+            val (languageCode, themeConfig) = rememberSettings(uiState)
 
-            ArtoposTheme(themeConfig = config) {
-                ArtoposApp()
+            LocaleProvider(languageCode = languageCode) {
+                ArtoposTheme(themeConfig = themeConfig) {
+                    ArtoposApp()
+                }
             }
+        }
+    }
+}
+
+@Composable
+private fun rememberSettings(uiState: MainActivityUiState): Pair<String, ThemeConfig> {
+    return remember(uiState) {
+        if (uiState is MainActivityUiState.Success) {
+            uiState.settings.languageCode to uiState.settings.themeConfig
+        } else {
+            "" to ThemeConfig.FOLLOW_SYSTEM
         }
     }
 }

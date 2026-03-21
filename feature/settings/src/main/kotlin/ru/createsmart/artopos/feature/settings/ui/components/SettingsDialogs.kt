@@ -20,8 +20,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
+import androidx.core.os.LocaleListCompat
 import ru.createsmart.artopos.core.model.settings.ThemeConfig
 import ru.createsmart.artopos.feature.settings.R
+import ru.createsmart.artopos.feature.settings.model.LanguageConfig
+import ru.createsmart.artopos.feature.settings.model.LanguageItem
 import ru.createsmart.artopos.core.ui.R as UiR
 
 @Composable
@@ -106,5 +109,71 @@ fun getThemeDisplayName(themeConfig: ThemeConfig): String {
         ThemeConfig.FOLLOW_SYSTEM -> stringResource(R.string.theme_system)
         ThemeConfig.LIGHT -> stringResource(R.string.theme_light)
         ThemeConfig.DARK -> stringResource(R.string.theme_dark)
+    }
+}
+
+@Composable
+fun LanguageSelectionDialog(
+    currentLanguageTag: String,
+    onLanguageSelected: (String) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.language_dialog_title)) },
+        text = {
+            Column(Modifier.selectableGroup()) {
+                LanguageConfig.supportedLanguages.forEach { language ->
+                    LanguageOptionRow(
+                        language = language,
+                        isSelected = (language.tag == currentLanguageTag),
+                        onClick = { onLanguageSelected(language.tag) },
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.action_cancel))
+            }
+        },
+    )
+}
+
+@Composable
+private fun LanguageOptionRow(
+    language: LanguageItem,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .height(56.dp)
+            .selectable(
+                selected = isSelected,
+                onClick = onClick,
+                role = Role.RadioButton,
+            )
+            .padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        RadioButton(selected = isSelected, onClick = null)
+        Text(
+            text = language.nativeName ?: stringResource(language.nameResId!!),
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(start = 16.dp),
+        )
+    }
+}
+
+@Composable
+fun getLanguageDisplayName(languageTag: String): String {
+    val language = LanguageConfig.supportedLanguages.find { it.tag == languageTag }
+    return when {
+        language?.nativeName != null -> language.nativeName
+        language?.nameResId != null -> stringResource(language.nameResId)
+        else -> LocaleListCompat.forLanguageTags(languageTag).get(0)?.displayName
+            ?: stringResource(R.string.language_unknown)
     }
 }

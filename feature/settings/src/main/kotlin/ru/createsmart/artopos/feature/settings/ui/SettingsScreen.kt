@@ -56,8 +56,11 @@ import ru.createsmart.artopos.core.ui.theme.ArtoposTheme
 import ru.createsmart.artopos.feature.settings.R
 import ru.createsmart.artopos.feature.settings.SettingsUiState
 import ru.createsmart.artopos.feature.settings.SettingsViewModel
+import ru.createsmart.artopos.feature.settings.model.SettingsDialogActions
 import ru.createsmart.artopos.feature.settings.ui.components.ClearCacheConfirmationDialog
+import ru.createsmart.artopos.feature.settings.ui.components.LanguageSelectionDialog
 import ru.createsmart.artopos.feature.settings.ui.components.ThemeSelectionDialog
+import ru.createsmart.artopos.feature.settings.ui.components.getLanguageDisplayName
 import ru.createsmart.artopos.feature.settings.ui.components.getThemeDisplayName
 import ru.createsmart.artopos.feature.settings.ui.preview.ArtworkSettingsStateProvider
 import ru.createsmart.artopos.core.ui.R as UiR
@@ -68,6 +71,11 @@ fun SettingsRoute(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val cacheSizeMb by viewModel.cacheSizeMb.collectAsStateWithLifecycle()
+    val currentLanguageTag = if (uiState is SettingsUiState.Success) {
+        (uiState as SettingsUiState.Success).settings.languageCode
+    } else {
+        ""
+    }
 
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) { // Recalculate the occupied cache
@@ -88,6 +96,8 @@ fun SettingsRoute(
         effectFlow = viewModel.uiEffect,
         onThemeChange = viewModel::updateTheme,
         onClearCache = viewModel::clearImageCache,
+        onLanguageChange = viewModel::updateLanguage,
+        currentLanguageTag = currentLanguageTag,
     )
 }
 
@@ -98,12 +108,11 @@ fun SettingsScreen(
     effectFlow: Flow<UiText>?,
     onThemeChange: (ThemeConfig) -> Unit,
     onClearCache: () -> Unit,
+    onLanguageChange: (String) -> Unit,
+    currentLanguageTag: String,
 ) {
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
-
-    var showThemeDialog by remember { mutableStateOf(false) }
-    var showClearCacheDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(effectFlow) {
         effectFlow?.collect { message ->
@@ -125,42 +134,105 @@ fun SettingsScreen(
         },
         topBar = { SettingsTopAppBar() },
     ) { innerPadding ->
-        when (uiState) {
-            is SettingsUiState.Loading -> {
-                Box(modifier = Modifier.fillMaxSize().padding(innerPadding))
-            }
+        SettingsScreenContent(
+            modifier = Modifier.padding(innerPadding),
+            uiState = uiState,
+            cacheSizeMb = cacheSizeMb,
+            currentLanguageTag = currentLanguageTag,
+            onThemeChange = onThemeChange,
+            onClearCache = onClearCache,
+            onLanguageChange = onLanguageChange,
+        )
+    }
+}
 
-            is SettingsUiState.Success -> {
-                SettingsContent(
-                    modifier = Modifier.padding(innerPadding),
-                    settings = uiState.settings,
-                    cacheSizeMb = cacheSizeMb,
-                    onThemeClick = { showThemeDialog = true },
-                    onClearCacheClick = { showClearCacheDialog = true },
-                )
+@Composable
+private fun SettingsScreenContent(
+    modifier: Modifier,
+    uiState: SettingsUiState,
+    cacheSizeMb: Long?,
+    currentLanguageTag: String,
+    onThemeChange: (ThemeConfig) -> Unit,
+    onClearCache: () -> Unit,
+    onLanguageChange: (String) -> Unit,
+) {
+    var showThemeDialog by remember { mutableStateOf(false) }
+    var showClearCacheDialog by remember { mutableStateOf(false) }
+    var showLanguageDialog by remember { mutableStateOf(false) }
 
-                if (showThemeDialog) {
-                    ThemeSelectionDialog(
-                        currentTheme = uiState.settings.themeConfig,
-                        onThemeSelected = {
-                            onThemeChange(it)
-                            showThemeDialog = false
-                        },
-                        onDismiss = { showThemeDialog = false },
-                    )
-                }
+    when (uiState) {
+        is SettingsUiState.Loading -> Box(modifier.fillMaxSize())
+        is SettingsUiState.Success -> {
+            SettingsContent(
+                modifier = modifier,
+                settings = uiState.settings,
+                cacheSizeMb = cacheSizeMb,
+                onThemeClick = { showThemeDialog = true },
+                onClearCacheClick = { showClearCacheDialog = true },
+                onLanguageClick = { showLanguageDialog = true },
+                currentLanguageTag = currentLanguageTag,
+            )
 
-                if (showClearCacheDialog) {
-                    ClearCacheConfirmationDialog(
-                        onConfirm = {
-                            onClearCache()
-                            showClearCacheDialog = false
-                        },
-                        onDismiss = { showClearCacheDialog = false },
-                    )
-                }
-            }
+            val dialogActions = SettingsDialogActions(
+                onThemeChange = {
+                    onThemeChange(it)
+                    showThemeDialog = false
+                },
+                onClearCache = {
+                    onClearCache()
+                    showClearCacheDialog = false
+                },
+                onLanguageChange = { tag ->
+                    onLanguageChange(tag)
+                    showLanguageDialog = false
+                },
+                onDismissTheme = { showThemeDialog = false },
+                onDismissClearCache = { showClearCacheDialog = false },
+                onDismissLanguage = { showLanguageDialog = false },
+            )
+
+            SettingsDialogs(
+                uiState = uiState,
+                showTheme = showThemeDialog,
+                showClearCache = showClearCacheDialog,
+                showLanguage = showLanguageDialog,
+                currentLanguageTag = currentLanguageTag,
+                actions = dialogActions,
+            )
         }
+    }
+}
+
+@Composable
+private fun SettingsDialogs(
+    uiState: SettingsUiState.Success,
+    showTheme: Boolean,
+    showClearCache: Boolean,
+    showLanguage: Boolean,
+    currentLanguageTag: String,
+    actions: SettingsDialogActions,
+) {
+    if (showTheme) {
+        ThemeSelectionDialog(
+            currentTheme = uiState.settings.themeConfig,
+            onThemeSelected = actions.onThemeChange,
+            onDismiss = actions.onDismissTheme,
+        )
+    }
+
+    if (showClearCache) {
+        ClearCacheConfirmationDialog(
+            onConfirm = actions.onClearCache,
+            onDismiss = actions.onDismissClearCache,
+        )
+    }
+
+    if (showLanguage) {
+        LanguageSelectionDialog(
+            currentLanguageTag = currentLanguageTag,
+            onLanguageSelected = actions.onLanguageChange,
+            onDismiss = actions.onDismissLanguage,
+        )
     }
 }
 
@@ -188,6 +260,8 @@ private fun SettingsContent(
     cacheSizeMb: Long?,
     onThemeClick: () -> Unit,
     onClearCacheClick: () -> Unit,
+    currentLanguageTag: String,
+    onLanguageClick: () -> Unit,
 ) {
     LazyColumn(modifier = modifier.fillMaxSize()) {
         item { SettingsSectionTitle(stringResource(R.string.title_appearance)) }
@@ -202,6 +276,14 @@ private fun SettingsContent(
         }
 
         item {
+            SettingsItem(
+                painter = painterResource(id = UiR.drawable.language),
+                title = stringResource(R.string.setting_language),
+                subtitle = getLanguageDisplayName(currentLanguageTag),
+                onClick = onLanguageClick,
+            )
+        }
+
         item {
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
             SettingsSectionTitle(stringResource(R.string.title_storage))
@@ -289,7 +371,9 @@ fun SettingsScreenPreview(
             cacheSizeMb = 142L,
             effectFlow = null,
             onThemeChange = { },
+            onLanguageChange = { },
             onClearCache = { },
+            currentLanguageTag = "en",
         )
     }
 }
