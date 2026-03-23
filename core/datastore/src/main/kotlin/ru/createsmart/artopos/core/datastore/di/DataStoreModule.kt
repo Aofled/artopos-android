@@ -5,7 +5,7 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import ru.createsmart.artopos.core.datastore.DataStoreSettingsRepository
-import ru.createsmart.artopos.core.datastore.SettingsRepository
+import ru.createsmart.artopos.core.domain.repository.SettingsRepository
 import javax.inject.Singleton
 
 @Module

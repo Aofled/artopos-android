@@ -8,8 +8,9 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.model)
+    implementation(projects.core.domain)
+
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.kotlinx.coroutines.core)
-    
-    implementation(projects.core.model)
 }

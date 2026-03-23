@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import ru.createsmart.artopos.core.datastore.SettingsRepository
+import ru.createsmart.artopos.core.domain.repository.SettingsRepository
 import javax.inject.Inject
 
 @HiltViewModel

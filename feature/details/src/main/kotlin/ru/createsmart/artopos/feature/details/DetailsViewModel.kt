@@ -11,11 +11,13 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import ru.createsmart.artopos.core.domain.usecase.GetArtworkDetailsUseCase
+import ru.createsmart.artopos.core.domain.usecase.GetUserSettingsUseCase
 import ru.createsmart.artopos.core.domain.usecase.SyncArtworkDetailsUseCase
 import ru.createsmart.artopos.core.navigation.DetailsRoute
 import ru.createsmart.artopos.core.ui.components.toUiText
@@ -30,6 +32,7 @@ private const val TRANSLATION_TIMEOUT_MS = 300L
 class DetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     getArtworkDetails: GetArtworkDetailsUseCase,
+    getUserSettings: GetUserSettingsUseCase,
     private val syncArtworkDetails: SyncArtworkDetailsUseCase,
     private val messageManager: UiMessageManager,
     private val translationFacade: ArtworkTranslationFacade,
@@ -46,17 +49,23 @@ class DetailsViewModel @Inject constructor(
     val isRefreshing = _isRefreshing.asStateFlow()
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val uiState: StateFlow<ArtworkDetailUiState> = getArtworkDetails(artworkId)
-        .transformLatest { rawArtwork ->
+    val uiState: StateFlow<ArtworkDetailUiState> = combine(
+        getArtworkDetails(artworkId),
+        getUserSettings(),
+    ) { artwork, settings ->
+        Pair(artwork, settings.languageCode)
+    }
+        .transformLatest { (rawArtwork, languageCode) ->
             if (rawArtwork == null) {
                 emit(ArtworkDetailUiState.Loading)
                 return@transformLatest
             }
-            // Get basic data (No heavy ML involved)
-            val fastTranslatedArtwork = translationFacade.translateFast(rawArtwork)
+
+            // Get basic data (No heavy ML involved), передаем languageCode
+            val fastTranslatedArtwork = translationFacade.translateFast(rawArtwork, languageCode)
 
             val quickDeepTranslation = withTimeoutOrNull(TRANSLATION_TIMEOUT_MS) {
-                translationFacade.translateDeep(rawArtwork, fastTranslatedArtwork)
+                translationFacade.translateDeep(rawArtwork, fastTranslatedArtwork, languageCode)
             }
 
             if (quickDeepTranslation != null) {
@@ -67,7 +76,12 @@ class DetailsViewModel @Inject constructor(
                 // Scenario B: Slow translation.
                 // 1. Show "Fast" version first (Partial/Original text) so user sees content instantly.
                 emit(ArtworkDetailUiState.Success(fastTranslatedArtwork.toDetailUi()))
-                val slowDeepTranslation = translationFacade.translateDeep(rawArtwork, fastTranslatedArtwork)
+
+                val slowDeepTranslation = translationFacade.translateDeep(
+                    rawArtwork,
+                    fastTranslatedArtwork,
+                    languageCode,
+                )
                 emit(ArtworkDetailUiState.Success(slowDeepTranslation.toDetailUi()))
             }
         }

@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import ru.createsmart.artopos.core.domain.usecase.GetArtworksUseCase
 import ru.createsmart.artopos.core.domain.usecase.GetFiltersUseCase
+import ru.createsmart.artopos.core.domain.usecase.GetUserSettingsUseCase
 import ru.createsmart.artopos.core.domain.usecase.InitializeFiltersUseCase
 import ru.createsmart.artopos.core.domain.usecase.PreloadTranslationModelUseCase
 import ru.createsmart.artopos.core.model.FilterParams
@@ -35,6 +37,7 @@ import javax.inject.Inject
 class DiscoverViewModel @Inject constructor(
     getArtworks: GetArtworksUseCase,
     getFiltersUseCase: GetFiltersUseCase,
+    private val getUserSettings: GetUserSettingsUseCase,
     private val preloadTranslationModelUseCase: PreloadTranslationModelUseCase,
     private val initializeFilters: InitializeFiltersUseCase,
     private val messageManager: UiMessageManager,
@@ -111,7 +114,9 @@ class DiscoverViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            preloadTranslationModelUseCase() // ML Kit Translation dictionary preloading
+            getUserSettings().collectLatest { settings ->
+                preloadTranslationModelUseCase(settings.languageCode) // ML Kit Translation dictionary preloading
+            }
         }
     }
 

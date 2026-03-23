@@ -6,7 +6,7 @@ import javax.inject.Inject
 class PreloadTranslationModelUseCase @Inject constructor(
     private val translator: TextTranslator,
 ) {
-    suspend operator fun invoke() {
-        translator.preloadModel()
+    suspend operator fun invoke(targetLanguage: String) {
+        translator.preloadModel(targetLanguage)
     }
 }

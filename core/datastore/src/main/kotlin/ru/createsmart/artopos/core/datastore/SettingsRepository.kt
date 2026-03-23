@@ -9,6 +9,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import ru.createsmart.artopos.core.domain.repository.SettingsRepository
 import ru.createsmart.artopos.core.model.settings.ThemeConfig
 import ru.createsmart.artopos.core.model.settings.UserSettings
 import javax.inject.Inject
@@ -18,12 +19,6 @@ private const val THEME_CONFIG_KEY = "theme_config"
 private const val LANGUAGE_KEY = "language"
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
-
-interface SettingsRepository {
-    val userSettingsStream: Flow<UserSettings>
-    suspend fun setThemeConfig(themeConfig: ThemeConfig)
-    suspend fun setLanguage(languageCode: String)
-}
 
 @Singleton
 class DataStoreSettingsRepository @Inject constructor(
