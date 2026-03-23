@@ -45,6 +45,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -85,18 +86,28 @@ fun FilterBottomSheet(
     onToggleSort: () -> Unit,
     onDismiss: () -> Unit,
 ) {
+    val currentContext = LocalContext.current
+    val currentConfig = LocalConfiguration.current
+
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
         containerColor = MaterialTheme.colorScheme.surface,
     ) {
-        FilterSheetContent(
-            filtersState = filtersState,
-            onFilterSelected = onFilterSelected,
-            onSearchQueryChanged = onSearchQueryChanged,
-            onReset = onReset,
-            onToggleSort = onToggleSort,
-        )
+        // TODO(WORKAROUND): ModalBottomSheet creates a new window and loses the overridden LocalConfiguration.
+        // We must manually provide the localized context inside the sheet's scope.
+        CompositionLocalProvider(
+            LocalContext provides currentContext,
+            LocalConfiguration provides currentConfig,
+        ) {
+            FilterSheetContent(
+                filtersState = filtersState,
+                onFilterSelected = onFilterSelected,
+                onSearchQueryChanged = onSearchQueryChanged,
+                onReset = onReset,
+                onToggleSort = onToggleSort,
+            )
+        }
     }
 }
 
