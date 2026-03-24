@@ -35,7 +35,7 @@ class ArtworkDetailsUiMapperTest {
         )
 
         // WHEN
-        val uiModel = artwork.toDetailUi()
+        val uiModel = artwork.toDetailUi(true)
 
         // THEN
         assertEquals(1, uiModel.id)
@@ -68,7 +68,7 @@ class ArtworkDetailsUiMapperTest {
         )
 
         // WHEN
-        val uiModel = artwork.toDetailUi()
+        val uiModel = artwork.toDetailUi(true)
 
         // THEN
         val mediumDetail = uiModel.details.find {
@@ -88,7 +88,7 @@ class ArtworkDetailsUiMapperTest {
         )
 
         // WHEN
-        val uiModel = artwork.toDetailUi()
+        val uiModel = artwork.toDetailUi(true)
 
         // THEN
         val mediumDetail = uiModel.details.find {

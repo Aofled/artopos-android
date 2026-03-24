@@ -19,5 +19,5 @@ dependencies {
 
     implementation(libs.zoomable)
 
-    testImplementation(libs.bundles.test.unit.minimal)
+    testImplementation(libs.bundles.test.unit.full)
 }
