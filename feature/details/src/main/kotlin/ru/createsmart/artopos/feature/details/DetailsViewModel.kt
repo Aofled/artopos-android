@@ -11,17 +11,20 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import ru.createsmart.artopos.core.domain.usecase.GetArtworkDetailsUseCase
+import ru.createsmart.artopos.core.domain.usecase.GetUserSettingsUseCase
 import ru.createsmart.artopos.core.domain.usecase.SyncArtworkDetailsUseCase
 import ru.createsmart.artopos.core.navigation.DetailsRoute
 import ru.createsmart.artopos.core.ui.components.toUiText
 import ru.createsmart.artopos.core.ui.manager.UiMessageManager
 import ru.createsmart.artopos.feature.details.mapper.toDetailUi
 import ru.createsmart.artopos.feature.details.translation.ArtworkTranslationFacade
+import java.util.Locale
 import javax.inject.Inject
 
 private const val TRANSLATION_TIMEOUT_MS = 300L
@@ -30,6 +33,7 @@ private const val TRANSLATION_TIMEOUT_MS = 300L
 class DetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     getArtworkDetails: GetArtworkDetailsUseCase,
+    getUserSettings: GetUserSettingsUseCase,
     private val syncArtworkDetails: SyncArtworkDetailsUseCase,
     private val messageManager: UiMessageManager,
     private val translationFacade: ArtworkTranslationFacade,
@@ -37,7 +41,7 @@ class DetailsViewModel @Inject constructor(
     private val routeArgs = savedStateHandle.toRoute<DetailsRoute>()
     private val artworkId = routeArgs.artworkId
 
-    private val _contentVersion = MutableStateFlow(0)
+    private val _contentVersion = MutableStateFlow(0) // To update images (bad internet)
     val contentVersion = _contentVersion.asStateFlow()
 
     val uiEffect = messageManager.uiEffect
@@ -45,30 +49,61 @@ class DetailsViewModel @Inject constructor(
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing = _isRefreshing.asStateFlow()
 
+    private val _showTranslation = MutableStateFlow(true)
+
     @OptIn(ExperimentalCoroutinesApi::class)
-    val uiState: StateFlow<ArtworkDetailUiState> = getArtworkDetails(artworkId)
-        .transformLatest { rawArtwork ->
+    val uiState: StateFlow<ArtworkDetailUiState> = combine(
+        getArtworkDetails(artworkId),
+        getUserSettings(),
+        _showTranslation,
+    ) { artwork, settings, showTranslation ->
+        Triple(artwork, settings.languageCode, showTranslation)
+    }
+        .transformLatest { (rawArtwork, languageCode, showTranslation) ->
             if (rawArtwork == null) {
                 emit(ArtworkDetailUiState.Loading)
                 return@transformLatest
             }
-            // Get basic data (No heavy ML involved)
-            val fastTranslatedArtwork = translationFacade.translateFast(rawArtwork)
+
+            // CONDITION 1: Language is English or the system language (if the system is in English)
+            // CONDITION 2: The user clicked "Show Original" (showTranslation = false)
+            val isTargetEnglish = languageCode == "en" ||
+                (languageCode.isEmpty() && Locale.getDefault().language == "en")
+
+            if (isTargetEnglish || !showTranslation) {
+                emit(
+                    ArtworkDetailUiState.Success(
+                        rawArtwork.toDetailUi(
+                            isTranslated = false, // To show/hide the bar
+                            canBeTranslated = !isTargetEnglish, // If the language is NOT English
+                        ),
+                    ),
+                )
+                return@transformLatest
+            }
+
+            // Get basic data (No heavy ML involved), передаем languageCode
+            val fastTranslatedArtwork = translationFacade.translateFast(rawArtwork, languageCode)
 
             val quickDeepTranslation = withTimeoutOrNull(TRANSLATION_TIMEOUT_MS) {
-                translationFacade.translateDeep(rawArtwork, fastTranslatedArtwork)
+                translationFacade.translateDeep(rawArtwork, fastTranslatedArtwork, languageCode)
             }
 
             if (quickDeepTranslation != null) {
                 // Scenario A: Fast device/cache.
                 // Show final result immediately. Avoids UI flickering (Fast -> Deep).
-                emit(ArtworkDetailUiState.Success(quickDeepTranslation.toDetailUi()))
+                emit(ArtworkDetailUiState.Success(quickDeepTranslation.toDetailUi(isTranslated = true)))
             } else {
                 // Scenario B: Slow translation.
                 // 1. Show "Fast" version first (Partial/Original text) so user sees content instantly.
-                emit(ArtworkDetailUiState.Success(fastTranslatedArtwork.toDetailUi()))
-                val slowDeepTranslation = translationFacade.translateDeep(rawArtwork, fastTranslatedArtwork)
-                emit(ArtworkDetailUiState.Success(slowDeepTranslation.toDetailUi()))
+                emit(ArtworkDetailUiState.Success(fastTranslatedArtwork.toDetailUi(isTranslated = true)))
+
+                val slowDeepTranslation = translationFacade.translateDeep(
+                    rawArtwork,
+                    fastTranslatedArtwork,
+                    languageCode,
+                )
+                emit(ArtworkDetailUiState.Success(slowDeepTranslation.toDetailUi(isTranslated = true)))
             }
         }
         .catch { emit(ArtworkDetailUiState.Error) }
@@ -100,5 +135,9 @@ class DetailsViewModel @Inject constructor(
         }
         _contentVersion.value++
         messageManager.resetLastEmittedMessage() // Reset debounce history so new errors can be shown fresh
+    }
+
+    fun toggleTranslation() {
+        _showTranslation.value = !_showTranslation.value
     }
 }

@@ -6,7 +6,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -42,8 +41,6 @@ import ru.createsmart.artopos.core.navigation.ArtoposAppState
 import ru.createsmart.artopos.core.navigation.DiscoverRoute
 import ru.createsmart.artopos.core.navigation.FavoritesRoute
 import ru.createsmart.artopos.core.navigation.rememberArtoposAppState
-import ru.createsmart.artopos.core.ui.theme.DarkGlass
-import ru.createsmart.artopos.core.ui.theme.LightGlass
 import ru.createsmart.artopos.navigation.AppNavGraph
 
 private const val BOTTOM_BAR_ALPHA = 0.85f
@@ -115,13 +112,7 @@ fun ArtoposApp(
 
 @Composable
 private fun ArtoposBottomBar(appState: ArtoposAppState) {
-    val isDark = isSystemInDarkTheme()
-
-    val glassColor = if (isDark) {
-        DarkGlass.copy(alpha = BOTTOM_BAR_ALPHA)
-    } else {
-        LightGlass.copy(alpha = BOTTOM_BAR_ALPHA)
-    }
+    val glassColor = MaterialTheme.colorScheme.surface.copy(alpha = BOTTOM_BAR_ALPHA)
 
     Box(
         modifier = Modifier

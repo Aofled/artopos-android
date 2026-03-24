@@ -16,61 +16,64 @@ import javax.inject.Singleton
 @Singleton
 class MLKitTranslatorImpl @Inject constructor() : TextTranslator {
 
-    private var translator: Translator? = null
+    private var currentTranslator: Translator? = null
+    private var activeLanguage: String = ""
 
     // Detects system language (e.g. "ru", "fr")
     private val targetLanguageCode: String = Locale.getDefault().language
 
-    // Source content is always English (from Harvard API)
-    private val sourceLanguageCode = TranslateLanguage.ENGLISH
+    private fun getOrCreateTranslator(targetLanguageCode: String): Translator? {
+        val actualLangCode = targetLanguageCode.ifEmpty { Locale.getDefault().language }
 
-    private fun getOrCreateTranslator(): Translator? {
-        val existing = translator
-        if (existing != null) return existing
+        return when {
+            // 1. If the target language is English (source), translation no needed
+            actualLangCode == "en" -> null
 
-        val targetLanguage = TranslateLanguage.fromLanguageTag(targetLanguageCode)
+            // 2. If the language has not changed, return the "cached" translator
+            currentTranslator != null && activeLanguage == actualLangCode -> currentTranslator
 
-        // Logic: No translation needed if user's phone is already in English.
-        val isLanguageSupported = targetLanguage != null && targetLanguage != sourceLanguageCode
+            // 3. If the language has changed, close the old one (free up memory) and create a new one
+            else -> {
+                currentTranslator?.close()
 
-        return if (isLanguageSupported && targetLanguage != null) {
-            val options = TranslatorOptions.Builder()
-                .setSourceLanguage(sourceLanguageCode)
-                .setTargetLanguage(targetLanguage)
-                .build()
-            Translation.getClient(options).also { translator = it }
-        } else {
-            null // Return null to skip translation logic
+                TranslateLanguage.fromLanguageTag(actualLangCode)?.let { targetLanguage ->
+                    val options = TranslatorOptions.Builder()
+                        .setSourceLanguage(TranslateLanguage.ENGLISH)
+                        .setTargetLanguage(targetLanguage)
+                        .build()
+
+                    activeLanguage = actualLangCode
+                    currentTranslator = Translation.getClient(options)
+                    currentTranslator // Back a new client
+                }
+            }
         }
     }
 
-    override suspend fun translate(text: String?): String? {
-        val currentTranslator = getOrCreateTranslator()
+    override suspend fun translate(text: String?, targetLanguage: String): String? {
+        // Try to get the translator only if text not empty.
+        val translator = if (text.isNullOrBlank()) null else getOrCreateTranslator(targetLanguage)
 
-        // Fallback: Return original text if translation is disabled or input is empty
-        if (text.isNullOrBlank() || currentTranslator == null) {
-            return text
-        }
-
-        return try {
-            // Critical: Ensure the language model (approx. 30MB) is downloaded before translating.
-            // If offline and model missing -> throws Exception.
-            val conditions = DownloadConditions.Builder().build()
-            currentTranslator.downloadModelIfNeeded(conditions).await()
-
-            currentTranslator.translate(text).await()
-        } catch (ignored: com.google.mlkit.common.MlKitException) {
-            // Stability: On failure (no internet, low storage), show original text instead of crashing.
-            text
-        }
+        return translator?.let { client ->
+            try {
+                // Critical: Ensure the language model (approx. 30MB) is downloaded before translating.
+                // If offline and model missing -> throws Exception.
+                val conditions = DownloadConditions.Builder().requireWifi().build()
+                client.downloadModelIfNeeded(conditions).await()
+                client.translate(text!!).await()
+            } catch (ignored: com.google.mlkit.common.MlKitException) {
+                // Stability: On failure (no internet, low storage), show original text instead of crashing.
+                text
+            }
+        } ?: text // If translator was null or text is empty, return the original
     }
 
-    override suspend fun preloadModel() {
-        val currentTranslator = getOrCreateTranslator() ?: return
+    override suspend fun preloadModel(targetLanguage: String) {
+        val translator = getOrCreateTranslator(targetLanguage) ?: return
 
         try {
-            val conditions = DownloadConditions.Builder().build()
-            currentTranslator.downloadModelIfNeeded(conditions).await()
+            val conditions = DownloadConditions.Builder().requireWifi().build()
+            translator.downloadModelIfNeeded(conditions).await()
         } catch (ignored: com.google.mlkit.common.MlKitException) {
             // Silent fail is OK for preloading
         }

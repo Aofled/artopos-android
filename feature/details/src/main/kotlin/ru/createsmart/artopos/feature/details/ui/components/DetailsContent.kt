@@ -34,6 +34,8 @@ import ru.createsmart.artopos.core.ui.components.ExpandableDetailsSection
 import ru.createsmart.artopos.core.ui.theme.ArtoposTheme
 import ru.createsmart.artopos.feature.details.R
 import ru.createsmart.artopos.feature.details.model.ArtworkDetailUi
+import ru.createsmart.artopos.feature.details.model.DetailsActions
+import ru.createsmart.artopos.feature.details.model.GalleryState
 import ru.createsmart.artopos.feature.details.ui.preview.artworkPreview
 
 const val SCROLL_RESET_DURATION = 400
@@ -46,6 +48,7 @@ fun DetailsContent(
     contentVersion: Int,
     onShowMessage: (UiText) -> Unit,
     onRefresh: () -> Unit,
+    onToggleTranslation: () -> Unit,
     isRefreshing: Boolean,
 ) {
     val scrollState = rememberLazyListState()
@@ -76,10 +79,16 @@ fun DetailsContent(
         ) {
             detailsItems(
                 artwork = artwork,
-                pagerState = pagerState,
-                isScrolledDown = isScrolledDown,
-                contentVersion = contentVersion,
-                onShowMessage = onShowMessage,
+                galleryState = GalleryState(
+                    pagerState = pagerState,
+                    isScrolledDown = isScrolledDown,
+                    contentVersion = contentVersion,
+                ),
+                actions = DetailsActions(
+                    onShowMessage = onShowMessage,
+                    onToggleTranslation = onToggleTranslation,
+                ),
+
             )
         }
     }
@@ -87,14 +96,18 @@ fun DetailsContent(
 
 private fun LazyListScope.detailsItems(
     artwork: ArtworkDetailUi,
-    pagerState: PagerState,
-    isScrolledDown: Boolean,
-    contentVersion: Int,
-    onShowMessage: (UiText) -> Unit,
+    galleryState: GalleryState,
+    actions: DetailsActions,
 ) {
     // 1. Gallery
     item {
-        GalleryHeader(artwork.images, pagerState, isScrolledDown, contentVersion, onShowMessage)
+        GalleryHeader(
+            artwork.images,
+            pagerState = galleryState.pagerState,
+            isScrolledDown = galleryState.isScrolledDown,
+            contentVersion = galleryState.contentVersion,
+            onShowMessage = actions.onShowMessage,
+        )
     }
 
     // 2. Artist and title
@@ -125,6 +138,16 @@ private fun LazyListScope.detailsItems(
         item { CopyrightFooter(artwork.copyright) }
     }
 
+    // 6. Translation banner (Footer)
+    if (artwork.isTranslated || artwork.canBeTranslated) {
+        item {
+            TranslationBadge(
+                isTranslated = artwork.isTranslated,
+                onToggleClick = actions.onToggleTranslation,
+            )
+        }
+    }
+
     item { Spacer(modifier = Modifier.height(48.dp)) }
 }
 
@@ -150,6 +173,7 @@ private fun ArtworksViewPreview() {
             onShowMessage = { },
             onRefresh = { },
             isRefreshing = true,
+            onToggleTranslation = { },
         )
     }
 }

@@ -9,10 +9,11 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import ru.createsmart.artopos.core.model.settings.ThemeConfig
 
 private val lightColorScheme = lightColorScheme(
     primary = NavyDark,
@@ -48,11 +49,17 @@ private val darkColorScheme = darkColorScheme(
 
 @Composable
 fun ArtoposTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    themeConfig: ThemeConfig = ThemeConfig.FOLLOW_SYSTEM,
     // Keep 'false' to enforce Brand Colors (Navy/Gold) instead of User's Wallpaper colors
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit,
 ) {
+    val darkTheme = when (themeConfig) {
+        ThemeConfig.FOLLOW_SYSTEM -> isSystemInDarkTheme()
+        ThemeConfig.LIGHT -> false
+        ThemeConfig.DARK -> true
+    }
+
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
@@ -65,7 +72,7 @@ fun ArtoposTheme(
 
     val view = LocalView.current
     if (!view.isInEditMode) {
-        SideEffect {
+        DisposableEffect(darkTheme) {
             val window = (view.context as Activity).window
             val insetsController = WindowCompat.getInsetsController(window, view)
 
@@ -73,6 +80,8 @@ fun ArtoposTheme(
             // Dark Theme -> Light Icons (isAppearanceLightStatusBars = false)
             insetsController.isAppearanceLightStatusBars = !darkTheme
             insetsController.isAppearanceLightNavigationBars = !darkTheme
+
+            onDispose {}
         }
     }
 

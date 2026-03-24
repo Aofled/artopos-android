@@ -5,6 +5,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
+import ru.createsmart.artopos.core.common.util.LocaleHelper
 import ru.createsmart.artopos.core.domain.translation.TextTranslator
 import ru.createsmart.artopos.core.model.Artwork
 import ru.createsmart.artopos.core.ui.util.FilterNameHelper
@@ -23,41 +24,44 @@ import javax.inject.Inject
  */
 
 class ArtworkTranslationFacade @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @ApplicationContext private val baseContext: Context,
     private val translator: TextTranslator,
 ) {
 
-    fun translateFast(artwork: Artwork): Artwork {
+    fun translateFast(artwork: Artwork, languageCode: String): Artwork {
+        val localizedContext = LocaleHelper.getLocalizedContext(baseContext, languageCode)
+
         return artwork.copy(
             // DICTIONARY
-            classification = translateWithDictionary(artwork.classification),
-            century = translateWithDictionary(artwork.century),
-            culture = translateWithDictionary(artwork.culture),
+            classification = translateWithDictionary(artwork.classification, localizedContext),
+            century = translateWithDictionary(artwork.century, localizedContext),
+            culture = translateWithDictionary(artwork.culture, localizedContext),
 
             // HYBRID (DICTIONARY + ML KIT)
-            technique = translateWithDictionary(artwork.technique),
-            medium = translateWithDictionary(artwork.medium),
-            period = translateWithDictionary(artwork.period),
+            technique = translateWithDictionary(artwork.technique, localizedContext),
+            medium = translateWithDictionary(artwork.medium, localizedContext),
+            period = translateWithDictionary(artwork.period, localizedContext),
         )
     }
 
     suspend fun translateDeep(
         originalArtwork: Artwork,
         fastArtwork: Artwork,
+        languageCode: String,
     ): Artwork {
         return withContext(Dispatchers.IO) {
             // ML_ONLY: ML Kit
-            val descriptionDef = async { translator.translate(originalArtwork.description) }
-            val dimensionsDef = async { translator.translate(originalArtwork.dimensions) }
-            val dateDef = async { translator.translate(originalArtwork.date) }
-            val styleDef = async { translator.translate(originalArtwork.style) }
+            val descriptionDef = async { translator.translate(originalArtwork.description, languageCode) }
+            val dimensionsDef = async { translator.translate(originalArtwork.dimensions, languageCode) }
+            val dateDef = async { translator.translate(originalArtwork.date, languageCode) }
+            val styleDef = async { translator.translate(originalArtwork.style, languageCode) }
 
             // HYBRID: Look it up in a dictionary, if not -> ML Kit
             val mediumDef = async {
                 if (fastArtwork.medium != originalArtwork.medium) {
                     fastArtwork.medium
                 } else {
-                    translator.translate(originalArtwork.medium)
+                    translator.translate(originalArtwork.medium, languageCode)
                 }
             }
 
@@ -65,7 +69,7 @@ class ArtworkTranslationFacade @Inject constructor(
                 if (fastArtwork.technique != originalArtwork.technique) {
                     fastArtwork.technique
                 } else {
-                    translator.translate(originalArtwork.technique)
+                    translator.translate(originalArtwork.technique, languageCode)
                 }
             }
 
@@ -73,7 +77,7 @@ class ArtworkTranslationFacade @Inject constructor(
                 if (fastArtwork.period != originalArtwork.period) {
                     fastArtwork.period
                 } else {
-                    translator.translate(originalArtwork.period)
+                    translator.translate(originalArtwork.period, languageCode)
                 }
             }
 
@@ -90,7 +94,7 @@ class ArtworkTranslationFacade @Inject constructor(
     }
 
     // Checks if string exists in local mapping
-    private fun translateWithDictionary(text: String?): String? {
+    private fun translateWithDictionary(text: String?, context: Context): String? {
         if (text == null) return null
         val localized = FilterNameHelper.getLocalizedName(context, text)
         return localized

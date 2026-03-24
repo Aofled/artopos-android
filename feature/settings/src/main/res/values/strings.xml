@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_settings">Settings</string>
+    <string name="title_appearance">Appearance</string>
+    <string name="title_storage">Storage</string>
+
+    <string name="setting_theme">Theme</string>
+    <string name="setting_language">Language</string>
+    <string name="setting_cache">Clear Image Cache</string>
+
+    <string name="theme_system">System Default</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+
+    <string name="action_cancel">"Cancel""</string>
+    <string name="action_clear">"Clear""</string>
+
+    <string name="choose_theme">Choose Theme</string>
+    <string name="clear_cache_description">This will remove all downloaded images from your device. They will be downloaded again when you view them.</string>
+    <string name="subtitle_clear_cache">Free up device storage</string>
+
+    <string name="msg_clearing_cache">Clearing cache...</string>
+    <string name="msg_cache_cleared">Cleared %1$d MB of images</string>
+    <string name="msg_cache_empty">Cache is already empty</string>
+
+    <string name="settings_cache_calculating">Calculating size...</string>
+    <string name="settings_cache_size_used">%1$d MB of local storage used</string>
+
+    <string name="language_system">System Default</string>
+    <string name="language_unknown">Unknown</string>
+    <string name="language_dialog_title">Choose Language</string>
+</resources>
