@@ -58,7 +58,8 @@ class MLKitTranslatorImpl @Inject constructor() : TextTranslator {
             try {
                 // Critical: Ensure the language model (approx. 30MB) is downloaded before translating.
                 // If offline and model missing -> throws Exception.
-                val conditions = DownloadConditions.Builder().requireWifi().build()
+                // Language packs are downloaded via Wi-Fi and mobile internet (.requireWifi() <- only Wi-Fi)
+                val conditions = DownloadConditions.Builder().build()
                 client.downloadModelIfNeeded(conditions).await()
                 client.translate(text!!).await()
             } catch (ignored: com.google.mlkit.common.MlKitException) {
@@ -70,9 +71,9 @@ class MLKitTranslatorImpl @Inject constructor() : TextTranslator {
 
     override suspend fun preloadModel(targetLanguage: String) {
         val translator = getOrCreateTranslator(targetLanguage) ?: return
-
+        // Language packs are downloaded via Wi-Fi and mobile internet (.requireWifi() <- only Wi-Fi)
         try {
-            val conditions = DownloadConditions.Builder().requireWifi().build()
+            val conditions = DownloadConditions.Builder().build()
             translator.downloadModelIfNeeded(conditions).await()
         } catch (ignored: com.google.mlkit.common.MlKitException) {
             // Silent fail is OK for preloading
