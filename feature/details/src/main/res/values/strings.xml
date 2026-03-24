@@ -12,4 +12,9 @@
     <string name="details_gallery">Gallery</string>
     <string name="details_credit_line">Credit Line"</string>
     <string name="details_provenance">Provenance</string>
+
+    <string name="label_translated_mlkit">Translated by Google ML Kit</string>
+    <string name="btn_show_original">View Original</string>
+    <string name="label_original_text"> "Original text"</string>
+    <string name="btn_translate">"Translate"</string>
 </resources>

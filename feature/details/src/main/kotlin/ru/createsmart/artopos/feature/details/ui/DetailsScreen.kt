@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -51,6 +52,7 @@ fun DetailsScreenRoute(
         onRefresh = viewModel::onRefresh,
         onBackClick = onBackClick,
         isRefreshing = isRefreshing,
+        onToggleTranslation = viewModel::toggleTranslation,
     )
 }
 
@@ -62,6 +64,7 @@ fun DetailsScreen(
     onRefresh: () -> Unit,
     onBackClick: () -> Unit,
     isRefreshing: Boolean,
+    onToggleTranslation: () -> Unit,
 ) {
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
@@ -114,6 +117,7 @@ fun DetailsScreen(
                         onShowMessage = { onShowSnackbar(it) },
                         onRefresh = onRefresh,
                         isRefreshing = isRefreshing,
+                        onToggleTranslation = onToggleTranslation,
                     )
                 }
             }
@@ -146,6 +150,7 @@ fun DiscoverScreenPreview(
             onRefresh = { },
             onBackClick = { },
             isRefreshing = true,
+            onToggleTranslation = { },
         )
     }
 }
