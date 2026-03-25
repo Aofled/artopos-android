@@ -1,4 +1,4 @@
-package ru.createsmart.artopos.core.designsystem.components
+package ru.createsmart.artopos.core.uicomponents
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

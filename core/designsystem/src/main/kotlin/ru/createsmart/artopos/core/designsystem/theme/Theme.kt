@@ -14,13 +14,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import ru.createsmart.artopos.core.model.settings.ThemeConfig
-import ru.createsmart.artopos.core.designsystem.theme.ErrorRed
-import ru.createsmart.artopos.core.designsystem.theme.GoldAccent
-import ru.createsmart.artopos.core.designsystem.theme.MapLand
-import ru.createsmart.artopos.core.designsystem.theme.MapWater
-import ru.createsmart.artopos.core.designsystem.theme.NavyDark
-import ru.createsmart.artopos.core.designsystem.theme.NavyLight
-import ru.createsmart.artopos.core.designsystem.theme.PaperWhite
 
 private val lightColorScheme = lightColorScheme(
     primary = NavyDark,

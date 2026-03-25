@@ -59,10 +59,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.createsmart.artopos.core.model.FilterSortOption
-import ru.createsmart.artopos.core.model.FilterType
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
 import ru.createsmart.artopos.core.designsystem.util.FilterNameHelper
+import ru.createsmart.artopos.core.model.FilterSortOption
+import ru.createsmart.artopos.core.model.FilterType
 import ru.createsmart.artopos.feature.discover.R
 import ru.createsmart.artopos.feature.discover.model.FilterListItem
 import ru.createsmart.artopos.feature.discover.model.FiltersUiState

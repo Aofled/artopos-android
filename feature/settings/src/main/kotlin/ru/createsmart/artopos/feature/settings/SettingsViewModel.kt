@@ -10,11 +10,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import ru.createsmart.artopos.core.designsystem.manager.UiMessageManager
 import ru.createsmart.artopos.core.domain.repository.SettingsRepository
 import ru.createsmart.artopos.core.domain.usecase.ClearImageCacheUseCase
 import ru.createsmart.artopos.core.domain.usecase.GetImageCacheSizeUseCase
 import ru.createsmart.artopos.core.model.settings.ThemeConfig
-import ru.createsmart.artopos.core.designsystem.manager.UiMessageManager
 import javax.inject.Inject
 
 private const val BYTES_IN_MEGABYTE = 1024L * 1024L

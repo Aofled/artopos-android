@@ -42,12 +42,12 @@ import androidx.paging.compose.itemKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
-import ru.createsmart.artopos.core.model.FilterParams
-import ru.createsmart.artopos.core.model.FilterType
-import ru.createsmart.artopos.core.designsystem.components.CustomCircularProgressIndicator
-import ru.createsmart.artopos.core.designsystem.components.CustomInputChip
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
 import ru.createsmart.artopos.core.designsystem.util.FilterNameHelper
+import ru.createsmart.artopos.core.model.FilterParams
+import ru.createsmart.artopos.core.model.FilterType
+import ru.createsmart.artopos.core.uicomponents.CustomCircularProgressIndicator
+import ru.createsmart.artopos.core.uicomponents.CustomInputChip
 import ru.createsmart.artopos.feature.discover.R
 import ru.createsmart.artopos.feature.discover.model.ArtworkListItem
 import ru.createsmart.artopos.feature.discover.model.DiscoverActions

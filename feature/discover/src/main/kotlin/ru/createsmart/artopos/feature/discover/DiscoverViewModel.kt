@@ -18,6 +18,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import ru.createsmart.artopos.core.designsystem.components.toUiText
+import ru.createsmart.artopos.core.designsystem.manager.UiMessageManager
 import ru.createsmart.artopos.core.domain.usecase.GetArtworksUseCase
 import ru.createsmart.artopos.core.domain.usecase.GetFiltersUseCase
 import ru.createsmart.artopos.core.domain.usecase.GetUserSettingsUseCase
@@ -26,8 +28,6 @@ import ru.createsmart.artopos.core.domain.usecase.PreloadTranslationModelUseCase
 import ru.createsmart.artopos.core.model.FilterParams
 import ru.createsmart.artopos.core.model.FilterSortOption
 import ru.createsmart.artopos.core.model.FilterType
-import ru.createsmart.artopos.core.designsystem.components.toUiText
-import ru.createsmart.artopos.core.designsystem.manager.UiMessageManager
 import ru.createsmart.artopos.feature.discover.mapper.toUi
 import ru.createsmart.artopos.feature.discover.model.DiscoverEvent
 import ru.createsmart.artopos.feature.discover.model.FiltersUiState
