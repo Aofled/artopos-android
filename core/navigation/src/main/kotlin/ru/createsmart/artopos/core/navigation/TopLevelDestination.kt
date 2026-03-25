@@ -1,6 +1,6 @@
 package ru.createsmart.artopos.core.navigation
 
-import ru.createsmart.artopos.core.ui.R as UiR
+import ru.createsmart.artopos.core.designsystem.R as UiR
 
 enum class TopLevelDestination(
     val route: Any,

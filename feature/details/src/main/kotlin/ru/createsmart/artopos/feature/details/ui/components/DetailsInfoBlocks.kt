@@ -19,7 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.createsmart.artopos.core.ui.theme.FontFamilySerif
+import ru.createsmart.artopos.core.designsystem.theme.FontFamilySerif
 import ru.createsmart.artopos.feature.details.R
 import ru.createsmart.artopos.feature.details.model.ArtworkDetailUi
 

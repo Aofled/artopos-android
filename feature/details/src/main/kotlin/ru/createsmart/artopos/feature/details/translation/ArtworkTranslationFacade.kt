@@ -8,7 +8,7 @@ import kotlinx.coroutines.withContext
 import ru.createsmart.artopos.core.common.util.LocaleHelper
 import ru.createsmart.artopos.core.domain.translation.TextTranslator
 import ru.createsmart.artopos.core.model.Artwork
-import ru.createsmart.artopos.core.ui.util.FilterNameHelper
+import ru.createsmart.artopos.core.designsystem.util.FilterNameHelper
 import javax.inject.Inject
 
 /**

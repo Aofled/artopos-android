@@ -11,8 +11,8 @@ import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import ru.createsmart.artopos.core.model.settings.ThemeConfig
-import ru.createsmart.artopos.core.ui.locale.LocaleProvider
-import ru.createsmart.artopos.core.ui.theme.ArtoposTheme
+import ru.createsmart.artopos.core.designsystem.locale.LocaleProvider
+import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
 import ru.createsmart.artopos.ui.ArtoposApp
 
 @AndroidEntryPoint

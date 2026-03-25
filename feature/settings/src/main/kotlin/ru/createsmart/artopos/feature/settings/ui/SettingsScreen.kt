@@ -52,7 +52,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.Flow
 import ru.createsmart.artopos.core.model.settings.ThemeConfig
 import ru.createsmart.artopos.core.model.settings.UserSettings
-import ru.createsmart.artopos.core.ui.theme.ArtoposTheme
+import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
 import ru.createsmart.artopos.feature.settings.R
 import ru.createsmart.artopos.feature.settings.SettingsUiState
 import ru.createsmart.artopos.feature.settings.SettingsViewModel
@@ -63,7 +63,7 @@ import ru.createsmart.artopos.feature.settings.ui.components.ThemeSelectionDialo
 import ru.createsmart.artopos.feature.settings.ui.components.getLanguageDisplayName
 import ru.createsmart.artopos.feature.settings.ui.components.getThemeDisplayName
 import ru.createsmart.artopos.feature.settings.ui.preview.ArtworkSettingsStateProvider
-import ru.createsmart.artopos.core.ui.R as UiR
+import ru.createsmart.artopos.core.designsystem.R as UiR
 
 @Composable
 fun SettingsRoute(

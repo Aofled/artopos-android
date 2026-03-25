@@ -15,7 +15,7 @@ import ru.createsmart.artopos.core.domain.usecase.ClearImageCacheUseCase
 import ru.createsmart.artopos.core.domain.usecase.GetImageCacheSizeUseCase
 import ru.createsmart.artopos.core.model.settings.ThemeConfig
 import ru.createsmart.artopos.core.model.settings.UserSettings
-import ru.createsmart.artopos.core.ui.manager.UiMessageManager
+import ru.createsmart.artopos.core.designsystem.manager.UiMessageManager
 import ru.createsmart.artopos.feature.settings.util.MainDispatcherRule
 
 class SettingsViewModelTest {

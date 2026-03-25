@@ -19,13 +19,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
-import ru.createsmart.artopos.core.ui.R
-import ru.createsmart.artopos.core.ui.components.RetryDecision
-import ru.createsmart.artopos.core.ui.components.RetryPlaceholder
-import ru.createsmart.artopos.core.ui.components.ShimmerBox
-import ru.createsmart.artopos.core.ui.components.analyzeRetry
+import ru.createsmart.artopos.core.designsystem.R
+import ru.createsmart.artopos.core.designsystem.components.RetryDecision
+import ru.createsmart.artopos.core.designsystem.components.RetryPlaceholder
+import ru.createsmart.artopos.core.designsystem.components.ShimmerBox
+import ru.createsmart.artopos.core.designsystem.components.analyzeRetry
 import ru.createsmart.artopos.feature.discover.model.ArtworkListItem
-import ru.createsmart.artopos.core.ui.R as UiR
+import ru.createsmart.artopos.core.designsystem.R as UiR
 
 private const val RETRY_HASH = "retry_hash"
 

@@ -25,7 +25,7 @@ import ru.createsmart.artopos.core.model.settings.ThemeConfig
 import ru.createsmart.artopos.feature.settings.R
 import ru.createsmart.artopos.feature.settings.model.LanguageConfig
 import ru.createsmart.artopos.feature.settings.model.LanguageItem
-import ru.createsmart.artopos.core.ui.R as UiR
+import ru.createsmart.artopos.core.designsystem.R as UiR
 
 @Composable
 fun ClearCacheConfirmationDialog(

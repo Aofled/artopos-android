@@ -61,13 +61,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.createsmart.artopos.core.model.FilterSortOption
 import ru.createsmart.artopos.core.model.FilterType
-import ru.createsmart.artopos.core.ui.theme.ArtoposTheme
-import ru.createsmart.artopos.core.ui.util.FilterNameHelper
+import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
+import ru.createsmart.artopos.core.designsystem.util.FilterNameHelper
 import ru.createsmart.artopos.feature.discover.R
 import ru.createsmart.artopos.feature.discover.model.FilterListItem
 import ru.createsmart.artopos.feature.discover.model.FiltersUiState
 import ru.createsmart.artopos.feature.discover.ui.preview.FilterPreviewData
-import ru.createsmart.artopos.core.ui.R as UiR
+import ru.createsmart.artopos.core.designsystem.R as UiR
 
 private val FILTER_GRID_HEIGHT = 130.dp
 private val FILTER_SECTION_HEADER_HEIGHT = 50.dp

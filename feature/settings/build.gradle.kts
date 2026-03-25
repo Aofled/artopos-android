@@ -9,7 +9,7 @@ android {
 }
 
 dependencies {
-    implementation(projects.core.ui)
+    implementation(projects.core.designsystem)
     implementation(projects.core.model)
     implementation(projects.core.datastore)
     implementation(projects.core.common)

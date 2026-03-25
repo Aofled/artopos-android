@@ -36,7 +36,7 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     implementation(projects.core.data)
-    implementation(projects.core.ui)
+    implementation(projects.core.designsystem)
     implementation(projects.core.domain)
     implementation(projects.core.database)
     implementation(projects.core.datastore)
