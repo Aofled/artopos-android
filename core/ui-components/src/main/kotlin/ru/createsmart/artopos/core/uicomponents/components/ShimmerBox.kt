@@ -1,4 +1,4 @@
-package ru.createsmart.artopos.core.uicomponents
+package ru.createsmart.artopos.core.uicomponents.components
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -15,35 +15,31 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.compositeOver
 
-private const val SHIMMER_DARK_HIGHLIGHT_ALPHA = 0.15f
-private const val SHIMMER_LIGHT_HIGHLIGHT_ALPHA = 0.6f
+private const val SHIMMER_DARK_EDGE_ALPHA = 0.6f
+private const val SHIMMER_DARK_HIGHLIGHT_ALPHA = 0.4f
 
-private const val SHIMMER_DURATION_MILLIS = 1500
-private const val SHIMMER_WAVE_SIZE = 1.5f
+private const val SHIMMER_LIGHT_EDGE_ALPHA = 0.95f
+private const val SHIMMER_LIGHT_HIGHLIGHT_ALPHA = 0.4f
 
 @Composable
-fun FullscreenShimmerBox(modifier: Modifier = Modifier) {
+fun ShimmerBox(modifier: Modifier = Modifier) {
     val isDark = isSystemInDarkTheme()
     val baseColor = MaterialTheme.colorScheme.surfaceVariant
 
+    // Visual Tweak: Dark theme needs lower opacity (subtle effect).
+    // Light theme needs higher opacity to be visible on white background.
+    // Optimization: Cache colors to avoid re-allocating List on every frame
     val shimmerColors = remember(baseColor, isDark) {
-        val edgeColor = baseColor.copy(alpha = 1f)
-
-        val highlightColor = if (isDark) {
-            Color.White.copy(alpha = SHIMMER_DARK_HIGHLIGHT_ALPHA).compositeOver(baseColor)
+        val (edgeAlpha, highlightAlpha) = if (isDark) {
+            SHIMMER_DARK_EDGE_ALPHA to SHIMMER_DARK_HIGHLIGHT_ALPHA
         } else {
-            Color.White.copy(alpha = SHIMMER_LIGHT_HIGHLIGHT_ALPHA).compositeOver(baseColor)
+            SHIMMER_LIGHT_EDGE_ALPHA to SHIMMER_LIGHT_HIGHLIGHT_ALPHA
         }
-
         listOf(
-            edgeColor,
-            highlightColor,
-            highlightColor,
-            highlightColor,
-            edgeColor,
+            baseColor.copy(alpha = edgeAlpha),
+            baseColor.copy(alpha = highlightAlpha),
+            baseColor.copy(alpha = edgeAlpha),
         )
     }
 
@@ -54,7 +50,7 @@ fun FullscreenShimmerBox(modifier: Modifier = Modifier) {
         targetValue = 1f,
         animationSpec = infiniteRepeatable(
             animation = tween(
-                durationMillis = SHIMMER_DURATION_MILLIS,
+                durationMillis = 1500,
                 easing = LinearEasing,
             ),
             repeatMode = RepeatMode.Restart,
@@ -64,14 +60,15 @@ fun FullscreenShimmerBox(modifier: Modifier = Modifier) {
 
     Box(
         modifier = modifier
+            // Optimization: 'drawBehind' runs only in the Draw phase.
+            // Unlike 'background(brush)', it skips Composition and Layout phases,
+            // which is critical for infinite animations (60/120 FPS).
             .drawBehind {
-                val waveSize = size.width * SHIMMER_WAVE_SIZE
-
-                val distance = waveSize + size.height
+                val distance = size.width + size.height
                 val currentOffset = distance * progress.value
 
                 val startOffset = Offset(
-                    x = currentOffset - waveSize,
+                    x = currentOffset - size.width,
                     y = currentOffset - size.height,
                 )
                 val endOffset = Offset(

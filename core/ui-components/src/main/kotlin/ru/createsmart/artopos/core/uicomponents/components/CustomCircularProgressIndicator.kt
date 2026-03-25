@@ -1,4 +1,4 @@
-package ru.createsmart.artopos.core.uicomponents
+package ru.createsmart.artopos.core.uicomponents.components
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size

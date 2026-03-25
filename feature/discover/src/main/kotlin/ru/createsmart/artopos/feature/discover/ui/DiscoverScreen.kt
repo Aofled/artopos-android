@@ -43,7 +43,7 @@ import kotlinx.coroutines.launch
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
 import ru.createsmart.artopos.core.model.FilterParams
 import ru.createsmart.artopos.core.model.FilterType
-import ru.createsmart.artopos.core.uicomponents.FilterFloatingActionButton
+import ru.createsmart.artopos.core.uicomponents.components.FilterFloatingActionButton
 import ru.createsmart.artopos.feature.discover.DiscoverViewModel
 import ru.createsmart.artopos.feature.discover.model.ArtworkListItem
 import ru.createsmart.artopos.feature.discover.model.DiscoverActions

@@ -30,7 +30,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
-import ru.createsmart.artopos.core.uicomponents.BackButton
+import ru.createsmart.artopos.core.uicomponents.components.BackButton
 import ru.createsmart.artopos.feature.details.ArtworkDetailUiState
 import ru.createsmart.artopos.feature.details.DetailsViewModel
 import ru.createsmart.artopos.feature.details.ui.components.DetailsContent
