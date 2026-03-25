@@ -48,8 +48,9 @@ import ru.createsmart.artopos.core.model.FilterParams
 import ru.createsmart.artopos.core.model.FilterType
 import ru.createsmart.artopos.core.uicomponents.components.CustomCircularProgressIndicator
 import ru.createsmart.artopos.core.uicomponents.components.CustomInputChip
+import ru.createsmart.artopos.feature.artworkcard.model.ArtworkListItem
+import ru.createsmart.artopos.feature.artworkcard.ui.components.ArtworkCard
 import ru.createsmart.artopos.feature.discover.R
-import ru.createsmart.artopos.feature.discover.model.ArtworkListItem
 import ru.createsmart.artopos.feature.discover.model.DiscoverActions
 import ru.createsmart.artopos.feature.discover.model.DiscoverEvent
 import ru.createsmart.artopos.core.designsystem.R as UiR

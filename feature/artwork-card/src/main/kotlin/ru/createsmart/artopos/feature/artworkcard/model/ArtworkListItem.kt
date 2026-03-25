@@ -1,4 +1,4 @@
-package ru.createsmart.artopos.feature.discover.model
+package ru.createsmart.artopos.feature.artworkcard.model
 
 import androidx.compose.runtime.Immutable
 

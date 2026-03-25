@@ -6,7 +6,7 @@ import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-import ru.createsmart.artopos.feature.discover.model.ArtworkListItem
+import ru.createsmart.artopos.feature.artworkcard.model.ArtworkListItem
 
 class DiscoverStateProvider : PreviewParameterProvider<Flow<PagingData<ArtworkListItem>>> {
     override val values: Sequence<Flow<PagingData<ArtworkListItem>>> = sequenceOf(

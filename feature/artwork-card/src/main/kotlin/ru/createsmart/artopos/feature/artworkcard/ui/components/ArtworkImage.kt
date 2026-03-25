@@ -1,4 +1,4 @@
-package ru.createsmart.artopos.feature.discover.ui.components
+package ru.createsmart.artopos.feature.artworkcard.ui.components
 
 import UiText
 import androidx.compose.foundation.layout.aspectRatio
@@ -24,7 +24,7 @@ import ru.createsmart.artopos.core.uicomponents.components.RetryDecision
 import ru.createsmart.artopos.core.uicomponents.components.RetryPlaceholder
 import ru.createsmart.artopos.core.uicomponents.components.ShimmerBox
 import ru.createsmart.artopos.core.uicomponents.components.analyzeRetry
-import ru.createsmart.artopos.feature.discover.model.ArtworkListItem
+import ru.createsmart.artopos.feature.artworkcard.model.ArtworkListItem
 import ru.createsmart.artopos.core.designsystem.R as UiR
 
 private const val RETRY_HASH = "retry_hash"

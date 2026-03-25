@@ -1,4 +1,4 @@
-package ru.createsmart.artopos.feature.discover.ui.components
+package ru.createsmart.artopos.feature.artworkcard.ui.components
 
 import UiText
 import android.content.res.Configuration
@@ -14,7 +14,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
-import ru.createsmart.artopos.feature.discover.model.ArtworkListItem
+import ru.createsmart.artopos.feature.artworkcard.model.ArtworkListItem
 
 @Composable
 fun ArtworkCard(

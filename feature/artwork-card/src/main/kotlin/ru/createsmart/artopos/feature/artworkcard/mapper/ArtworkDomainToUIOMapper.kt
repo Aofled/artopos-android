@@ -1,7 +1,7 @@
-package ru.createsmart.artopos.feature.discover.mapper
+package ru.createsmart.artopos.feature.artworkcard.mapper
 
 import ru.createsmart.artopos.core.model.Artwork
-import ru.createsmart.artopos.feature.discover.model.ArtworkListItem
+import ru.createsmart.artopos.feature.artworkcard.model.ArtworkListItem
 
 private const val DEFAULT_ASPECT_RATIO = 0.75f
 
