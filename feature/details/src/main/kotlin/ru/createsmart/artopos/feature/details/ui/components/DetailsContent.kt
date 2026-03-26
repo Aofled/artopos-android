@@ -49,6 +49,7 @@ fun DetailsContent(
     onShowMessage: (UiText) -> Unit,
     onRefresh: () -> Unit,
     onToggleTranslation: () -> Unit,
+    onFavoriteClick: () -> Unit,
     isRefreshing: Boolean,
 ) {
     val scrollState = rememberLazyListState()
@@ -87,6 +88,7 @@ fun DetailsContent(
                 actions = DetailsActions(
                     onShowMessage = onShowMessage,
                     onToggleTranslation = onToggleTranslation,
+                    onFavoriteClick = onFavoriteClick,
                 ),
 
             )
@@ -107,6 +109,8 @@ private fun LazyListScope.detailsItems(
             isScrolledDown = galleryState.isScrolledDown,
             contentVersion = galleryState.contentVersion,
             onShowMessage = actions.onShowMessage,
+            isFavorite = artwork.isFavorite,
+            onFavoriteClick = actions.onFavoriteClick,
         )
     }
 
@@ -174,6 +178,7 @@ private fun ArtworksViewPreview() {
             onRefresh = { },
             isRefreshing = true,
             onToggleTranslation = { },
+            onFavoriteClick = { },
         )
     }
 }

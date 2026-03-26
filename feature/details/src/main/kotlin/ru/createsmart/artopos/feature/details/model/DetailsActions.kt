@@ -5,4 +5,5 @@ import UiText
 data class DetailsActions(
     val onShowMessage: (UiText) -> Unit,
     val onToggleTranslation: () -> Unit,
+    val onFavoriteClick: () -> Unit,
 )

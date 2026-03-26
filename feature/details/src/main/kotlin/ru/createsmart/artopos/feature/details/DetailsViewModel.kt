@@ -17,9 +17,7 @@ import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import ru.createsmart.artopos.core.designsystem.components.toUiText
-import ru.createsmart.artopos.core.domain.usecase.GetArtworkDetailsUseCase
-import ru.createsmart.artopos.core.domain.usecase.GetUserSettingsUseCase
-import ru.createsmart.artopos.core.domain.usecase.SyncArtworkDetailsUseCase
+import ru.createsmart.artopos.core.domain.interactor.DetailsInteractor
 import ru.createsmart.artopos.core.navigation.DetailsRoute
 import ru.createsmart.artopos.core.uicomponents.manager.UiMessageManager
 import ru.createsmart.artopos.feature.details.mapper.toDetailUi
@@ -32,9 +30,7 @@ private const val TRANSLATION_TIMEOUT_MS = 300L
 @HiltViewModel
 class DetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    getArtworkDetails: GetArtworkDetailsUseCase,
-    getUserSettings: GetUserSettingsUseCase,
-    private val syncArtworkDetails: SyncArtworkDetailsUseCase,
+    private val useCases: DetailsInteractor,
     private val messageManager: UiMessageManager,
     private val translationFacade: ArtworkTranslationFacade,
 ) : ViewModel() {
@@ -53,8 +49,8 @@ class DetailsViewModel @Inject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val uiState: StateFlow<ArtworkDetailUiState> = combine(
-        getArtworkDetails(artworkId),
-        getUserSettings(),
+        useCases.getArtworkDetails(artworkId),
+        useCases.getUserSettings(),
         _showTranslation,
     ) { artwork, settings, showTranslation ->
         Triple(artwork, settings.languageCode, showTranslation)
@@ -116,7 +112,7 @@ class DetailsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            syncArtworkDetails(artworkId)
+            useCases.syncArtworkDetails(artworkId)
         }
     }
 
@@ -125,7 +121,7 @@ class DetailsViewModel @Inject constructor(
         viewModelScope.launch {
             _isRefreshing.value = true
 
-            val result = syncArtworkDetails(artworkId)
+            val result = useCases.syncArtworkDetails(artworkId)
 
             result.onFailure { error ->
                 messageManager.sendSideEffect(error.toUiText())
@@ -139,5 +135,11 @@ class DetailsViewModel @Inject constructor(
 
     fun toggleTranslation() {
         _showTranslation.value = !_showTranslation.value
+    }
+
+    fun toggleFavorite() {
+        viewModelScope.launch {
+            useCases.toggleFavorite(artworkId)
+        }
     }
 }

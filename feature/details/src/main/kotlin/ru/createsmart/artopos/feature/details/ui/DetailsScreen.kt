@@ -52,6 +52,7 @@ fun DetailsScreenRoute(
         effectFlow = viewModel.uiEffect,
         onRefresh = viewModel::onRefresh,
         onBackClick = onBackClick,
+        onFavoriteClick = viewModel::toggleFavorite,
         isRefreshing = isRefreshing,
         onToggleTranslation = viewModel::toggleTranslation,
     )
@@ -64,6 +65,7 @@ fun DetailsScreen(
     effectFlow: Flow<UiText>? = null,
     onRefresh: () -> Unit,
     onBackClick: () -> Unit,
+    onFavoriteClick: () -> Unit,
     isRefreshing: Boolean,
     onToggleTranslation: () -> Unit,
 ) {
@@ -123,6 +125,7 @@ fun DetailsScreen(
                         onShowMessage = { onShowSnackbar(it) },
                         onRefresh = onRefresh,
                         isRefreshing = isRefreshing,
+                        onFavoriteClick = onFavoriteClick,
                         onToggleTranslation = onToggleTranslation,
                     )
                 }
@@ -157,6 +160,7 @@ fun DiscoverScreenPreview(
             onBackClick = { },
             isRefreshing = true,
             onToggleTranslation = { },
+            onFavoriteClick = { },
         )
     }
 }

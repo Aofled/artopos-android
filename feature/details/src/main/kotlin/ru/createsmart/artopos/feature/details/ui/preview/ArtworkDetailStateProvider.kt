@@ -108,4 +108,5 @@ val artworkPreview = ArtworkDetailUi(
         ),
     ),
     copyright = null,
+    isFavorite = true,
 )

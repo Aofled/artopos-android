@@ -42,5 +42,6 @@ fun Artwork.toDetailUi(isTranslated: Boolean, canBeTranslated: Boolean = false):
         culture = culture,
         isTranslated = isTranslated,
         canBeTranslated = canBeTranslated,
+        isFavorite = isFavorite,
     )
 }

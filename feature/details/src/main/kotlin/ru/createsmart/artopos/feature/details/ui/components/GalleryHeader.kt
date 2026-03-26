@@ -24,6 +24,7 @@ import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import ru.createsmart.artopos.core.uicomponents.components.FavoriteButton
 import ru.createsmart.artopos.feature.details.model.GalleryImageUi
 
 @Composable
@@ -32,7 +33,9 @@ fun GalleryHeader(
     pagerState: PagerState,
     isScrolledDown: Boolean,
     contentVersion: Int,
+    isFavorite: Boolean,
     onShowMessage: (UiText) -> Unit,
+    onFavoriteClick: () -> Unit,
 ) {
     if (images.isEmpty()) return
 
@@ -77,6 +80,15 @@ fun GalleryHeader(
                     .padding(horizontal = 12.dp, vertical = 6.dp),
             )
         }
+
+        FavoriteButton(
+            isFavorite = isFavorite,
+            onClick = onFavoriteClick,
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(16.dp), // Upper left bottom corner
+            isFullScreen = true,
+        )
     }
 }
 

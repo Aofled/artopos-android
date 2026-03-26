@@ -19,6 +19,7 @@ data class ArtworkDetailUi(
     val copyright: String? = null,
     val isTranslated: Boolean = false,
     val canBeTranslated: Boolean = false,
+    val isFavorite: Boolean,
 )
 
 @Immutable
