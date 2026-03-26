@@ -23,5 +23,6 @@ fun Artwork.toUi(): ArtworkListItem {
         imageUrl = imageUrl,
         aspectRatio = ratio,
         year = date ?: "",
+        isFavorite = isFavorite,
     )
 }

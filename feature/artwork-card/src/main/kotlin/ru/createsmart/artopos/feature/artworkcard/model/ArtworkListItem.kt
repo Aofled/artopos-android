@@ -12,4 +12,5 @@ data class ArtworkListItem(
     val imageUrl: String,
     val aspectRatio: Float,
     val year: String,
+    val isFavorite: Boolean,
 )
