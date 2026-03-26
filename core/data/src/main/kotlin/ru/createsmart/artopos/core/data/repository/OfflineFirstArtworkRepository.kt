@@ -7,11 +7,14 @@ import androidx.paging.PagingData
 import androidx.paging.map
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import ru.createsmart.artopos.core.data.mapper.toDetailsDBO
 import ru.createsmart.artopos.core.data.mapper.toDomain
+import ru.createsmart.artopos.core.data.mapper.toFavorite
 import ru.createsmart.artopos.core.data.mediator.ArtworkRemoteMediator
 import ru.createsmart.artopos.core.database.HarvardDatabase
 import ru.createsmart.artopos.core.domain.repository.ArtworkRepository
@@ -29,7 +32,8 @@ class OfflineFirstArtworkRepository @Inject constructor(
     private val api: HarvardAPI,
 ) : ArtworkRepository {
 
-    private val dao get() = database.artworkDao()
+    private val artworkDao get() = database.artworkDao()
+    private val favoriteDao get() = database.favoriteDao()
 
     private val pagingConfig = PagingConfig(
         pageSize = 50,
@@ -51,7 +55,7 @@ class OfflineFirstArtworkRepository @Inject constructor(
                 params = params,
             ),
             pagingSourceFactory = {
-                database.artworkDao().getArtworks()
+                artworkDao.getArtworksWithFavoriteFlags()
             },
         ).flow
             .map { pagingData ->
@@ -59,20 +63,64 @@ class OfflineFirstArtworkRepository @Inject constructor(
             }
     }
 
+    /**
+     * We listen to two tables at once because the "exhibit" can be located either in the temporary feed cache,
+     * or in the persistent favorites storage (or both).
+     */
     override fun getArtwork(id: Int): Flow<Artwork?> {
-        return dao.getArtworkWithDetails(id)
-            .map { relation ->
-                relation?.toDomain()
+        val fromDiscoverFlow = artworkDao.getArtworkWithDetails(id)
+        val fromFavoritesFlow = favoriteDao.getArtworkFavoriteWithDetails(id)
+        return combine(fromDiscoverFlow, fromFavoritesFlow) { fromDiscover, fromFavorites ->
+            when {
+                // PRIORITY 1: Take from Discover Feed first.
+                // It holds the most recent network data (handles 'isFavorite' flag internally).
+                fromDiscover != null -> fromDiscover.toDomain()
+
+                // PRIORITY 2: Fallback to Favorites.
+                // Useful if the feed cache was cleared, but the user saved this artwork previously.
+                fromFavorites != null -> fromFavorites.toDomain()
+
+                // PRIORITY 3: Not found locally. UI should show Loading/Error.
+                else -> null
             }
+        }
+            .distinctUntilChanged()
             .flowOn(Dispatchers.IO)
     }
 
     override suspend fun syncArtworkDetails(id: Int): Result<Unit> {
         return runCatching {
             withContext(Dispatchers.IO) {
+                // 1. Download fresh JSON with full details
                 val dto = api.getArtworkDetails(id)
+
+                // 2. Save the "heavy" part of the data in a separate table (artwork_details).
+                // Thanks to @Relation, the getArtwork() method will immediately see this new data.
                 val detailsEntity = dto.toDetailsDBO()
-                dao.insertDetails(detailsEntity)
+                artworkDao.insertDetails(detailsEntity)
+            }
+        }
+    }
+
+    override fun getFavoriteArtworks(): Flow<List<Artwork>> {
+        return favoriteDao.getFavorites()
+            .map { list -> list.map { it.toDomain() } }
+            .flowOn(Dispatchers.IO)
+    }
+
+    override suspend fun toggleFavorite(artworkId: Int) {
+        withContext(Dispatchers.IO) {
+            val isFavorite = favoriteDao.isFavorite(artworkId)
+
+            if (isFavorite) {
+                favoriteDao.removeFavorite(artworkId)
+            } else {
+                // Logic: Copy the current state of the artwork from the Main feed to the Favorites table.
+                // This creates an offline backup of the artwork that survives cache clearing.
+                val snapshot = artworkDao.getArtworkSnapshot(artworkId)
+                if (snapshot != null) {
+                    favoriteDao.insertFavorite(snapshot.toFavorite())
+                }
             }
         }
     }

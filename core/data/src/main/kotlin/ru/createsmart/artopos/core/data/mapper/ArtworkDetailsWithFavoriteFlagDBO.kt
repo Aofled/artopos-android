@@ -1,12 +1,14 @@
 package ru.createsmart.artopos.core.data.mapper
 
-import ru.createsmart.artopos.core.database.model.ArtworkWithDetailsDBO
+import ru.createsmart.artopos.core.database.model.ArtworkDetailsWithFavoriteFlagDBO
 import ru.createsmart.artopos.core.model.Artwork
 
-fun ArtworkWithDetailsDBO.toDomain(): Artwork {
-    val base = artwork.toDomain()
+fun ArtworkDetailsWithFavoriteFlagDBO.toDomain(): Artwork {
+    val base = this.artworkWithDetails.artwork.toDomain().copy(
+        isFavorite = this.isFavorite,
+    )
 
-    val details = this.details ?: return base
+    val details = this.artworkWithDetails.details ?: return base
 
     return base.copy(
         provenance = details.provenance,
