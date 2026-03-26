@@ -4,10 +4,10 @@ import androidx.room.Embedded
 import androidx.room.Relation
 
 /**
- * POJO for gluing Artwork (Parent) and Details (Child).
+ * POJO for gluing Favorites (Parent) and Details (Child).
  */
-data class ArtworkWithDetailsDBO(
-    @Embedded val artwork: ArtworkDBO,
+data class ArtworkFavoriteWithDetailsDBO(
+    @Embedded val favoriteArtwork: ArtworkFavoriteDBO,
 
     @Relation(
         parentColumn = "id", // Field 'id' in table 'favorites'

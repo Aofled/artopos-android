@@ -10,6 +10,7 @@ import dagger.hilt.components.SingletonComponent
 import ru.createsmart.artopos.core.database.HarvardDatabase
 import ru.createsmart.artopos.core.database.dao.ArtworkDao
 import ru.createsmart.artopos.core.database.dao.ArtworkRemoteKeysDao
+import ru.createsmart.artopos.core.database.dao.FavoriteDao
 import ru.createsmart.artopos.core.database.dao.FilterItemDao
 import javax.inject.Singleton
 
@@ -34,8 +35,13 @@ object DatabaseModule {
     }
 
     @Provides
-    fun provideHarvardDao(database: HarvardDatabase): ArtworkDao {
+    fun provideArtworkDao(database: HarvardDatabase): ArtworkDao {
         return database.artworkDao()
+    }
+
+    @Provides
+    fun provideFavoriteDao(database: HarvardDatabase): FavoriteDao {
+        return database.favoriteDao()
     }
 
     @Provides
