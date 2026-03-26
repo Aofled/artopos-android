@@ -12,4 +12,6 @@ interface ArtworkRepository {
 
     fun getArtwork(id: Int): Flow<Artwork?>
     suspend fun syncArtworkDetails(id: Int): Result<Unit>
+    fun getFavoriteArtworks(): Flow<List<Artwork>>
+    suspend fun toggleFavorite(artworkId: Int)
 }
