@@ -24,6 +24,7 @@ data class Artwork(
     val dimensions: String? = null,
     val copyright: String? = null,
     val galleryLocation: String? = null,
+    val isFavorite: Boolean = false,
 )
 
 data class ImageDimensions(
