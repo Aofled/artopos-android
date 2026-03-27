@@ -21,6 +21,7 @@ class DiscoverStateProvider : PreviewParameterProvider<Flow<PagingData<ArtworkLi
                         imageUrl = "https://nrs.harvard.edu/urn-3:HUAM:LEG252412",
                         aspectRatio = 0.44163266f,
                         year = "19th century",
+                        isFavorite = true,
                     ),
                     ArtworkListItem(
                         id = 2,
@@ -29,6 +30,7 @@ class DiscoverStateProvider : PreviewParameterProvider<Flow<PagingData<ArtworkLi
                         imageUrl = "https://nrs.harvard.edu/urn-3:HUAM:763750",
                         aspectRatio = 0.43098038f,
                         year = "mid-17th century",
+                        isFavorite = false,
                     ),
                     ArtworkListItem(
                         id = 3,
@@ -37,6 +39,7 @@ class DiscoverStateProvider : PreviewParameterProvider<Flow<PagingData<ArtworkLi
                         imageUrl = "https://nrs.harvard.edu/urn-3:HUAM:LEG252388",
                         aspectRatio = 1.9600308f,
                         year = "15th day of the 8th month, 1817",
+                        isFavorite = false,
                     ),
                     ArtworkListItem(
                         id = 4,
@@ -45,6 +48,7 @@ class DiscoverStateProvider : PreviewParameterProvider<Flow<PagingData<ArtworkLi
                         imageUrl = "https://nrs.harvard.edu/urn-3:HUAM:768168",
                         aspectRatio = 0.5086275f,
                         year = "19th century",
+                        isFavorite = true,
                     ),
                     ArtworkListItem(
                         id = 5,
@@ -53,6 +57,7 @@ class DiscoverStateProvider : PreviewParameterProvider<Flow<PagingData<ArtworkLi
                         imageUrl = "https://nrs.harvard.edu/urn-3:HUAM:765896",
                         aspectRatio = 0.4043137f,
                         year = "1897",
+                        isFavorite = false,
                     ),
                     ArtworkListItem(
                         id = 6,
@@ -61,6 +66,7 @@ class DiscoverStateProvider : PreviewParameterProvider<Flow<PagingData<ArtworkLi
                         imageUrl = "https://nrs.harvard.edu/urn-3:HUAM:766941",
                         aspectRatio = 0.37176472f,
                         year = "c. 1893-1917",
+                        isFavorite = true,
                     ),
                 ),
             ),

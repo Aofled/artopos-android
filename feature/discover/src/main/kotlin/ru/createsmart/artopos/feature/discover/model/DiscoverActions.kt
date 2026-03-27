@@ -15,5 +15,6 @@ data class DiscoverActions(
     val onFilterOpen: () -> Unit,
     val onRemoveFilter: (FilterType) -> Unit,
     val onToggleFilterSort: () -> Unit,
+    val onToggleFavorite: (Int) -> Unit,
     val onSearchQueryChanged: (String) -> Unit,
 )

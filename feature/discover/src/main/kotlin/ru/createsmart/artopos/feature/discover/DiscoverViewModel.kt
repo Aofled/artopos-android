@@ -19,11 +19,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import ru.createsmart.artopos.core.designsystem.components.toUiText
-import ru.createsmart.artopos.core.domain.usecase.GetArtworksUseCase
-import ru.createsmart.artopos.core.domain.usecase.GetFiltersUseCase
-import ru.createsmart.artopos.core.domain.usecase.GetUserSettingsUseCase
-import ru.createsmart.artopos.core.domain.usecase.InitializeFiltersUseCase
-import ru.createsmart.artopos.core.domain.usecase.PreloadTranslationModelUseCase
+import ru.createsmart.artopos.core.domain.interactor.DiscoverInteractor
 import ru.createsmart.artopos.core.model.FilterParams
 import ru.createsmart.artopos.core.model.FilterSortOption
 import ru.createsmart.artopos.core.model.FilterType
@@ -34,13 +30,10 @@ import ru.createsmart.artopos.feature.discover.model.DiscoverEvent
 import ru.createsmart.artopos.feature.discover.model.FiltersUiState
 import javax.inject.Inject
 
+@Suppress("TooManyFunctions")
 @HiltViewModel
 class DiscoverViewModel @Inject constructor(
-    getArtworks: GetArtworksUseCase,
-    getFiltersUseCase: GetFiltersUseCase,
-    private val getUserSettings: GetUserSettingsUseCase,
-    private val preloadTranslationModelUseCase: PreloadTranslationModelUseCase,
-    private val initializeFilters: InitializeFiltersUseCase,
+    private val useCases: DiscoverInteractor,
     private val messageManager: UiMessageManager,
 ) : ViewModel() {
 
@@ -62,21 +55,21 @@ class DiscoverViewModel @Inject constructor(
     // --- UI FLOWS (Depends on DRAFT) ---
 
     private val _classificationsFlow = combine(
-        getFiltersUseCase(FilterType.CLASSIFICATION),
+        useCases.getFilters(FilterType.CLASSIFICATION),
         _draftFilterParams,
     ) { list, params ->
         list.toUi(params.classification)
     }
 
     private val _centuriesFlow = combine(
-        getFiltersUseCase(FilterType.CENTURY),
+        useCases.getFilters(FilterType.CENTURY),
         _draftFilterParams,
     ) { list, params ->
         list.toUi(params.century)
     }
 
     private val _culturesFlow = combine(
-        getFiltersUseCase(FilterType.CULTURE),
+        useCases.getFilters(FilterType.CULTURE),
         _draftFilterParams,
     ) { list, params ->
         list.toUi(params.culture)
@@ -104,19 +97,19 @@ class DiscoverViewModel @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     val artworksFlow = _activeFilterParams
         .flatMapLatest { params ->
-            getArtworks(params) // It depends on the filter
+            useCases.getArtworks(params) // It depends on the filter
         }
         .map { pagingData -> pagingData.map { it.toUi() } }
         .cachedIn(viewModelScope)
 
     init {
         viewModelScope.launch {
-            initializeFilters()
+            useCases.initializeFilters()
         }
 
         viewModelScope.launch {
-            getUserSettings().collectLatest { settings ->
-                preloadTranslationModelUseCase(settings.languageCode) // ML Kit Translation dictionary preloading
+            useCases.getUserSettings().collectLatest { settings ->
+                useCases.preloadTranslationModel(settings.languageCode) // ML Kit Translation dictionary preloading
             }
         }
     }
@@ -183,13 +176,19 @@ class DiscoverViewModel @Inject constructor(
         _draftFilterParams.value = currentDraft.copy(sort = newSort)
     }
 
+    fun onToggleFavorite(id: Int) {
+        viewModelScope.launch {
+            useCases.toggleFavorite(id)
+        }
+    }
+
     // --- ERROR HANDLING ---
 
     fun onRefresh(): Boolean {
         if (!messageManager.checkInternetAndNotify()) return false
 
         viewModelScope.launch {
-            val result = initializeFilters()
+            val result = useCases.initializeFilters()
 
             result.onFailure { error ->
                 messageManager.sendSideEffect(error.toUiText())
@@ -205,7 +204,7 @@ class DiscoverViewModel @Inject constructor(
     fun onRetryAction(): Boolean {
         if (messageManager.checkInternetAndNotify()) {
             viewModelScope.launch {
-                val result = initializeFilters()
+                val result = useCases.initializeFilters()
 
                 result.onFailure { error ->
                     messageManager.sendSideEffect(error.toUiText())

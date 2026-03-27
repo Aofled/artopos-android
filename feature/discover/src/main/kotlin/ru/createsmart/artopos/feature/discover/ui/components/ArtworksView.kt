@@ -135,7 +135,7 @@ private fun ArtworksGrid(
         modifier = Modifier.fillMaxSize(),
     ) {
         item(span = StaggeredGridItemSpan.FullLine) {
-            TopAppBar(filterParams = filterParams, onRemoveFilter = actions.onRemoveFilter)
+            FavoritesHeader(filterParams = filterParams, onRemoveFilter = actions.onRemoveFilter)
         }
 
         if (isEmptyResult) {
@@ -145,6 +145,7 @@ private fun ArtworksGrid(
                 artworks = artworks,
                 contentVersion = contentVersion,
                 onArtworkClick = actions.onArtworkClick,
+                onFavoriteClick = actions.onToggleFavorite,
                 onShowMessage = onShowMessage,
             )
         }
@@ -157,7 +158,7 @@ private fun ArtworksGrid(
 }
 
 @Composable
-private fun TopAppBar(
+private fun FavoritesHeader(
     filterParams: FilterParams,
     onRemoveFilter: (FilterType) -> Unit,
 ) {
@@ -231,6 +232,7 @@ private fun LazyStaggeredGridScope.artworkItems(
     artworks: LazyPagingItems<ArtworkListItem>,
     contentVersion: Int,
     onArtworkClick: (Int) -> Unit,
+    onFavoriteClick: (Int) -> Unit,
     onShowMessage: (UiText) -> Unit,
 ) {
     items(
@@ -245,6 +247,7 @@ private fun LazyStaggeredGridScope.artworkItems(
                 artwork = artwork,
                 contentVersion = contentVersion,
                 onClick = { onArtworkClick(artwork.id) },
+                onFavoriteClick = { onFavoriteClick(artwork.id) },
                 onShowMessage = onShowMessage,
             )
         }
@@ -320,8 +323,8 @@ private fun ActiveFilterChip(
 @Composable
 private fun ArtworksViewPreview() {
     val mockData = listOf(
-        ArtworkListItem(1, "Art 1", "Artist 1", "", 1f, "2020"),
-        ArtworkListItem(2, "Art 2", "Artist 2", "", 2f, "2021"),
+        ArtworkListItem(1, "Art 1", "Artist 1", "", 1f, "2020", true),
+        ArtworkListItem(2, "Art 2", "Artist 2", "", 2f, "2021", false),
     )
 
     val artworks = flowOf(PagingData.from(mockData)).collectAsLazyPagingItems()
@@ -338,6 +341,7 @@ private fun ArtworksViewPreview() {
                 onRefresh = {},
                 onRetry = {},
                 onArtworkClick = {},
+                onToggleFavorite = {},
                 onError = {},
                 onFilterSelected = { _, _ -> },
                 onFilterApply = {},
