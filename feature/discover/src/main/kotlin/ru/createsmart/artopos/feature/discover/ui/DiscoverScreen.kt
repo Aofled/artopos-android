@@ -154,8 +154,6 @@ fun DiscoverScreen(
 
             floatingActionButton = {
                 DiscoverFloatingButton(
-                    pagingItems = pagingItems,
-                    filtersState = filtersState,
                     visible = showFab,
                     onFilterClick = {
                         actions.onFilterOpen()
@@ -223,15 +221,10 @@ private fun DiscoverScreenEffects(
 
 @Composable
 private fun DiscoverFloatingButton(
-    pagingItems: LazyPagingItems<ArtworkListItem>,
-    filtersState: FiltersUiState,
     visible: Boolean,
     onFilterClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val isListReady = pagingItems.loadState.refresh !is LoadState.Loading
-    val showFab = isListReady && filtersState.isAvailable
-
     AnimatedVisibility(
         visible = visible,
         enter = scaleIn(),
