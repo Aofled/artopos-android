@@ -62,11 +62,15 @@ class FavoritesViewModel @Inject constructor(
     }
 
     fun onRefresh() {
+        if (!messageManager.checkInternetAndNotify()) {
+            return
+        }
         viewModelScope.launch {
             _isRefreshing.value = true
             _contentVersion.value++
             delay(REFRESH_DELAY_MS) // Artificial delay for UI smoothness
             _isRefreshing.value = false
         }
+        messageManager.resetLastEmittedMessage()
     }
 }
