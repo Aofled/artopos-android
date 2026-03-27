@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
@@ -95,12 +96,18 @@ fun FavoritesScreen(
     }
 
     Scaffold(
-        modifier = Modifier
-            .windowInsetsPadding(WindowInsets.navigationBars)
-            .padding(bottom = 48.dp),
+        modifier = Modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.background,
         contentWindowInsets = WindowInsets.statusBars,
-        snackbarHost = { SnackbarHost(snackbarHostState) },
+
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackbarHostState,
+                modifier = Modifier
+                    .windowInsetsPadding(WindowInsets.navigationBars)
+                    .padding(bottom = 48.dp),
+            )
+        },
     ) { innerPadding ->
 
         FavoritesScreenContent(
@@ -146,7 +153,7 @@ private fun FavoritesScreenContent(
                         columns = StaggeredGridCells.Fixed(2),
                         contentPadding = PaddingValues(
                             top = 8.dp,
-                            bottom = 24.dp,
+                            bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + 48.dp,
                             start = 16.dp,
                             end = 16.dp,
                         ),
