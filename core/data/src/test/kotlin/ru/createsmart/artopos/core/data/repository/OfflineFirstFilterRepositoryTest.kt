@@ -76,6 +76,10 @@ class OfflineFirstFilterRepositoryTest {
 
         // GIVEN
         coEvery { api.getClassification() } throws IOException("Network error")
+        // GIVEN
+        val emptyResponse = NetworkResponse(PageInfo(1, 1, 0, null), emptyList<FilterItemDTO>())
+        coEvery { api.getCentury() } returns emptyResponse
+        coEvery { api.getCulture() } returns emptyResponse
 
         // WHEN
         repository.initializeFilters()

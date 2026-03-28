@@ -10,12 +10,12 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
-import ru.createsmart.artopos.core.designsystem.manager.UiMessageManager
 import ru.createsmart.artopos.core.domain.repository.SettingsRepository
 import ru.createsmart.artopos.core.domain.usecase.ClearImageCacheUseCase
 import ru.createsmart.artopos.core.domain.usecase.GetImageCacheSizeUseCase
 import ru.createsmart.artopos.core.model.settings.ThemeConfig
 import ru.createsmart.artopos.core.model.settings.UserSettings
+import ru.createsmart.artopos.core.uicomponents.manager.UiMessageManager
 import ru.createsmart.artopos.feature.settings.util.MainDispatcherRule
 
 class SettingsViewModelTest {

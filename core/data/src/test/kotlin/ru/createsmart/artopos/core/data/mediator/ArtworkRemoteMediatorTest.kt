@@ -10,6 +10,7 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -21,6 +22,7 @@ import org.junit.runner.RunWith
 import ru.createsmart.artopos.core.database.HarvardDatabase
 import ru.createsmart.artopos.core.database.model.ArtworkDBO
 import ru.createsmart.artopos.core.database.model.ArtworkRemoteKeysEntity
+import ru.createsmart.artopos.core.database.model.ArtworkWithFavoriteFlagDBO
 import ru.createsmart.artopos.core.model.FilterParams
 import ru.createsmart.artopos.core.network.api.HarvardAPI
 import ru.createsmart.artopos.core.network.model.ArtworkDTO
@@ -84,7 +86,7 @@ class ArtworkRemoteMediatorTest {
         } returns networkResponse
 
         // Mock the PagingState
-        val pagingState = PagingState<Int, ArtworkDBO>(
+        val pagingState = PagingState<Int, ArtworkWithFavoriteFlagDBO>(
             pages = listOf(),
             anchorPosition = null,
             config = PagingConfig(pageSize = 20),
@@ -113,6 +115,13 @@ class ArtworkRemoteMediatorTest {
     fun `append load success fetching next page`() = runTest {
         // GIVEN
         val initialId = 1
+
+        val mockDbo = mockk<ArtworkDBO> { every { id } returns initialId }
+        val mockFlagDbo = ArtworkWithFavoriteFlagDBO(
+            artwork = mockDbo,
+            isFavorite = false,
+        )
+
         // Pre-condition: Simulate that Page 1 is already loaded in the DB.
         // RemoteMediator needs to find the 'nextKey' from the database to know what to load next.
         database.artworkRemoteKeysDao().insertAll(
@@ -140,10 +149,10 @@ class ArtworkRemoteMediatorTest {
         )
 
         // Mock State: Tell Mediator that we have one page with one item
-        val pagingState = PagingState(
+        val pagingState = PagingState<Int, ArtworkWithFavoriteFlagDBO>(
             pages = listOf(
                 androidx.paging.PagingSource.LoadResult.Page(
-                    data = listOf(mockk<ArtworkDBO> { coEvery { id } returns initialId }),
+                    data = listOf(mockFlagDbo),
                     prevKey = null,
                     nextKey = 2,
                 ),
@@ -182,7 +191,7 @@ class ArtworkRemoteMediatorTest {
             )
         } throws IOException("No internet")
 
-        val pagingState = PagingState<Int, ArtworkDBO>(
+        val pagingState = PagingState<Int, ArtworkWithFavoriteFlagDBO>(
             pages = listOf(),
             anchorPosition = null,
             config = PagingConfig(20),

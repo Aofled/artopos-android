@@ -80,7 +80,7 @@ class OfflineFirstArtworkRepositoryDetailsTest {
             id = 1, sortingIndex = 5, title = "Base Title", artist = "",
             imageUrl = "", imageDimensions = null, date = null, yearInt = null,
             technique = null,
-            description = "Description loaded from list", // <-- Уже есть!
+            description = "Description loaded from list",
             url = null, galleryImages = null,
         )
         database.artworkDao().insertArtworks(listOf(baseDbo))
@@ -120,7 +120,7 @@ class OfflineFirstArtworkRepositoryDetailsTest {
         // THEN
         assertTrue(result.isFailure)
 
-        val details = database.artworkDao().getArtworkWithDetails(1).first()
-        assertNull(details?.details)
+        val wrapper = database.artworkDao().getArtworkWithDetails(1).first()
+        assertNull(wrapper?.artworkWithDetails?.details)
     }
 }
