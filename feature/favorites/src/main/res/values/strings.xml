@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="label_favorites">Favorites</string>
+    <string name="no_favorites">Favorites</string>
+    <string name="no_favorites_description">"Tap the heart icon on any artwork to save it here."</string>
+</resources>
