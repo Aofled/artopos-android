@@ -16,4 +16,6 @@ dependencies {
     implementation(projects.core.navigation)
 
     implementation(libs.androidx.hilt.navigation.compose)
+
+    testImplementation(libs.bundles.test.unit.full)
 }
