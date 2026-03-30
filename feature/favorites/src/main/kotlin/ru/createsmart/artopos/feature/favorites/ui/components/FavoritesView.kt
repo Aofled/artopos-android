@@ -12,17 +12,23 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
+import ru.createsmart.artopos.core.uicomponents.notifiers.LocalBottomBarStateNotifier
 import ru.createsmart.artopos.feature.artworkcard.model.ArtworkListItem
 import ru.createsmart.artopos.feature.artworkcard.ui.components.ArtworkCard
 import ru.createsmart.artopos.feature.favorites.R
@@ -40,6 +46,20 @@ fun FavoritesView(
 ) {
     val pullState = rememberPullToRefreshState()
 
+    val listState = rememberLazyStaggeredGridState()
+    val bottomBarNotifier = LocalBottomBarStateNotifier.current
+
+    val isAtBottom by remember(artworks.size) {
+        derivedStateOf {
+            !listState.canScrollForward
+        }
+    }
+
+    // We don't hide the navigation if the list has reached the end or the screen is not scrollable.
+    LaunchedEffect(isAtBottom) {
+        bottomBarNotifier(isAtBottom)
+    }
+
     PullToRefreshBox(
         isRefreshing = isRefreshing,
         onRefresh = actions.onRefresh,
@@ -48,6 +68,7 @@ fun FavoritesView(
     ) {
         LazyVerticalStaggeredGrid(
             columns = StaggeredGridCells.Fixed(2),
+            state = listState,
             contentPadding = PaddingValues(
                 top = 8.dp,
                 bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + 48.dp,
