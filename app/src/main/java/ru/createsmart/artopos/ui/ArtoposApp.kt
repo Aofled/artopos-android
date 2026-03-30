@@ -22,6 +22,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,6 +42,7 @@ import ru.createsmart.artopos.core.navigation.ArtoposAppState
 import ru.createsmart.artopos.core.navigation.DiscoverRoute
 import ru.createsmart.artopos.core.navigation.FavoritesRoute
 import ru.createsmart.artopos.core.navigation.rememberArtoposAppState
+import ru.createsmart.artopos.core.uicomponents.notifiers.LocalBottomBarStateNotifier
 import ru.createsmart.artopos.navigation.AppNavGraph
 
 private const val BOTTOM_BAR_ALPHA = 0.85f
@@ -52,6 +54,7 @@ fun ArtoposApp(
     appState: ArtoposAppState = rememberArtoposAppState(),
 ) {
     var isBottomBarVisible by remember { mutableStateOf(true) }
+    var isLockedAtBottom by remember { mutableStateOf(false) }
 
     // When you go back (PopBackStack) or switch to a new tab the menu will always be in place
     val currentDestination = appState.currentDestination
@@ -63,8 +66,7 @@ fun ArtoposApp(
         currentDestination?.hasRoute(FavoritesRoute::class) == true
 
     // To listen to swipes
-
-    val nestedScrollConnection = remember(canHideBottomBar) {
+    val nestedScrollConnection = remember(canHideBottomBar, isLockedAtBottom) {
         object : NestedScrollConnection {
             @Suppress("SameReturnValue")
             override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
@@ -75,10 +77,26 @@ fun ArtoposApp(
                 }
                 // If we swipe DOWN (content moves up, dy < 0) -> Hide the menu
                 else if (available.y < -SCROLL_THRESHOLD) {
-                    isBottomBarVisible = false
+                    // Hide the menu ONLY if we are not blocked at the end of the list
+                    if (!isLockedAtBottom) {
+                        isBottomBarVisible = false
+                    }
                 }
                 return Offset.Zero
             }
+        }
+    }
+
+    /**
+     * If the list is at the end (or the list is empty/small), force the menu to appear.
+     * If the list is at the end (atBottom = false), do NOT force the menu to appear.
+     * Unlock the menu (isLockedAtBottom = false),
+     * The next swipe down (via onPreScroll) will hide the navigation.
+     */
+    val bottomBarNotifier: (Boolean) -> Unit = { atBottom ->
+        isLockedAtBottom = atBottom
+        if (atBottom) {
+            isBottomBarVisible = true
         }
     }
 
@@ -104,8 +122,10 @@ fun ArtoposApp(
             }
         },
     ) { _ -> // contentPadding for lists we will pass later via CompositionLocal
-        Box(modifier = Modifier.fillMaxSize()) {
-            AppNavGraph(appState = appState)
+        CompositionLocalProvider(LocalBottomBarStateNotifier provides bottomBarNotifier) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                AppNavGraph(appState = appState)
+            }
         }
     }
 }

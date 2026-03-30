@@ -37,6 +37,7 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     implementation(projects.core.data)
     implementation(projects.core.designsystem)
+    implementation(projects.core.uiComponents)
     implementation(projects.core.domain)
     implementation(projects.core.database)
     implementation(projects.core.datastore)

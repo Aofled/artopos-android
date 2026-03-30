@@ -24,6 +24,8 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,6 +48,7 @@ import ru.createsmart.artopos.core.model.FilterParams
 import ru.createsmart.artopos.core.model.FilterType
 import ru.createsmart.artopos.core.uicomponents.components.CustomCircularProgressIndicator
 import ru.createsmart.artopos.core.uicomponents.components.CustomInputChip
+import ru.createsmart.artopos.core.uicomponents.notifiers.LocalBottomBarStateNotifier
 import ru.createsmart.artopos.feature.artworkcard.model.ArtworkListItem
 import ru.createsmart.artopos.feature.artworkcard.ui.components.ArtworkCard
 import ru.createsmart.artopos.feature.discover.R
@@ -105,7 +108,18 @@ private fun ArtworksGrid(
     scrollUp: Flow<DiscoverEvent>,
 ) {
     val listState = rememberLazyStaggeredGridState()
+    val bottomBarNotifier = LocalBottomBarStateNotifier.current
+
     val isEmptyResult = artworks.itemCount == 0 && artworks.loadState.refresh !is LoadState.Loading
+
+    val isAtBottom by remember {
+        derivedStateOf { !listState.canScrollForward }
+    }
+
+    // We don't hide the navigation if the list has reached the end or the screen is not scrollable.
+    LaunchedEffect(isAtBottom) {
+        bottomBarNotifier(isAtBottom)
+    }
 
     LaunchedEffect(artworks.loadState.refresh) { // Auto-scroll up when data is updated
         scrollUp.collect { action ->
@@ -119,7 +133,7 @@ private fun ArtworksGrid(
 
     val gridPadding = PaddingValues( // Add System Bars padding + extra spacing for design
         top = contentPadding.calculateTopPadding() + 8.dp,
-        bottom = contentPadding.calculateBottomPadding() + 98.dp, // This is the height of the BottomBar 48dp + gap
+        bottom = contentPadding.calculateBottomPadding() + 108.dp, // This is the height of the BottomBar 48dp + gap
         start = 16.dp,
         end = 16.dp,
     )
