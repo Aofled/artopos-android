@@ -43,6 +43,7 @@ import ru.createsmart.artopos.core.navigation.DiscoverRoute
 import ru.createsmart.artopos.core.navigation.FavoritesRoute
 import ru.createsmart.artopos.core.navigation.rememberArtoposAppState
 import ru.createsmart.artopos.core.uicomponents.notifiers.LocalBottomBarStateNotifier
+import ru.createsmart.artopos.core.uicomponents.notifiers.LocalBottomBarVisibility
 import ru.createsmart.artopos.navigation.AppNavGraph
 
 private const val BOTTOM_BAR_ALPHA = 0.85f
@@ -122,7 +123,10 @@ fun ArtoposApp(
             }
         },
     ) { _ -> // contentPadding for lists we will pass later via CompositionLocal
-        CompositionLocalProvider(LocalBottomBarStateNotifier provides bottomBarNotifier) {
+        CompositionLocalProvider(
+            LocalBottomBarStateNotifier provides bottomBarNotifier,
+            LocalBottomBarVisibility provides isBottomBarVisible,
+        ) {
             Box(modifier = Modifier.fillMaxSize()) {
                 AppNavGraph(appState = appState)
             }

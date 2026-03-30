@@ -129,7 +129,7 @@ fun SettingsScreen(
                 hostState = snackbarHostState,
                 modifier = Modifier
                     .windowInsetsPadding(WindowInsets.navigationBars)
-                    .padding(bottom = 48.dp),
+                    .padding(bottom = 52.dp),
             )
         },
         topBar = { SettingsTopAppBar() },

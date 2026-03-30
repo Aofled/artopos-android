@@ -92,7 +92,7 @@ fun FavoritesScreen(
                 hostState = snackbarHostState,
                 modifier = Modifier
                     .windowInsetsPadding(WindowInsets.navigationBars)
-                    .padding(bottom = 48.dp),
+                    .padding(bottom = 52.dp),
             )
         },
     ) { innerPadding ->

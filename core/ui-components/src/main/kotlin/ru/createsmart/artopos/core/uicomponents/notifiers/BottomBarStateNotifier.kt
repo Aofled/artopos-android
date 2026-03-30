@@ -8,3 +8,5 @@ val LocalBottomBarStateNotifier = compositionLocalOf<(Boolean) -> Unit> {
             _ ->
     }
 }
+
+val LocalBottomBarVisibility = compositionLocalOf<Boolean> { true }

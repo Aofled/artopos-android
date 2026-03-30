@@ -3,7 +3,9 @@ package ru.createsmart.artopos.feature.discover.ui
 import UiText
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.Box
@@ -47,6 +49,7 @@ import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
 import ru.createsmart.artopos.core.model.FilterParams
 import ru.createsmart.artopos.core.model.FilterType
 import ru.createsmart.artopos.core.uicomponents.components.FilterFloatingActionButton
+import ru.createsmart.artopos.core.uicomponents.notifiers.LocalBottomBarVisibility
 import ru.createsmart.artopos.feature.artworkcard.model.ArtworkListItem
 import ru.createsmart.artopos.feature.discover.DiscoverViewModel
 import ru.createsmart.artopos.feature.discover.model.DiscoverActions
@@ -139,10 +142,24 @@ fun DiscoverScreen(
 
     val isListReady = pagingItems.loadState.refresh !is LoadState.Loading
     val showFab = isListReady && filtersState.isAvailable
+    val isBottomBarVisible = LocalBottomBarVisibility.current
 
-    // Scaffold handles system bars (Status/Nav Bar) automatically via contentWindowInsets
+    // Animate FAB vertical offset to avoid overlapping with the BottomBar
+    val fabBottomPadding by animateDpAsState(
+        targetValue = if (isBottomBarVisible) 48.dp else 0.dp,
+        animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing),
+        label = "fabPadding",
+    )
+
+    // Animate Snackbar padding to ensure it stacks correctly above the FAB and BottomBar.
+    // Scaffold handles system bars (Status/Nav Bar) automatically via contentWindowInsets.
     val snackbarBottomPadding by animateDpAsState(
-        targetValue = if (showFab) 120.dp else 48.dp,
+        targetValue = if (showFab) {
+            if (isBottomBarVisible) 122.dp else 74.dp // If FAB exists, NAV is visible, else NAV not visible.
+        } else {
+            if (isBottomBarVisible) 52.dp else 0.dp // If FAB does not exist, NAV is visible, else NAV not visible.
+        },
+        animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing),
         label = "snackbarPadding",
     )
 
@@ -161,7 +178,7 @@ fun DiscoverScreen(
                     },
                     modifier = Modifier
                         .windowInsetsPadding(WindowInsets.navigationBars)
-                        .padding(bottom = 0.dp),
+                        .padding(bottom = fabBottomPadding),
                 )
             },
         ) { innerPadding ->
