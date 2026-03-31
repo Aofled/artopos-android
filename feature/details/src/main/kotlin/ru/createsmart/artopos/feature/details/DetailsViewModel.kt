@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -78,28 +80,35 @@ class DetailsViewModel @Inject constructor(
                 return@transformLatest
             }
 
-            // Get basic data (No heavy ML involved), передаем languageCode
+            // Get basic data (No heavy ML involved)
             val fastTranslatedArtwork = translationFacade.translateFast(rawArtwork, languageCode)
 
-            val quickDeepTranslation = withTimeoutOrNull(TRANSLATION_TIMEOUT_MS) {
-                translationFacade.translateDeep(rawArtwork, fastTranslatedArtwork, languageCode)
-            }
+            // This prevents cancelling and restarting the ML Kit process if it takes longer than the timeout.
+            coroutineScope {
+                val deepTranslationDeferred = async {
+                    translationFacade.translateDeep(rawArtwork, fastTranslatedArtwork, languageCode)
+                }
 
-            if (quickDeepTranslation != null) {
-                // Scenario A: Fast device/cache.
-                // Show final result immediately. Avoids UI flickering (Fast -> Deep).
-                emit(ArtworkDetailUiState.Success(quickDeepTranslation.toDetailUi(isTranslated = true)))
-            } else {
-                // Scenario B: Slow translation.
-                // 1. Show "Fast" version first (Partial/Original text) so user sees content instantly.
-                emit(ArtworkDetailUiState.Success(fastTranslatedArtwork.toDetailUi(isTranslated = true)))
+                // Wait for up to TRANSLATION_TIMEOUT_MS to see if the translation finishes quickly
+                val quickDeepTranslation = withTimeoutOrNull(TRANSLATION_TIMEOUT_MS) {
+                    deepTranslationDeferred.await()
+                }
 
-                val slowDeepTranslation = translationFacade.translateDeep(
-                    rawArtwork,
-                    fastTranslatedArtwork,
-                    languageCode,
-                )
-                emit(ArtworkDetailUiState.Success(slowDeepTranslation.toDetailUi(isTranslated = true)))
+                if (quickDeepTranslation != null) {
+                    // Scenario A: Fast device/cache.
+                    // Show final result immediately. Avoids UI flickering (Fast -> Deep).
+                    emit(ArtworkDetailUiState.Success(quickDeepTranslation.toDetailUi(isTranslated = true)))
+                } else {
+                    // Scenario B: Slow translation.
+                    // 1. Show "Fast" version first (Partial/Original text) so user sees content instantly.
+                    emit(ArtworkDetailUiState.Success(fastTranslatedArtwork.toDetailUi(isTranslated = true)))
+
+                    // 2. Wait for the previously started background translation to finish.
+                    val slowDeepTranslation = deepTranslationDeferred.await()
+
+                    // 3. Update the UI with the final translated text.
+                    emit(ArtworkDetailUiState.Success(slowDeepTranslation.toDetailUi(isTranslated = true)))
+                }
             }
         }
         .catch { emit(ArtworkDetailUiState.Error) }
