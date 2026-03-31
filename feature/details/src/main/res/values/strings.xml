@@ -17,4 +17,7 @@
     <string name="btn_show_original">View Original</string>
     <string name="label_original_text"> "Original text"</string>
     <string name="btn_translate">"Translate"</string>
+
+    <string name="unknown_artist">Unknown Artist</string>
+    <string name="unknown_title">Untitled</string>
 </resources>

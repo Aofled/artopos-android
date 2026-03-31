@@ -14,7 +14,7 @@ fun ArtworkDTO.toDBO(): ArtworkDBO {
         ?.mapNotNull { it.name }
         ?.joinToString(", ")
         .takeIf { !it.isNullOrBlank() }
-        ?: "Unknown Artist"
+        ?: ""
 
     // Priority: Use "images" array (better quality) -> fallback to "primaryimageurl"
     val bestImage = images?.firstOrNull()
@@ -44,7 +44,7 @@ fun ArtworkDTO.toDBO(): ArtworkDBO {
 
     return ArtworkDBO(
         id = id,
-        title = title.ifBlank { "Untitled" },
+        title = title.ifBlank { "" },
         artist = artistName,
         imageUrl = finalUrl,
         imageDimensions = dimensions,

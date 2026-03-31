@@ -28,14 +28,20 @@ internal fun ArtistAndTitle(
     artwork: ArtworkDetailUi,
 ) {
     Column(modifier = Modifier.padding(24.dp)) {
+        val displayArtist = artwork.artist.ifBlank {
+            stringResource(R.string.unknown_artist)
+        }
         Text(
-            text = artwork.artist,
+            text = displayArtist,
             style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.onBackground,
         )
         Spacer(modifier = Modifier.height(8.dp))
+        val displayTitle = artwork.title.ifBlank {
+            stringResource(R.string.unknown_title)
+        }
         Text(
-            text = artwork.title,
+            text = displayTitle,
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.secondary,
             fontWeight = FontWeight.Bold,
