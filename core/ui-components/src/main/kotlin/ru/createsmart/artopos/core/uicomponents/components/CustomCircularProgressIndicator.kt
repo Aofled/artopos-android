@@ -7,6 +7,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import ru.createsmart.artopos.core.designsystem.theme.ArtoposDimens
 
 @Composable
 fun CustomCircularProgressIndicator() {
@@ -16,6 +17,6 @@ fun CustomCircularProgressIndicator() {
         strokeWidth = 3.dp,
         modifier = Modifier
             .padding(8.dp)
-            .size(48.dp),
+            .size(ArtoposDimens.CircularProgressIndicatorHeight),
     )
 }

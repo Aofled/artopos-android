@@ -38,6 +38,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hasRoute
+import ru.createsmart.artopos.core.designsystem.theme.ArtoposDimens
 import ru.createsmart.artopos.core.navigation.ArtoposAppState
 import ru.createsmart.artopos.core.navigation.DiscoverRoute
 import ru.createsmart.artopos.core.navigation.FavoritesRoute
@@ -147,7 +148,7 @@ private fun ArtoposBottomBar(appState: ArtoposAppState) {
             modifier = Modifier
                 .fillMaxWidth()
                 .navigationBarsPadding()
-                .height(48.dp)
+                .height(ArtoposDimens.BottomBarHeight)
                 .selectableGroup(),
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically,
@@ -159,7 +160,7 @@ private fun ArtoposBottomBar(appState: ArtoposAppState) {
 
                 IconButton(
                     onClick = { appState.navigateToTopLevelDestination(destination) },
-                    modifier = Modifier.size(48.dp),
+                    modifier = Modifier.size(ArtoposDimens.BottomBarHeight),
                 ) {
                     val iconRes = if (selected) destination.iconSelected else destination.iconUnselected
 

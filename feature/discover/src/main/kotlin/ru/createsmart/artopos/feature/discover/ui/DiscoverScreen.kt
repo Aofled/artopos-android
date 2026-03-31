@@ -45,6 +45,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
+import ru.createsmart.artopos.core.designsystem.theme.ArtoposDimens
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
 import ru.createsmart.artopos.core.model.FilterParams
 import ru.createsmart.artopos.core.model.FilterType
@@ -146,8 +147,11 @@ fun DiscoverScreen(
 
     // Animate FAB vertical offset to avoid overlapping with the BottomBar
     val fabBottomPadding by animateDpAsState(
-        targetValue = if (isBottomBarVisible) 48.dp else 0.dp,
-        animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing),
+        targetValue = if (isBottomBarVisible) ArtoposDimens.BottomBarHeight else 0.dp,
+        animationSpec = tween(
+            durationMillis = ArtoposDimens.BOTTOM_BAR_ANIMATION_DURATION,
+            easing = FastOutSlowInEasing,
+        ),
         label = "fabPadding",
     )
 
@@ -155,11 +159,22 @@ fun DiscoverScreen(
     // Scaffold handles system bars (Status/Nav Bar) automatically via contentWindowInsets.
     val snackbarBottomPadding by animateDpAsState(
         targetValue = if (showFab) {
-            if (isBottomBarVisible) 122.dp else 74.dp // If FAB exists, NAV is visible, else NAV not visible.
+            if (isBottomBarVisible) {
+                ArtoposDimens.SnackbarPaddingFabWithMenu
+            } else {
+                ArtoposDimens.SnackbarPaddingFabWithoutMenu // If FAB exists, NAV is visible, else NAV not visible.
+            }
         } else {
-            if (isBottomBarVisible) 52.dp else 0.dp // If FAB does not exist, NAV is visible, else NAV not visible.
+            if (isBottomBarVisible) {
+                ArtoposDimens.SnackbarPaddingWithMenu
+            } else {
+                0.dp // If FAB does not exist, NAV is visible, else NAV not visible.
+            }
         },
-        animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing),
+        animationSpec = tween(
+            durationMillis = ArtoposDimens.BOTTOM_BAR_ANIMATION_DURATION,
+            easing = FastOutSlowInEasing,
+        ),
         label = "snackbarPadding",
     )
 

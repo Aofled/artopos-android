@@ -2,6 +2,9 @@ package ru.createsmart.artopos.feature.favorites.ui
 
 import UiText
 import android.content.res.Configuration
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
@@ -29,7 +32,9 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import ru.createsmart.artopos.core.designsystem.theme.ArtoposDimens
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
+import ru.createsmart.artopos.core.uicomponents.notifiers.LocalBottomBarVisibility
 import ru.createsmart.artopos.feature.favorites.FavoritesUiState
 import ru.createsmart.artopos.feature.favorites.FavoritesViewModel
 import ru.createsmart.artopos.feature.favorites.model.FavoritesActions
@@ -82,6 +87,21 @@ fun FavoritesScreen(
         effectFlow?.collect { message -> onShowSnackbar(message) }
     }
 
+    val isBottomBarVisible = LocalBottomBarVisibility.current
+
+    val snackbarBottomPadding by animateDpAsState(
+        targetValue = if (isBottomBarVisible) {
+            ArtoposDimens.SnackbarPaddingWithMenu
+        } else {
+            0.dp
+        }, // NAV is visible, else NAV not visible.
+        animationSpec = tween(
+            durationMillis = ArtoposDimens.BOTTOM_BAR_ANIMATION_DURATION,
+            easing = FastOutSlowInEasing,
+        ),
+        label = "snackbarPadding",
+    )
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.background,
@@ -92,7 +112,7 @@ fun FavoritesScreen(
                 hostState = snackbarHostState,
                 modifier = Modifier
                     .windowInsetsPadding(WindowInsets.navigationBars)
-                    .padding(bottom = 52.dp),
+                    .padding(bottom = snackbarBottomPadding),
             )
         },
     ) { innerPadding ->

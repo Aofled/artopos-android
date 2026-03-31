@@ -50,6 +50,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.Flow
+import ru.createsmart.artopos.core.designsystem.theme.ArtoposDimens
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
 import ru.createsmart.artopos.core.model.settings.ThemeConfig
 import ru.createsmart.artopos.core.model.settings.UserSettings
@@ -129,7 +130,7 @@ fun SettingsScreen(
                 hostState = snackbarHostState,
                 modifier = Modifier
                     .windowInsetsPadding(WindowInsets.navigationBars)
-                    .padding(bottom = 52.dp),
+                    .padding(bottom = ArtoposDimens.SnackbarPaddingWithMenu),
             )
         },
         topBar = { SettingsTopAppBar() },
