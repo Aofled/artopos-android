@@ -20,7 +20,7 @@ import javax.inject.Inject
  * Translate from a local dictionary, if that doesn't work, use ML KIT:
  * - technique, medium, period
  * Translate only ML KIT:
- * - description, dimensions, date
+ * - description, dimensions, date, galleryLocation, creditLine, provenance
  */
 
 class ArtworkTranslationFacade @Inject constructor(
@@ -55,6 +55,9 @@ class ArtworkTranslationFacade @Inject constructor(
             val dimensionsDef = async { translator.translate(originalArtwork.dimensions, languageCode) }
             val dateDef = async { translator.translate(originalArtwork.date, languageCode) }
             val styleDef = async { translator.translate(originalArtwork.style, languageCode) }
+            val galleryLocationDef = async { translator.translate(originalArtwork.galleryLocation, languageCode) }
+            val creditLineDef = async { translator.translate(originalArtwork.creditLine, languageCode) }
+            val provenanceDef = async { translator.translate(originalArtwork.provenance, languageCode) }
 
             // HYBRID: Look it up in a dictionary, if not -> ML Kit
             val mediumDef = async {
@@ -89,6 +92,9 @@ class ArtworkTranslationFacade @Inject constructor(
                 dimensions = dimensionsDef.await(),
                 date = dateDef.await(),
                 style = styleDef.await(),
+                galleryLocation = galleryLocationDef.await(),
+                creditLine = creditLineDef.await(),
+                provenance = provenanceDef.await(),
             )
         }
     }
