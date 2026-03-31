@@ -6,8 +6,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridScope
@@ -42,6 +45,7 @@ import androidx.paging.compose.itemKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
+import ru.createsmart.artopos.core.designsystem.theme.ArtoposDimens
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
 import ru.createsmart.artopos.core.designsystem.util.FilterNameHelper
 import ru.createsmart.artopos.core.model.FilterParams
@@ -112,6 +116,8 @@ private fun ArtworksGrid(
 
     val isEmptyResult = artworks.itemCount == 0 && artworks.loadState.refresh !is LoadState.Loading
 
+    val navBarsHeight = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+
     val isAtBottom by remember {
         derivedStateOf { !listState.canScrollForward }
     }
@@ -133,7 +139,8 @@ private fun ArtworksGrid(
 
     val gridPadding = PaddingValues( // Add System Bars padding + extra spacing for design
         top = contentPadding.calculateTopPadding() + 8.dp,
-        bottom = contentPadding.calculateBottomPadding() + 108.dp, // This is the height of the BottomBar 48dp + gap
+        // bottom = contentPadding.calculateBottomPadding() + 108.dp, // This is the height of the BottomBar 48dp + gap
+        bottom = navBarsHeight + ArtoposDimens.BottomBarHeight + 16.dp,
         start = 16.dp,
         end = 16.dp,
     )
