@@ -1,5 +1,7 @@
 package ru.createsmart.artopos.core.translation
 
+import android.content.res.Resources
+import com.google.mlkit.common.MlKitException
 import com.google.mlkit.common.model.DownloadConditions
 import com.google.mlkit.common.model.RemoteModelManager
 import com.google.mlkit.nl.translate.TranslateLanguage
@@ -22,8 +24,14 @@ class MLKitTranslatorImpl @Inject constructor() : TextTranslator {
     // Detects system language (e.g. "ru", "fr")
     private val targetLanguageCode: String = Locale.getDefault().language
 
+    private fun getActualLanguage(targetLanguageCode: String): String {
+        return targetLanguageCode.ifEmpty {
+            Resources.getSystem().configuration.locales.get(0).language
+        }
+    }
+
     private fun getOrCreateTranslator(targetLanguageCode: String): Translator? {
-        val actualLangCode = targetLanguageCode.ifEmpty { Locale.getDefault().language }
+        val actualLangCode = getActualLanguage(targetLanguageCode)
 
         return when {
             // 1. If the target language is English (source), translation no needed
@@ -62,7 +70,7 @@ class MLKitTranslatorImpl @Inject constructor() : TextTranslator {
                 val conditions = DownloadConditions.Builder().build()
                 client.downloadModelIfNeeded(conditions).await()
                 client.translate(text!!).await()
-            } catch (ignored: com.google.mlkit.common.MlKitException) {
+            } catch (ignored: MlKitException) {
                 // Stability: On failure (no internet, low storage), show original text instead of crashing.
                 text
             }
@@ -75,7 +83,7 @@ class MLKitTranslatorImpl @Inject constructor() : TextTranslator {
         try {
             val conditions = DownloadConditions.Builder().build()
             translator.downloadModelIfNeeded(conditions).await()
-        } catch (ignored: com.google.mlkit.common.MlKitException) {
+        } catch (ignored: MlKitException) {
             // Silent fail is OK for preloading
         }
     }
@@ -89,7 +97,7 @@ class MLKitTranslatorImpl @Inject constructor() : TextTranslator {
 
         return try {
             modelManager.isModelDownloaded(model).await()
-        } catch (ignored: com.google.mlkit.common.MlKitException) {
+        } catch (ignored: MlKitException) {
             false
         }
     }
