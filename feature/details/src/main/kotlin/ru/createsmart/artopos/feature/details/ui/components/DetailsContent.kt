@@ -90,7 +90,6 @@ fun DetailsContent(
                     onToggleTranslation = onToggleTranslation,
                     onFavoriteClick = onFavoriteClick,
                 ),
-
             )
         }
     }
@@ -148,6 +147,7 @@ private fun LazyListScope.detailsItems(
             TranslationBadge(
                 isTranslated = artwork.isTranslated,
                 onToggleClick = actions.onToggleTranslation,
+                isTranslationPending = artwork.isTranslationPending,
             )
         }
     }

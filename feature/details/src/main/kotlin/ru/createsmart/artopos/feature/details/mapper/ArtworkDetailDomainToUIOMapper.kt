@@ -7,7 +7,11 @@ import ru.createsmart.artopos.feature.details.model.ArtworkDetailUi
 import ru.createsmart.artopos.feature.details.model.DetailItem
 import ru.createsmart.artopos.feature.details.model.GalleryImageUi
 
-fun Artwork.toDetailUi(isTranslated: Boolean, canBeTranslated: Boolean = false): ArtworkDetailUi {
+fun Artwork.toDetailUi(
+    isTranslated: Boolean,
+    canBeTranslated: Boolean = false,
+    isTranslationPending: Boolean = false,
+): ArtworkDetailUi {
     val detailsList = buildList {
         fun addIfNotNull(labelResId: Int, value: String?, isWide: Boolean = false) {
             if (!value.isNullOrBlank()) {
@@ -40,8 +44,9 @@ fun Artwork.toDetailUi(isTranslated: Boolean, canBeTranslated: Boolean = false):
         classification = classification,
         century = century,
         culture = culture,
+        isFavorite = isFavorite,
         isTranslated = isTranslated,
         canBeTranslated = canBeTranslated,
-        isFavorite = isFavorite,
+        isTranslationPending = isTranslationPending,
     )
 }

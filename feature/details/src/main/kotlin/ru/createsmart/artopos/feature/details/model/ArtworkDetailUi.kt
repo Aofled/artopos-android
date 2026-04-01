@@ -17,9 +17,10 @@ data class ArtworkDetailUi(
     val details: List<DetailItem>,
     val images: List<GalleryImageUi> = emptyList(),
     val copyright: String? = null,
+    val isFavorite: Boolean,
     val isTranslated: Boolean = false,
     val canBeTranslated: Boolean = false,
-    val isFavorite: Boolean,
+    val isTranslationPending: Boolean = false,
 )
 
 @Immutable

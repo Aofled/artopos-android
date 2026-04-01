@@ -74,6 +74,7 @@ class DetailsViewModel @Inject constructor(
                         rawArtwork.toDetailUi(
                             isTranslated = false, // To show/hide the bar
                             canBeTranslated = !isTargetEnglish, // If the language is NOT English
+                            isTranslationPending = false,
                         ),
                     ),
                 )
@@ -97,17 +98,29 @@ class DetailsViewModel @Inject constructor(
                 if (quickDeepTranslation != null) {
                     // Scenario A: Fast device/cache.
                     // Show final result immediately. Avoids UI flickering (Fast -> Deep).
-                    emit(ArtworkDetailUiState.Success(quickDeepTranslation.toDetailUi(isTranslated = true)))
+                    emit(
+                        ArtworkDetailUiState.Success(
+                            quickDeepTranslation.toDetailUi(isTranslated = true, isTranslationPending = false),
+                        ),
+                    )
                 } else {
                     // Scenario B: Slow translation.
                     // 1. Show "Fast" version first (Partial/Original text) so user sees content instantly.
-                    emit(ArtworkDetailUiState.Success(fastTranslatedArtwork.toDetailUi(isTranslated = true)))
+                    emit(
+                        ArtworkDetailUiState.Success(
+                            fastTranslatedArtwork.toDetailUi(isTranslated = true, isTranslationPending = true),
+                        ),
+                    )
 
                     // 2. Wait for the previously started background translation to finish.
                     val slowDeepTranslation = deepTranslationDeferred.await()
 
                     // 3. Update the UI with the final translated text.
-                    emit(ArtworkDetailUiState.Success(slowDeepTranslation.toDetailUi(isTranslated = true)))
+                    emit(
+                        ArtworkDetailUiState.Success(
+                            slowDeepTranslation.toDetailUi(isTranslated = true, isTranslationPending = false),
+                        ),
+                    )
                 }
             }
         }
