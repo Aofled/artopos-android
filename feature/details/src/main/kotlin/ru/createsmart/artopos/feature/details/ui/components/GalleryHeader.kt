@@ -20,12 +20,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,7 +32,6 @@ import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.flow.collectLatest
 import ru.createsmart.artopos.core.uicomponents.components.DownloadButton
 import ru.createsmart.artopos.core.uicomponents.components.FavoriteButton
 import ru.createsmart.artopos.feature.details.model.GalleryImageUi
@@ -66,13 +62,7 @@ fun GalleryHeader(
     val finalHeight = animatedHeight(targetHeight, isScrolledDown)
 
     // For the "download" button
-    var isCurrentImageLoaded by remember { mutableStateOf(false) }
-
-    LaunchedEffect(pagerState) {
-        snapshotFlow { pagerState.currentPage }.collectLatest {
-            isCurrentImageLoaded = false
-        }
-    }
+    val loadedPages = remember { mutableStateMapOf<Int, Boolean>() }
 
     Box {
         HorizontalPager(
@@ -89,10 +79,7 @@ fun GalleryHeader(
                 onShowMessage = onShowMessage,
                 contentScale = ContentScale.Crop,
                 onImageLoaded = { loaded ->
-                    // Update the button state ONLY if the callback came from the current VISIBLE page
-                    if (page == pagerState.currentPage) {
-                        isCurrentImageLoaded = loaded
-                    }
+                    loadedPages[page] = loaded
                 },
             )
         }
@@ -125,6 +112,8 @@ fun GalleryHeader(
                     .padding(0.dp),
                 isFullScreen = true,
             )
+
+            val isCurrentImageLoaded = loadedPages[pagerState.currentPage] == true
 
             AnimatedVisibility(
                 visible = isCurrentImageLoaded,
