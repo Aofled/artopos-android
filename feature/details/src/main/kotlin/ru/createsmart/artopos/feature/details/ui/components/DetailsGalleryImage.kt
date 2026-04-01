@@ -33,6 +33,7 @@ fun DetailsGalleryImage(
     globalVersion: Int,
     onShowMessage: (UiText) -> Unit,
     contentScale: ContentScale,
+    onImageLoaded: (Boolean) -> Unit,
 ) {
     val context = LocalContext.current
     var localRetry by remember { mutableIntStateOf(0) }
@@ -47,6 +48,7 @@ fun DetailsGalleryImage(
         onStateChange = { loaded, error ->
             isImageLoaded = loaded
             lastError = error
+            onImageLoaded(loaded)
         },
         onErrorMessage = { if (localRetry > 0) onShowMessage(it) },
     )

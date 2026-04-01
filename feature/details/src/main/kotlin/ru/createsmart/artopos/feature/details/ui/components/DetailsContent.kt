@@ -51,6 +51,7 @@ fun DetailsContent(
     onToggleTranslation: () -> Unit,
     onFavoriteClick: () -> Unit,
     isRefreshing: Boolean,
+    onDownloadClick: (url: String, title: String) -> Unit,
 ) {
     val scrollState = rememberLazyListState()
     val pagerState = rememberPagerState(pageCount = { artwork.images.size })
@@ -90,6 +91,7 @@ fun DetailsContent(
                     onToggleTranslation = onToggleTranslation,
                     onFavoriteClick = onFavoriteClick,
                 ),
+                onDownloadClick = onDownloadClick,
             )
         }
     }
@@ -99,6 +101,7 @@ private fun LazyListScope.detailsItems(
     artwork: ArtworkDetailUi,
     galleryState: GalleryState,
     actions: DetailsActions,
+    onDownloadClick: (String, String) -> Unit,
 ) {
     // 1. Gallery
     item {
@@ -110,6 +113,8 @@ private fun LazyListScope.detailsItems(
             onShowMessage = actions.onShowMessage,
             isFavorite = artwork.isFavorite,
             onFavoriteClick = actions.onFavoriteClick,
+            artworkTitle = artwork.title,
+            onDownloadClick = onDownloadClick,
         )
     }
 
@@ -179,6 +184,7 @@ private fun ArtworksViewPreview() {
             isRefreshing = true,
             onToggleTranslation = { },
             onFavoriteClick = { },
+            onDownloadClick = { url: String, title: String -> },
         )
     }
 }

@@ -20,4 +20,11 @@
 
     <string name="unknown_artist">Unknown Artist</string>
     <string name="unknown_title">Untitled</string>
+
+    <string name="msg_downloading">Downloading image...</string>
+    <string name="msg_saved_to">Saved to %1$s</string>
+
+    <string name="error_no_internet">No internet connection</string>
+    <string name="error_no_save">Failed to save: Check your connection or storage</string>
+    <string name="error_no_image">An error occurred while saving the image</string>
 </resources>

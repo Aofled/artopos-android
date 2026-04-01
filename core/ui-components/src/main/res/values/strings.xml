@@ -2,4 +2,5 @@
 <resources>
     <string name="description_remove_favorites">Remove from favorites</string>
     <string name="description_add_favorites">Add to favorites</string>
+    <string name="description_download">Download</string>
 </resources>

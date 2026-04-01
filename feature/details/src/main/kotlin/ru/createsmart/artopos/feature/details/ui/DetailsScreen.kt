@@ -55,6 +55,7 @@ fun DetailsScreenRoute(
         onFavoriteClick = viewModel::toggleFavorite,
         isRefreshing = isRefreshing,
         onToggleTranslation = viewModel::toggleTranslation,
+        onDownloadClick = viewModel::downloadImage,
     )
 }
 
@@ -68,6 +69,7 @@ fun DetailsScreen(
     onFavoriteClick: () -> Unit,
     isRefreshing: Boolean,
     onToggleTranslation: () -> Unit,
+    onDownloadClick: (url: String, title: String) -> Unit,
 ) {
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
@@ -127,6 +129,7 @@ fun DetailsScreen(
                         isRefreshing = isRefreshing,
                         onFavoriteClick = onFavoriteClick,
                         onToggleTranslation = onToggleTranslation,
+                        onDownloadClick = onDownloadClick,
                     )
                 }
             }
@@ -161,6 +164,7 @@ fun DiscoverScreenPreview(
             isRefreshing = true,
             onToggleTranslation = { },
             onFavoriteClick = { },
+            onDownloadClick = { url: String, title: String -> },
         )
     }
 }

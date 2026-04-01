@@ -20,10 +20,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import ru.createsmart.artopos.core.designsystem.components.toUiText
 import ru.createsmart.artopos.core.domain.interactor.DetailsInteractor
+import ru.createsmart.artopos.core.domain.repository.ImageDownloader
 import ru.createsmart.artopos.core.navigation.DetailsRoute
 import ru.createsmart.artopos.core.uicomponents.manager.UiMessageManager
 import ru.createsmart.artopos.feature.details.mapper.toDetailUi
 import ru.createsmart.artopos.feature.details.translation.ArtworkTranslationFacade
+import java.io.IOException
+import java.net.ConnectException
+import java.net.UnknownHostException
 import java.util.Locale
 import javax.inject.Inject
 
@@ -35,6 +39,7 @@ class DetailsViewModel @Inject constructor(
     private val useCases: DetailsInteractor,
     private val messageManager: UiMessageManager,
     private val translationFacade: ArtworkTranslationFacade,
+    private val imageDownloader: ImageDownloader,
 ) : ViewModel() {
     private val routeArgs = savedStateHandle.toRoute<DetailsRoute>()
     private val artworkId = routeArgs.artworkId
@@ -162,6 +167,33 @@ class DetailsViewModel @Inject constructor(
     fun toggleFavorite() {
         viewModelScope.launch {
             useCases.toggleFavorite(artworkId)
+        }
+    }
+
+    fun downloadImage(url: String, title: String) {
+        viewModelScope.launch {
+            val result = imageDownloader.downloadImage(url, title)
+
+            result.onSuccess { path ->
+                messageManager.sendSideEffect(UiText.StringResource(R.string.msg_saved_to, path))
+            }.onFailure { error ->
+
+                val uiMessage = when (error) {
+                    is UnknownHostException, is ConnectException -> {
+                        // Network error (and the image is not in the offline cache)
+                        UiText.StringResource(R.string.error_no_internet)
+                    }
+                    is IOException -> {
+                        // Network or disk problems (e.g. no space)
+                        UiText.StringResource(R.string.error_no_save)
+                    }
+                    else -> {
+                        // Unknown failure (e.g. MediaStore crashed)
+                        UiText.StringResource(R.string.error_no_image)
+                    }
+                }
+                messageManager.sendSideEffect(uiMessage)
+            }
         }
     }
 }
