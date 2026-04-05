@@ -33,7 +33,7 @@ internal fun ArtistAndTitle(
         }
         Text(
             text = displayArtist,
-            style = MaterialTheme.typography.headlineMedium,
+            style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.onBackground,
         )
         Spacer(modifier = Modifier.height(8.dp))

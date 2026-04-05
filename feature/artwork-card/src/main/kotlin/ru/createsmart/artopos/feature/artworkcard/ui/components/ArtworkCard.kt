@@ -49,17 +49,19 @@ fun ArtworkCard(
         }
 
         Column(
-            modifier = Modifier.padding(top = 8.dp, start = 4.dp),
+            modifier = Modifier.padding(top = 8.dp),
         ) {
             val displayArtist = artwork.artist.ifBlank {
                 stringResource(R.string.unknown_artist)
             }
             Text(
                 text = displayArtist,
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .padding(bottom = 4.dp),
             )
         }
         val displayTitle = artwork.title.ifBlank {
