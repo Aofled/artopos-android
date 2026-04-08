@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import ru.createsmart.artopos.core.domain.repository.SettingsRepository
-import ru.createsmart.artopos.core.domain.usecase.ClearImageCacheUseCase
+import ru.createsmart.artopos.core.domain.usecase.ClearAppCacheUseCase
 import ru.createsmart.artopos.core.domain.usecase.GetImageCacheSizeUseCase
 import ru.createsmart.artopos.core.model.settings.ThemeConfig
 import ru.createsmart.artopos.core.uicomponents.manager.UiMessageManager
@@ -22,7 +22,7 @@ private const val BYTES_IN_MEGABYTE = 1024L * 1024L
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
-    private val clearImageCacheUseCase: ClearImageCacheUseCase,
+    private val clearAppCacheUseCase: ClearAppCacheUseCase,
     private val getImageCacheSizeUseCase: GetImageCacheSizeUseCase,
     private val uiMessageManager: UiMessageManager,
 ) : ViewModel() {
@@ -62,13 +62,13 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun clearImageCache() {
+    fun clearAppCache() {
         viewModelScope.launch {
             uiMessageManager.sendSideEffect(
                 UiText.StringResource(R.string.msg_clearing_cache),
             )
 
-            val freedBytes = clearImageCacheUseCase()
+            val freedBytes = clearAppCacheUseCase()
             val freedMb = freedBytes / (BYTES_IN_MEGABYTE)
 
             val message = if (freedMb > 0) {

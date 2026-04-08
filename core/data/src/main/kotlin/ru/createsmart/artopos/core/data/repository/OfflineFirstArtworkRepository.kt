@@ -124,4 +124,15 @@ class OfflineFirstArtworkRepository @Inject constructor(
             }
         }
     }
+
+    // To clear unused fields from the detail_table
+    override suspend fun clearDatabaseCache() {
+        withContext(Dispatchers.IO) {
+            try {
+                // val deletedCount = database.artworkDao().clearOrphanedDetails()
+                // Log.d("DatabaseCache", "Cleared $deletedCount orphaned artwork details.")
+            } catch (ignored: Exception) {
+            }
+        }
+    }
 }

@@ -103,7 +103,7 @@ class SettingsViewModelTest {
         setupViewModel()
 
         // WHEN
-        viewModel.clearImageCache()
+        viewModel.clearAppCache()
 
         // THEN
         // "Clearing..."

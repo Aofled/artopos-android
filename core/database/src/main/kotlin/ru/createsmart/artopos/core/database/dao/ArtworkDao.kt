@@ -53,6 +53,16 @@ interface ArtworkDao {
     )
     fun getArtworkWithDetails(id: Int): Flow<ArtworkDetailsWithFavoriteFlagDBO?>
 
+    // Clears artwork_details that are not associated with the Discover or Favorites.
+    @Query(
+        """
+        DELETE FROM artwork_details 
+        WHERE id NOT IN (SELECT id FROM artworks) 
+          AND id NOT IN (SELECT id FROM favorites)
+    """,
+    )
+    suspend fun clearOrphanedDetails(): Int
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertDetails(details: ArtworkDetailsDBO)
 }

@@ -96,7 +96,7 @@ fun SettingsRoute(
         cacheSizeMb = cacheSizeMb,
         effectFlow = viewModel.uiEffect,
         onThemeChange = viewModel::updateTheme,
-        onClearCache = viewModel::clearImageCache,
+        onClearCache = viewModel::clearAppCache,
         onLanguageChange = viewModel::updateLanguage,
         currentLanguageTag = currentLanguageTag,
     )

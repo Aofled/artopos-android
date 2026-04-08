@@ -14,4 +14,5 @@ interface ArtworkRepository {
     suspend fun syncArtworkDetails(id: Int): Result<Unit>
     fun getFavoriteArtworks(): Flow<List<Artwork>>
     suspend fun toggleFavorite(artworkId: Int)
+    suspend fun clearDatabaseCache()
 }
