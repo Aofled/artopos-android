@@ -36,6 +36,7 @@ import ru.createsmart.artopos.core.uicomponents.components.DownloadButton
 import ru.createsmart.artopos.core.uicomponents.components.FavoriteButton
 import ru.createsmart.artopos.feature.details.model.GalleryImageUi
 
+private const val RATIO_THRESHOLD_PORTRAIT = 0.8f
 private const val RATIO_THRESHOLD_SQUARE = 1.1f
 private const val RATIO_THRESHOLD_SMALL_PANORAMA = 1.5f
 private const val RATIO_THRESHOLD_MEDIUM_PANORAMA = 2.5f
@@ -43,11 +44,12 @@ private const val RATIO_THRESHOLD_SUPER_PANORAMA = 3.0f
 private const val RATIO_THRESHOLD_EXTRA_PANORAMA = 3.5f
 
 private const val ZOOM_MULTIPLIER_NONE = 1.0f
-private const val ZOOM_MULTIPLIER_SMALL = 1.5f
-private const val ZOOM_MULTIPLIER_MEDIUM = 2.0f
-private const val ZOOM_MULTIPLIER_LARGE = 2.5f
-private const val ZOOM_MULTIPLIER_SUPER_LARGE = 3.0f
-private const val ZOOM_MULTIPLIER_EXTRA_LARGE = 3.5f
+private const val ZOOM_MULTIPLIER_EXTRA_SMALL = 1.5f
+private const val ZOOM_MULTIPLIER_SMALL = 2.0f
+private const val ZOOM_MULTIPLIER_MEDIUM = 2.5f
+private const val ZOOM_MULTIPLIER_LARGE = 3.0f
+private const val ZOOM_MULTIPLIER_SUPER_LARGE = 3.5f
+private const val ZOOM_MULTIPLIER_EXTRA_LARGE = 5.5f
 
 @Composable
 fun GalleryHeader(
@@ -80,22 +82,25 @@ fun GalleryHeader(
     // The wider the panorama (the larger the ratio), the more we expand the container when zooming
     val zoomMultiplier = if (isCurrentZoomed) {
         when {
-            // Squares and vertical portraits (ratio <= 1.1) are NOT stretched.
-            ratio <= RATIO_THRESHOLD_SQUARE -> ZOOM_MULTIPLIER_NONE
+            // Vertical portraits (ratio <= 0.8) are NOT stretched.
+            ratio <= RATIO_THRESHOLD_PORTRAIT -> ZOOM_MULTIPLIER_NONE
 
-            // Small panoramas (up to 1.5:1). Stretch by 1.5 times.
+            // Squares and vertical portraits (from 0.8 to 1.1:1). Stretch by 1.5 times.
+            ratio <= RATIO_THRESHOLD_SQUARE -> ZOOM_MULTIPLIER_EXTRA_SMALL
+
+            // Small panoramas (from 1.1 to 1.5:1). Stretch by 2.0 times.
             ratio <= RATIO_THRESHOLD_SMALL_PANORAMA -> ZOOM_MULTIPLIER_SMALL
 
-            // Medium panoramas (from 1.5:1 to 2.5:1). Stretched by 2x.
+            // Medium panoramas (from 1.5:1 to 2.5:1). Stretched by 2.5x.
             ratio <= RATIO_THRESHOLD_MEDIUM_PANORAMA -> ZOOM_MULTIPLIER_MEDIUM
 
-            // large panoramas (from 2.5:1 to 3.0:1). Stretched by 2.5x.
+            // large panoramas (from 2.5:1 to 3.0:1). Stretched by 3.0x.
             ratio <= RATIO_THRESHOLD_SUPER_PANORAMA -> ZOOM_MULTIPLIER_LARGE
 
-            // large panoramas (from 3.0:1 to 3.5:1). Stretched by 3x.
+            // large panoramas (from 3.0:1 to 3.5:1). Stretched by 3.5x.
             ratio <= RATIO_THRESHOLD_EXTRA_PANORAMA -> ZOOM_MULTIPLIER_SUPER_LARGE
 
-            // Extremely long scrolls/panoramas (wider than 3.0:1). Stretch by 3.5x.
+            // Extremely long scrolls/panoramas (wider than 3.0:1). Stretch by 5.5x.
             else -> ZOOM_MULTIPLIER_EXTRA_LARGE
         }
     } else {
