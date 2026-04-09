@@ -4,11 +4,13 @@ import UiText
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.layout.ContentScale
@@ -26,6 +28,7 @@ import ru.createsmart.artopos.core.uicomponents.components.analyzeRetry
 import ru.createsmart.artopos.core.designsystem.R as UiR
 
 private const val RETRY_HASH = "retry_hash"
+private const val ZOOM_ACTIVATION_THRESHOLD = 1.25f
 
 @Composable
 fun DetailsGalleryImage(
@@ -34,6 +37,7 @@ fun DetailsGalleryImage(
     onShowMessage: (UiText) -> Unit,
     contentScale: ContentScale,
     onImageLoaded: (Boolean) -> Unit,
+    onZoomStateChanged: (isZoomed: Boolean) -> Unit = {},
 ) {
     val context = LocalContext.current
     var localRetry by remember { mutableIntStateOf(0) }
@@ -52,6 +56,14 @@ fun DetailsGalleryImage(
         },
         onErrorMessage = { if (localRetry > 0) onShowMessage(it) },
     )
+
+    LaunchedEffect(zoomState) {
+        snapshotFlow { zoomState.scale }.collect { currentScale ->
+            // The image is zoomed if the scale is greater than 1.25
+            val isZoomed = currentScale > ZOOM_ACTIVATION_THRESHOLD
+            onZoomStateChanged(isZoomed)
+        }
+    }
 
     Box(
         modifier = Modifier
