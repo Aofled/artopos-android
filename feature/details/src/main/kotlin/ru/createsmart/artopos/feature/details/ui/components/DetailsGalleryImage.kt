@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
+import coil.size.Size
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
 import ru.createsmart.artopos.core.designsystem.R
@@ -43,7 +44,7 @@ fun DetailsGalleryImage(
     var localRetry by remember { mutableIntStateOf(0) }
     var lastError: Throwable? by remember { mutableStateOf(null) }
 
-    val zoomState = rememberZoomState(maxScale = 5f)
+    val zoomState = rememberZoomState(maxScale = 10f)
     var isImageLoaded by remember { mutableStateOf(false) }
 
     val imageRequest = rememberGalleryImageRequest(
@@ -107,6 +108,7 @@ private fun rememberGalleryImageRequest(
         ImageRequest.Builder(context)
             .data(imageUrl)
             .setParameter(RETRY_HASH, version, memoryCacheKey = null)
+            .size(Size.ORIGINAL)
             .crossfade(true)
             .listener(
                 onStart = { onStateChange(false, null) },
