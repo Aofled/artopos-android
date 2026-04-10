@@ -2,6 +2,7 @@ package ru.createsmart.artopos.feature.favorites.ui.components
 
 import UiText
 import android.content.res.Configuration
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
@@ -23,10 +24,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
 import ru.createsmart.artopos.core.uicomponents.notifiers.LocalBottomBarStateNotifier
 import ru.createsmart.artopos.feature.artworkcard.model.ArtworkListItem
@@ -48,6 +51,7 @@ fun FavoritesView(
 
     val listState = rememberLazyStaggeredGridState()
     val bottomBarNotifier = LocalBottomBarStateNotifier.current
+    val coroutineScope = rememberCoroutineScope()
 
     val isAtBottom by remember(artworks.size) {
         derivedStateOf {
@@ -58,6 +62,16 @@ fun FavoritesView(
     // We don't hide the navigation if the list has reached the end or the screen is not scrollable.
     LaunchedEffect(isAtBottom) {
         bottomBarNotifier(isAtBottom)
+    }
+
+    val canScrollUp by remember {
+        derivedStateOf { listState.firstVisibleItemIndex > 0 } // If below the first element
+    }
+
+    BackHandler(enabled = canScrollUp) {
+        coroutineScope.launch {
+            listState.scrollToItem(0)
+        }
     }
 
     PullToRefreshBox(
