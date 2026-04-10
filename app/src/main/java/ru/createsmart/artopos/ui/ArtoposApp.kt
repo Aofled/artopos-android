@@ -43,6 +43,7 @@ import ru.createsmart.artopos.core.navigation.ArtoposAppState
 import ru.createsmart.artopos.core.navigation.DiscoverRoute
 import ru.createsmart.artopos.core.navigation.FavoritesRoute
 import ru.createsmart.artopos.core.navigation.rememberArtoposAppState
+import ru.createsmart.artopos.core.uicomponents.notifiers.BottomBarCommand
 import ru.createsmart.artopos.core.uicomponents.notifiers.LocalBottomBarStateNotifier
 import ru.createsmart.artopos.core.uicomponents.notifiers.LocalBottomBarVisibility
 import ru.createsmart.artopos.navigation.AppNavGraph
@@ -90,15 +91,23 @@ fun ArtoposApp(
     }
 
     /**
-     * If the list is at the end (or the list is empty/small), force the menu to appear.
-     * If the list is at the end (atBottom = false), do NOT force the menu to appear.
-     * Unlock the menu (isLockedAtBottom = false),
-     * The next swipe down (via onPreScroll) will hide the navigation.
+     * Updates the bottom bar state based on the command.
+     * [BottomBarCommand.SHOW] - makes the bottom bar visible.
+     * [BottomBarCommand.LOCK_AT_BOTTOM] - locks the bar at the bottom and shows it.
+     * [BottomBarCommand.UNLOCK] - unlocks the bar so it can be hidden by scrolling.
      */
-    val bottomBarNotifier: (Boolean) -> Unit = { atBottom ->
-        isLockedAtBottom = atBottom
-        if (atBottom) {
-            isBottomBarVisible = true
+    val bottomBarNotifier: (BottomBarCommand) -> Unit = { command ->
+        when (command) {
+            BottomBarCommand.SHOW -> {
+                isBottomBarVisible = true
+            }
+            BottomBarCommand.LOCK_AT_BOTTOM -> {
+                isLockedAtBottom = true
+                isBottomBarVisible = true
+            }
+            BottomBarCommand.UNLOCK -> {
+                isLockedAtBottom = false
+            }
         }
     }
 

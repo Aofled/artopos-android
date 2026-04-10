@@ -55,6 +55,7 @@ import ru.createsmart.artopos.core.model.FilterParams
 import ru.createsmart.artopos.core.model.FilterType
 import ru.createsmart.artopos.core.uicomponents.components.CustomCircularProgressIndicator
 import ru.createsmart.artopos.core.uicomponents.components.CustomInputChip
+import ru.createsmart.artopos.core.uicomponents.notifiers.BottomBarCommand
 import ru.createsmart.artopos.core.uicomponents.notifiers.LocalBottomBarStateNotifier
 import ru.createsmart.artopos.feature.artworkcard.model.ArtworkListItem
 import ru.createsmart.artopos.feature.artworkcard.ui.components.ArtworkCard
@@ -128,13 +129,18 @@ private fun ArtworksGrid(
 
     // We don't hide the navigation if the list has reached the end or the screen is not scrollable.
     LaunchedEffect(isAtBottom) {
-        bottomBarNotifier(isAtBottom)
+        if (isAtBottom) {
+            bottomBarNotifier(BottomBarCommand.LOCK_AT_BOTTOM)
+        } else {
+            bottomBarNotifier(BottomBarCommand.UNLOCK)
+        }
     }
 
     LaunchedEffect(artworks.loadState.refresh) { // Auto-scroll up when data is updated
         scrollUp.collect { action ->
             when (action) {
                 is DiscoverEvent.ScrollToTop -> {
+                    bottomBarNotifier(BottomBarCommand.SHOW)
                     listState.scrollToItem(0)
                 }
             }
@@ -147,13 +153,13 @@ private fun ArtworksGrid(
 
     BackHandler(enabled = canScrollUp) {
         coroutineScope.launch {
+            bottomBarNotifier(BottomBarCommand.SHOW)
             listState.scrollToItem(0)
         }
     }
 
     val gridPadding = PaddingValues( // Add System Bars padding + extra spacing for design
         top = contentPadding.calculateTopPadding() + 8.dp,
-        // bottom = contentPadding.calculateBottomPadding() + 108.dp, // This is the height of the BottomBar 48dp + gap
         bottom = navBarsHeight + ArtoposDimens.BottomBarHeight + 16.dp,
         start = 16.dp,
         end = 16.dp,

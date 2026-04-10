@@ -31,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
+import ru.createsmart.artopos.core.uicomponents.notifiers.BottomBarCommand
 import ru.createsmart.artopos.core.uicomponents.notifiers.LocalBottomBarStateNotifier
 import ru.createsmart.artopos.feature.artworkcard.model.ArtworkListItem
 import ru.createsmart.artopos.feature.artworkcard.ui.components.ArtworkCard
@@ -61,7 +62,11 @@ fun FavoritesView(
 
     // We don't hide the navigation if the list has reached the end or the screen is not scrollable.
     LaunchedEffect(isAtBottom) {
-        bottomBarNotifier(isAtBottom)
+        if (isAtBottom) {
+            bottomBarNotifier(BottomBarCommand.LOCK_AT_BOTTOM)
+        } else {
+            bottomBarNotifier(BottomBarCommand.UNLOCK)
+        }
     }
 
     val canScrollUp by remember {
@@ -70,6 +75,7 @@ fun FavoritesView(
 
     BackHandler(enabled = canScrollUp) {
         coroutineScope.launch {
+            bottomBarNotifier(BottomBarCommand.SHOW)
             listState.scrollToItem(0)
         }
     }
