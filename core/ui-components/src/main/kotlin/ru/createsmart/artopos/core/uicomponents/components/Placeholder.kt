@@ -32,7 +32,7 @@ fun RetryPlaceholder(
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Icon(
-                painter = painterResource(id = R.drawable.refresh),
+                painter = painterResource(id = R.drawable.ic_refresh),
                 contentDescription = hint,
                 tint = MaterialTheme.colorScheme.onErrorContainer,
             )

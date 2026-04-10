@@ -230,11 +230,16 @@ private fun SortToggleButton(
     ) {
         AnimatedContent(targetState = sort, label = "sort_anim") { targetSort ->
             val (iconRes, textRes) = when (targetSort) {
-                FilterSortOption.RANK -> UiR.drawable.sort to R.string.sort_rank // "Curator's Pick"
-                FilterSortOption.TOTAL_PAGE_VIEWS -> UiR.drawable.person_heart to R.string.sort_views // "Most Viewed"
-                FilterSortOption.ACCESSION_YEAR -> UiR.drawable.schedule to R.string.sort_newest // "New Arrivals"
-                FilterSortOption.DATE_BEGIN -> UiR.drawable.hourglass to R.string.sort_oldest // "Oldest First"
-                FilterSortOption.RANDOM -> UiR.drawable.shuffle to R.string.sort_random // "Shuffle"
+                FilterSortOption.RANK ->
+                    UiR.drawable.ic_action_sort to R.string.sort_rank // "Curator's Pick"
+                FilterSortOption.TOTAL_PAGE_VIEWS ->
+                    UiR.drawable.ic_action_person_heart to R.string.sort_views // "Most Viewed"
+                FilterSortOption.ACCESSION_YEAR ->
+                    UiR.drawable.ic_action_schedule to R.string.sort_newest // "New Arrivals"
+                FilterSortOption.DATE_BEGIN ->
+                    UiR.drawable.ic_action_hourglass to R.string.sort_oldest // "Oldest First"
+                FilterSortOption.RANDOM ->
+                    UiR.drawable.ic_action_shuffle to R.string.sort_random // "Shuffle"
             }
 
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -271,7 +276,7 @@ private fun FilterSearchBar(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
-            painter = painterResource(id = UiR.drawable.search),
+            painter = painterResource(id = UiR.drawable.ic_search),
             contentDescription = stringResource(R.string.description_search_filters),
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(20.dp),
@@ -329,7 +334,7 @@ private fun SearchInputField(
                 modifier = Modifier.size(24.dp),
             ) {
                 Icon(
-                    painter = painterResource(id = UiR.drawable.close),
+                    painter = painterResource(id = UiR.drawable.ic_action_close),
                     contentDescription = stringResource(R.string.description_search_clear),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(16.dp),

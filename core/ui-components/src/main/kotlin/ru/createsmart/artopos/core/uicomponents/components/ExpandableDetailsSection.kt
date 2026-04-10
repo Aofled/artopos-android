@@ -72,9 +72,9 @@ fun ExpandableDetailsSection(
             )
             Icon(
                 painter = if (isExpanded) {
-                    painterResource(id = R.drawable.keyboard_arrow_up)
+                    painterResource(id = R.drawable.ic_action_keyboard_arrow_up)
                 } else {
-                    painterResource(id = R.drawable.keyboard_arrow_down)
+                    painterResource(id = R.drawable.ic_action_keyboard_arrow_down)
                 },
                 contentDescription = if (isExpanded) {
                     stringResource(R.string.description_collapse)

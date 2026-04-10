@@ -269,7 +269,7 @@ private fun SettingsContent(
 
         item {
             SettingsItem(
-                painter = painterResource(UiR.drawable.color_lens),
+                painter = painterResource(UiR.drawable.ic_color_lens),
                 title = stringResource(R.string.setting_theme),
                 subtitle = getThemeDisplayName(settings.themeConfig),
                 onClick = onThemeClick,
@@ -278,7 +278,7 @@ private fun SettingsContent(
 
         item {
             SettingsItem(
-                painter = painterResource(id = UiR.drawable.language),
+                painter = painterResource(id = UiR.drawable.ic_language),
                 title = stringResource(R.string.setting_language),
                 subtitle = getLanguageDisplayName(currentLanguageTag),
                 onClick = onLanguageClick,
@@ -298,7 +298,7 @@ private fun SettingsContent(
             }
 
             SettingsItem(
-                painter = painterResource(UiR.drawable.delete_outline),
+                painter = painterResource(UiR.drawable.ic_delete),
                 title = stringResource(R.string.setting_cache),
                 subtitle = cacheSubtitle,
                 onClick = onClearCacheClick,

@@ -32,7 +32,7 @@ fun DownloadButton(
             .size(40.dp),
     ) {
         Icon(
-            painter = painterResource(id = UiR.drawable.download),
+            painter = painterResource(id = UiR.drawable.ic_action_download),
             contentDescription = stringResource(R.string.description_download),
             tint = Color.White,
             modifier = Modifier.size(24.dp),

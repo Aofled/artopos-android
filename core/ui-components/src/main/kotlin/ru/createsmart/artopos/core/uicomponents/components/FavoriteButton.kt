@@ -31,9 +31,9 @@ fun FavoriteButton(
             .size(if (isFullScreen) 40.dp else 36.dp),
     ) {
         val iconRes = if (isFavorite) {
-            UiR.drawable.favorite
+            UiR.drawable.ic_action_favorite
         } else {
-            UiR.drawable.favorite_border
+            UiR.drawable.ic_action_favorite_border
         }
 
         Icon(
