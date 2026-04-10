@@ -11,8 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import ru.createsmart.artopos.core.domain.usecase.GetFavoriteArtworksUseCase
-import ru.createsmart.artopos.core.domain.usecase.ToggleFavoriteUseCase
+import ru.createsmart.artopos.core.domain.interactor.FavoritesInteractor
 import ru.createsmart.artopos.core.uicomponents.manager.UiMessageManager
 import ru.createsmart.artopos.feature.artworkcard.mapper.toUi
 import javax.inject.Inject
@@ -28,8 +27,7 @@ private const val REFRESH_DELAY_MS = 300L
 
 @HiltViewModel
 class FavoritesViewModel @Inject constructor(
-    getFavoritesUseCase: GetFavoriteArtworksUseCase,
-    private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
+    private val useCases: FavoritesInteractor,
     private val messageManager: UiMessageManager,
 ) : ViewModel() {
 
@@ -41,7 +39,7 @@ class FavoritesViewModel @Inject constructor(
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing = _isRefreshing.asStateFlow()
 
-    val uiState: StateFlow<FavoritesUiState> = getFavoritesUseCase()
+    val uiState: StateFlow<FavoritesUiState> = useCases.getFavoritesUseCase()
         .map { list ->
             if (list.isEmpty()) {
                 FavoritesUiState.Empty
@@ -57,7 +55,7 @@ class FavoritesViewModel @Inject constructor(
 
     fun onToggleFavorite(id: Int) {
         viewModelScope.launch {
-            toggleFavoriteUseCase(id)
+            useCases.toggleFavoriteUseCase(id)
         }
     }
 

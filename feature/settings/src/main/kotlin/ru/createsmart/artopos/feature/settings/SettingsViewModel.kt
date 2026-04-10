@@ -1,5 +1,6 @@
 package ru.createsmart.artopos.feature.settings
 
+import UiText
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -10,9 +11,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import ru.createsmart.artopos.core.domain.interactor.SettingsInteractor
 import ru.createsmart.artopos.core.domain.repository.SettingsRepository
-import ru.createsmart.artopos.core.domain.usecase.ClearAppCacheUseCase
-import ru.createsmart.artopos.core.domain.usecase.GetImageCacheSizeUseCase
 import ru.createsmart.artopos.core.model.settings.ThemeConfig
 import ru.createsmart.artopos.core.uicomponents.manager.UiMessageManager
 import javax.inject.Inject
@@ -22,8 +22,7 @@ private const val BYTES_IN_MEGABYTE = 1024L * 1024L
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
-    private val clearAppCacheUseCase: ClearAppCacheUseCase,
-    private val getImageCacheSizeUseCase: GetImageCacheSizeUseCase,
+    private val useCases: SettingsInteractor,
     private val uiMessageManager: UiMessageManager,
 ) : ViewModel() {
 
@@ -56,7 +55,7 @@ class SettingsViewModel @Inject constructor(
 
     fun calculateCacheSize() {
         viewModelScope.launch {
-            val bytes = getImageCacheSizeUseCase()
+            val bytes = useCases.getImageCacheSizeUseCase()
             val megabytes = bytes / (BYTES_IN_MEGABYTE)
             _cacheSizeMb.value = megabytes
         }
@@ -68,7 +67,7 @@ class SettingsViewModel @Inject constructor(
                 UiText.StringResource(R.string.msg_clearing_cache),
             )
 
-            val freedBytes = clearAppCacheUseCase()
+            val freedBytes = useCases.clearAppCacheUseCase()
             val freedMb = freedBytes / (BYTES_IN_MEGABYTE)
 
             val message = if (freedMb > 0) {
