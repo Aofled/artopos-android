@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_section_appearance">Знешні выгляд</string>
+    <string name="settings_section_storage">Сховішча</string>
+
+    <string name="settings_label_theme">Тэма</string>
+    <string name="settings_label_language">Мова</string>
+    <string name="settings_label_cache">Ачысціць кэш выяў</string>
+    <string name="settings_label_cache_subtitle">Вызваліць месца на прыладзе</string>
+
+    <string name="settings_theme_dialog_title">Выбраць тэму</string>
+    <string name="settings_theme_option_system">Сістэмная</string>
+    <string name="settings_theme_option_light">Светлая</string>
+    <string name="settings_theme_option_dark">Цёмная</string>
+
+    <string name="settings_language_dialog_title">Выбраць мову</string>
+    <string name="settings_language_option_system">Сістэмная</string>
+    <string name="settings_language_option_unknown">Невядома</string>
+
+    <string name="settings_cache_dialog_message">Гэта выдаліць усе спампаваныя выявы з вашай прылады. Яны будуць спампаваныя зноў пры іх праглядзе.</string>
+    <string name="settings_cache_status_calculating">Падлік памеру...</string>
+    <string name="settings_cache_status_size_used">Выкарыстана %1$d МБ лакальнага сховішча</string>
+
+    <string name="settings_action_clear_cache">Ачысціць</string>
+
+    <string name="settings_msg_cache_clearing">Ачыстка кэшу...</string>
+    <string name="settings_msg_cache_cleared">Ачышчана %1$d МБ выяў</string>
+    <string name="settings_msg_cache_empty">Кэш ужо пусты</string>
+</resources>

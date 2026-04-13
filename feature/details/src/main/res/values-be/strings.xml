@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="details_title_specifications">Характарыстыкі</string>
+    <string name="details_label_date">Дата</string>
+    <string name="details_label_culture">Культура</string>
+    <string name="details_label_period">Перыяд</string>
+    <string name="details_label_style">Стыль</string>
+    <string name="details_label_classification">Класіфікацыя</string>
+    <string name="details_label_century">Стагоддзе</string>
+    <string name="details_label_medium">Матэрыял</string>
+    <string name="details_label_dimensions">Памеры</string>
+    <string name="details_label_gallery">Галерэя</string>
+    <string name="details_label_credit_line">Крыніца</string>
+    <string name="details_label_provenance">Паходжанне</string>
+
+    <string name="details_label_translation_service">Перакладзена Google ML Kit</string>
+    <string name="details_label_original_text">Арыгінал</string>
+    <string name="details_btn_show_original">Арыгінальны тэкст</string>
+
+    <string name="details_msg_save_success">Захавана ў %1$s</string>
+
+    <string name="details_error_save_failed">Не ўдалося захаваць: праверце злучэнне або сховішча</string>
+    <string name="details_error_save_generic">Падчас захавання выявы адбылася памылка</string>
+</resources>

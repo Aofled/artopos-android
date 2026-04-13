@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="discover_filter_label_type">Тып</string>
+    <string name="discover_filter_label_period">Часавы перыяд</string>
+    <string name="discover_filter_label_culture">Культура</string>
+    <string name="discover_filter_value_any">Любы</string>
+
+    <string name="discover_title_sort_filters">Фільтры сартавання</string>
+    <string name="discover_search_hint">Пошук фільтраў...</string>
+
+    <string name="discover_cd_search">Пошук</string>
+    <string name="discover_cd_clear_search">Ачысціць</string>
+    <string name="discover_cd_sort">Сартаванне</string>
+
+    <string name="discover_sort_option_rank">Рэкамендацыя</string>
+    <string name="discover_sort_option_views">Хіты</string>
+    <string name="discover_sort_option_newest">Навінкі</string>
+    <string name="discover_sort_option_oldest">Ад старых</string>
+    <string name="discover_sort_option_random">Перамяшаць</string>
+
+    <string name="discover_empty_title">Няма вынікаў!</string>
+    <string name="discover_empty_subtitle">Паспрабуйце змяніць фільтры</string>
+</resources>

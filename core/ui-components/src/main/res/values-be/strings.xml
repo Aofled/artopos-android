@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="core_cd_favorite_add">Дадаць у выбранае</string>
+    <string name="core_cd_favorite_remove">Выдаліць з выбранага</string>
+
+    <string name="core_cd_download">Спампаваць</string>
+</resources>

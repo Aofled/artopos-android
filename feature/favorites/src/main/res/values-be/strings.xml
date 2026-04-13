@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="favorites_empty_title">Выбранае</string>
+    <string name="favorites_empty_message">Націсніце на значок сэрца на любым творы мастацтва, каб захаваць яго тут.</string>
+</resources>
