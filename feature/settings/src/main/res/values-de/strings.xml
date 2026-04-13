@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_section_appearance">Erscheinungsbild</string>
+    <string name="settings_section_storage">Speicher</string>
+
+    <string name="settings_label_theme">Design</string>
+    <string name="settings_label_language">Sprache</string>
+    <string name="settings_label_cache">Bild-Cache leeren</string>
+    <string name="settings_label_cache_subtitle">Gerätespeicher freigeben</string>
+
+    <string name="settings_theme_dialog_title">Design auswählen</string>
+    <string name="settings_theme_option_system">Systemstandard</string>
+    <string name="settings_theme_option_light">Hell</string>
+    <string name="settings_theme_option_dark">Dunkel</string>
+
+    <string name="settings_language_dialog_title">Sprache auswählen</string>
+    <string name="settings_language_option_system">Systemstandard</string>
+    <string name="settings_language_option_unknown">Unbekannt</string>
+
+    <string name="settings_cache_dialog_message">Dadurch werden alle heruntergeladenen Bilder von Ihrem Gerät entfernt. Sie werden erneut heruntergeladen, wenn Sie sie ansehen.</string>
+    <string name="settings_cache_status_calculating">Größe wird berechnet...</string>
+    <string name="settings_cache_status_size_used">%1$d MB lokaler Speicherplatz verwendet</string>
+
+    <string name="settings_action_clear_cache">Leeren</string>
+
+    <string name="settings_msg_cache_clearing">Cache wird geleert...</string>
+    <string name="settings_msg_cache_cleared">%1$d MB an Bildern gelöscht</string>
+    <string name="settings_msg_cache_empty">Cache ist bereits leer</string>
+</resources>

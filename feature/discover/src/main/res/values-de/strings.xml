@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="discover_filter_label_type">Typ</string>
+    <string name="discover_filter_label_period">Zeitraum</string>
+    <string name="discover_filter_label_culture">Kultur</string>
+    <string name="discover_filter_value_any">Beliebig</string>
+
+    <string name="discover_title_sort_filters">Sortierfilter</string>
+    <string name="discover_search_hint">Filter durchsuchen...</string>
+
+    <string name="discover_cd_search">Suchen</string>
+    <string name="discover_cd_clear_search">Leeren</string>
+    <string name="discover_cd_sort">Sortierung</string>
+
+    <string name="discover_sort_option_rank">Kuratorenauswahl</string>
+    <string name="discover_sort_option_views">Meistangesehen</string>
+    <string name="discover_sort_option_newest">Neuzugänge</string>
+    <string name="discover_sort_option_oldest">Älteste zuerst</string>
+    <string name="discover_sort_option_random">Mischen</string>
+
+    <string name="discover_empty_title">Keine Ergebnisse!</string>
+    <string name="discover_empty_subtitle">Versuchen Sie, Ihre Filter anzupassen</string>
+</resources>
