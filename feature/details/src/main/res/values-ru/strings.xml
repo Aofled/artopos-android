@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="details_title_specifications">Характеристики</string>
+    <string name="details_label_date">Дата</string>
+    <string name="details_label_culture">Культура</string>
+    <string name="details_label_period">Период</string>
+    <string name="details_label_style">Стиль</string>
+    <string name="details_label_classification">Классификация</string>
+    <string name="details_label_century">Век</string>
+    <string name="details_label_medium">Материал</string>
+    <string name="details_label_dimensions">Размеры</string>
+    <string name="details_label_gallery">Галерея</string>
+    <string name="details_label_credit_line">Источник</string>
+    <string name="details_label_provenance">Провенанс</string>
+
+    <string name="details_label_translation_service">Переведено Google ML Kit</string>
+    <string name="details_label_original_text">Оригинал</string>
+    <string name="details_btn_show_original">Оригинальный текст</string>
+
+    <string name="details_msg_save_success">Сохранено в %1$s</string>
+
+    <string name="details_error_save_failed">Не удалось сохранить: Проверьте подключение или память</string>
+    <string name="details_error_save_generic">Произошла ошибка при сохранении изображения</string>
+</resources>

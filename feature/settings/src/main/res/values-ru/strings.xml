@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_section_appearance">Внешний вид</string>
+    <string name="settings_section_storage">Хранилище</string>
+
+    <string name="settings_label_theme">Тема</string>
+    <string name="settings_label_language">Язык</string>
+    <string name="settings_label_cache">Очистить кэш изображений</string>
+    <string name="settings_label_cache_subtitle">Освободить место на устройстве</string>
+
+    <string name="settings_theme_dialog_title">Выберите тему</string>
+    <string name="settings_theme_option_system">Системная</string>
+    <string name="settings_theme_option_light">Светлая</string>
+    <string name="settings_theme_option_dark">Темная</string>
+
+    <string name="settings_language_dialog_title">Выберите язык</string>
+    <string name="settings_language_option_system">Системный</string>
+    <string name="settings_language_option_unknown">Неизвестно</string>
+
+    <string name="settings_cache_dialog_message">Это удалит все загруженные изображения с вашего устройства. Они будут загружены снова при просмотре.</string>
+    <string name="settings_cache_status_calculating">Вычисление размера...</string>
+    <string name="settings_cache_status_size_used">Использовано %1$d МБ локального хранилища</string>
+
+    <string name="settings_action_clear_cache">Очистить</string>
+
+    <string name="settings_msg_cache_clearing">Очистка кэша...</string>
+    <string name="settings_msg_cache_cleared">Очищено %1$d МБ изображений</string>
+    <string name="settings_msg_cache_empty">Кэш уже пуст</string>
+</resources>

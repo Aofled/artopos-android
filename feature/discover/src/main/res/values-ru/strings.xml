@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="discover_filter_label_type">Тип</string>
+    <string name="discover_filter_label_period">Период времени</string>
+    <string name="discover_filter_label_culture">Культура</string>
+    <string name="discover_filter_value_any">Любой</string>
+
+    <string name="discover_title_sort_filters">Сортировка фильтров</string>
+    <string name="discover_search_hint">Поиск фильтров...</string>
+
+    <string name="discover_cd_search">Поиск</string>
+    <string name="discover_cd_clear_search">Очистить</string>
+    <string name="discover_cd_sort">Сортировка</string>
+
+    <string name="discover_sort_option_rank">Выбор куратора</string>
+    <string name="discover_sort_option_views">Популярное</string>
+    <string name="discover_sort_option_newest">Новинки</string>
+    <string name="discover_sort_option_oldest">Сначала старые</string>
+    <string name="discover_sort_option_random">Перемешать</string>
+
+    <string name="discover_empty_title">Нет результатов!</string>
+    <string name="discover_empty_subtitle">Попробуйте изменить фильтры</string>
+</resources>

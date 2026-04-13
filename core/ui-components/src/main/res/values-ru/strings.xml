@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="core_cd_favorite_add">Добавить в избранное</string>
+    <string name="core_cd_favorite_remove">Удалить из избранного</string>
+
+    <string name="core_cd_download">Скачать</string>
+</resources>

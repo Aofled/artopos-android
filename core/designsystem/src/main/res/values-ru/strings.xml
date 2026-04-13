@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="core_title_discover">Экспонаты</string>
+    <string name="core_title_favorites">Избранное</string>
+    <string name="core_title_settings">Настройки</string>
+    <string name="core_title_filters">Фильтры</string>
+
+    <string name="core_cd_back">Назад</string>
+    <string name="core_cd_retry">Повторить</string>
+    <string name="core_cd_image">Изображение</string>
+    <string name="core_cd_remove_filter">Удалить фильтр</string>
+    <string name="core_cd_collapse">Свернуть</string>
+    <string name="core_cd_expand">Развернуть</string>
+
+    <string name="core_btn_reset">Сброс</string>
+    <string name="core_btn_translate">Перевести</string>
+    <string name="core_btn_filter">Фильтры</string>
+    <string name="core_btn_cancel">Отмена</string>
+
+    <string name="core_error_generic">Что-то пошло не так</string>
+    <string name="core_error_not_found">Изображение не найдено (404)</string>
+    <string name="core_error_no_internet">Нет подключения к интернету</string>
+    <string name="core_error_failed_connect">Не удалось подключиться к серверу</string>
+    <string name="core_error_timed_out">Время ожидания загрузки истекло</string>
+    <string name="core_error_network">Ошибка сети. Проверьте подключение.</string>
+    <string name="core_error_server">Ошибка сервера</string>
+    <string name="core_error_load_image">Не удалось загрузить изображение</string>
+
+    <string name="core_placeholder_artist">Неизвестный автор</string>
+    <string name="core_placeholder_title">Без названия</string>
+</resources>
