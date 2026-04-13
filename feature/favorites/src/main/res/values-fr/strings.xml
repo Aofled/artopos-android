@@ -1,0 +1,4 @@
+<resources>
+    <string name="favorites_empty_title">Favoris</string>
+    <string name="favorites_empty_message">Touchez l\'icône en forme de cœur sur n\'importe quelle œuvre d\'art pour l\'enregistrer ici.</string>
+</resources>

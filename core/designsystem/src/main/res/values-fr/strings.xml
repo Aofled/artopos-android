@@ -1,0 +1,30 @@
+<resources>
+    <string name="core_title_discover">Expositions</string>
+    <string name="core_title_favorites">Favoris</string>
+    <string name="core_title_settings">Paramètres</string>
+    <string name="core_title_filters">Filtres</string>
+
+    <string name="core_cd_back">Retour</string>
+    <string name="core_cd_retry">Réessayer</string>
+    <string name="core_cd_image">Image</string>
+    <string name="core_cd_remove_filter">Supprimer le filtre</string>
+    <string name="core_cd_collapse">Réduire</string>
+    <string name="core_cd_expand">Développer</string>
+
+    <string name="core_btn_reset">Réinitialiser</string>
+    <string name="core_btn_translate">Traduire</string>
+    <string name="core_btn_filter">Filtres</string>
+    <string name="core_btn_cancel">Annuler</string>
+
+    <string name="core_error_generic">Quelque chose s\'est mal passé</string>
+    <string name="core_error_not_found">Image introuvable (404)</string>
+    <string name="core_error_no_internet">Pas de connexion internet</string>
+    <string name="core_error_failed_connect">Impossible de se connecter au serveur</string>
+    <string name="core_error_timed_out">Délai de téléchargement dépassé</string>
+    <string name="core_error_network">Erreur réseau. Vérifiez votre connexion.</string>
+    <string name="core_error_server">Erreur du serveur</string>
+    <string name="core_error_load_image">Échec du chargement de l\'image</string>
+
+    <string name="core_placeholder_artist">Artiste inconnu</string>
+    <string name="core_placeholder_title">Sans titre</string>
+</resources>

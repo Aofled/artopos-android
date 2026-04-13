@@ -1,0 +1,28 @@
+<resources>
+    <string name="settings_section_appearance">Apparence</string>
+    <string name="settings_section_storage">Stockage</string>
+
+    <string name="settings_label_theme">Thème</string>
+    <string name="settings_label_language">Langue</string>
+    <string name="settings_label_cache">Vider le cache des images</string>
+    <string name="settings_label_cache_subtitle">Libérer de l\'espace de stockage sur l\'appareil</string>
+
+    <string name="settings_theme_dialog_title">Choisir un thème</string>
+    <string name="settings_theme_option_system">Paramètres par défaut du système</string>
+    <string name="settings_theme_option_light">Clair</string>
+    <string name="settings_theme_option_dark">Sombre</string>
+
+    <string name="settings_language_dialog_title">Choisir la langue</string>
+    <string name="settings_language_option_system">Paramètres par défaut du système</string>
+    <string name="settings_language_option_unknown">Inconnue</string>
+
+    <string name="settings_cache_dialog_message">Cela supprimera toutes les images téléchargées de votre appareil. Elles seront téléchargées à nouveau lorsque vous les consulterez.</string>
+    <string name="settings_cache_status_calculating">Calcul de la taille...</string>
+    <string name="settings_cache_status_size_used">%1$d Mo d\'espace de stockage local utilisé</string>
+
+    <string name="settings_action_clear_cache">Vider</string>
+
+    <string name="settings_msg_cache_clearing">Vidage du cache...</string>
+    <string name="settings_msg_cache_cleared">%1$d Mo d\'images effacés</string>
+    <string name="settings_msg_cache_empty">Le cache est déjà vide</string>
+</resources>

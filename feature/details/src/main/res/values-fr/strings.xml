@@ -1,0 +1,23 @@
+<resources>
+    <string name="details_title_specifications">Caractéristiques</string>
+    <string name="details_label_date">Date</string>
+    <string name="details_label_culture">Culture</string>
+    <string name="details_label_period">Période</string>
+    <string name="details_label_style">Style</string>
+    <string name="details_label_classification">Classification</string>
+    <string name="details_label_century">Siècle</string>
+    <string name="details_label_medium">Médium</string>
+    <string name="details_label_dimensions">Dimensions</string>
+    <string name="details_label_gallery">Galerie</string>
+    <string name="details_label_credit_line">Crédit</string>
+    <string name="details_label_provenance">Provenance</string>
+
+    <string name="details_label_translation_service">Traduit par Google ML Kit</string>
+    <string name="details_label_original_text">Voir l\'original</string>
+    <string name="details_btn_show_original">Texte original</string>
+
+    <string name="details_msg_save_success">Enregistré dans %1$s</string>
+
+    <string name="details_error_save_failed">Échec de l\'enregistrement : vérifiez votre connexion ou votre stockage</string>
+    <string name="details_error_save_generic">Une erreur est survenue lors de l\'enregistrement de l\'image</string>
+</resources>
