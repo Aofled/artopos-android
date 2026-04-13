@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -23,6 +24,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.staggeredgrid.LazyHorizontalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
@@ -180,7 +182,6 @@ private fun FilterSheetHeader(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 4.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -189,16 +190,16 @@ private fun FilterSheetHeader(
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface,
         )
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            TextButton(onClick = onReset) {
-                Text(stringResource(DSR.string.core_btn_reset))
-            }
 
-            SortToggleButton(sort = sort, onClick = onToggleSort)
+        Spacer(modifier = Modifier.width(4.dp))
+
+        TextButton(onClick = onReset) {
+            Text(stringResource(DSR.string.core_btn_reset))
         }
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        SortToggleButton(sort = sort, onClick = onToggleSort)
     }
 }
 
@@ -227,6 +228,7 @@ private fun SortToggleButton(
             containerColor = containerColor,
             contentColor = contentColor,
         ),
+        modifier = Modifier.animateContentSize(),
     ) {
         AnimatedContent(targetState = sort, label = "sort_anim") { targetSort ->
             val (iconRes, textRes) = when (targetSort) {
@@ -252,6 +254,9 @@ private fun SortToggleButton(
                 Text(
                     text = stringResource(textRes),
                     style = MaterialTheme.typography.labelLarge,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.widthIn(max = 140.dp),
                 )
             }
         }
