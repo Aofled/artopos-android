@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="details_title_specifications">詳細情報</string>
+    <string name="details_label_date">制作年</string>
+    <string name="details_label_culture">文化</string>
+    <string name="details_label_period">時代</string>
+    <string name="details_label_style">様式</string>
+    <string name="details_label_classification">分類</string>
+    <string name="details_label_century">世紀</string>
+    <string name="details_label_medium">素材・技法</string>
+    <string name="details_label_dimensions">寸法</string>
+    <string name="details_label_gallery">ギャラリー</string>
+    <string name="details_label_credit_line">クレジットライン</string>
+    <string name="details_label_provenance">来歴</string>
+
+    <string name="details_label_translation_service">Google ML Kit による翻訳</string>
+    <string name="details_label_original_text">原文を見る</string>
+    <string name="details_btn_show_original">原文</string>
+
+    <string name="details_msg_save_success">%1$s に保存しました</string>
+
+    <string name="details_error_save_failed">保存に失敗しました：接続またはストレージを確認してください</string>
+    <string name="details_error_save_generic">画像の保存中にエラーが発生しました</string>
+</resources>

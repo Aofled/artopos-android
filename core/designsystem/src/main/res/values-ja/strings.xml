@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="core_title_discover">展示品</string>
+    <string name="core_title_favorites">お気に入り</string>
+    <string name="core_title_settings">設定</string>
+    <string name="core_title_filters">フィルター</string>
+
+    <string name="core_cd_back">戻る</string>
+    <string name="core_cd_retry">再試行</string>
+    <string name="core_cd_image">画像</string>
+    <string name="core_cd_remove_filter">フィルターを解除</string>
+    <string name="core_cd_collapse">折りたたむ</string>
+    <string name="core_cd_expand">展開する</string>
+
+    <string name="core_btn_reset">リセット</string>
+    <string name="core_btn_translate">翻訳</string>
+    <string name="core_btn_filter">フィルター</string>
+    <string name="core_btn_cancel">キャンセル</string>
+
+    <string name="core_error_generic">エラーが発生しました</string>
+    <string name="core_error_not_found">画像が見つかりません (404)</string>
+    <string name="core_error_no_internet">インターネット接続がありません</string>
+    <string name="core_error_failed_connect">サーバーへの接続に失敗しました</string>
+    <string name="core_error_timed_out">ダウンロードがタイムアウトしました</string>
+    <string name="core_error_network">ネットワークエラー。接続を確認してください。</string>
+    <string name="core_error_server">サーバーエラー</string>
+    <string name="core_error_load_image">画像の読み込みに失敗しました</string>
+
+    <string name="core_placeholder_artist">作者不明</string>
+    <string name="core_placeholder_title">無題</string>
+</resources>

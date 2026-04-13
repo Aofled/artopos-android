@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="discover_filter_label_type">種類</string>
+    <string name="discover_filter_label_period">時代・時期</string>
+    <string name="discover_filter_label_culture">文化</string>
+    <string name="discover_filter_value_any">指定なし</string>
+
+    <string name="discover_title_sort_filters">フィルターの並べ替え</string>
+    <string name="discover_search_hint">フィルターを検索...</string>
+
+    <string name="discover_cd_search">検索</string>
+    <string name="discover_cd_clear_search">クリア</string>
+    <string name="discover_cd_sort">並べ替え</string>
+
+    <string name="discover_sort_option_rank">キュレーター厳選</string>
+    <string name="discover_sort_option_views">閲覧数順</string>
+    <string name="discover_sort_option_newest">新着順</string>
+    <string name="discover_sort_option_oldest">古い順</string>
+    <string name="discover_sort_option_random">シャッフル</string>
+
+    <string name="discover_empty_title">結果がありません！</string>
+    <string name="discover_empty_subtitle">フィルターを調整してみてください</string>
+</resources>

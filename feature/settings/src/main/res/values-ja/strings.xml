@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_section_appearance">外観</string>
+    <string name="settings_section_storage">ストレージ</string>
+
+    <string name="settings_label_theme">テーマ</string>
+    <string name="settings_label_language">言語</string>
+    <string name="settings_label_cache">画像キャッシュを消去</string>
+    <string name="settings_label_cache_subtitle">デバイスのストレージ容量を空ける</string>
+
+    <string name="settings_theme_dialog_title">テーマを選択</string>
+    <string name="settings_theme_option_system">システムのデフォルト</string>
+    <string name="settings_theme_option_light">ライト</string>
+    <string name="settings_theme_option_dark">ダーク</string>
+
+    <string name="settings_language_dialog_title">言語を選択</string>
+    <string name="settings_language_option_system">システムのデフォルト</string>
+    <string name="settings_language_option_unknown">不明</string>
+
+    <string name="settings_cache_dialog_message">デバイスからすべてのダウンロード済み画像が削除されます。画像は次に表示する際に再ダウンロードされます。</string>
+    <string name="settings_cache_status_calculating">サイズを計算中...</string>
+    <string name="settings_cache_status_size_used">ローカルストレージを %1$d MB 使用中</string>
+
+    <string name="settings_action_clear_cache">消去</string>
+
+    <string name="settings_msg_cache_clearing">キャッシュを消去中...</string>
+    <string name="settings_msg_cache_cleared">%1$d MB の画像を消去しました</string>
+    <string name="settings_msg_cache_empty">キャッシュはすでに空です</string>
+</resources>
