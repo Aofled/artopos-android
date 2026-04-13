@@ -24,27 +24,49 @@ import androidx.core.os.LocaleListCompat
 import ru.createsmart.artopos.core.model.settings.ThemeConfig
 import ru.createsmart.artopos.feature.settings.R
 import ru.createsmart.artopos.feature.settings.model.LanguageConfig
-import ru.createsmart.artopos.feature.settings.model.LanguageItem
 import ru.createsmart.artopos.core.designsystem.R as DSR
+
+/**
+ * IMPORTANT ARCHITECTURAL RULE FOR DIALOGS (Localization Note):
+ *
+ * In Jetpack Compose, the [AlertDialog] and [ModalBottomSheet] components create
+ * a separate system window (Window/Popup) on top of the current UI tree.
+ *
+ * Because of this, they "break away" from our custom [CompositionLocalProvider],
+ * where we change the app language on the fly (without restarting the Activity).
+ *
+ * If you call `stringResource()` INSIDE the `title`, `text`, or `confirmButton` lambdas,
+ * the dialog uses the Android system language, ignoring the selected app language.
+ *
+ * THE CORRECT APPROACH (State Hoisting for Strings):
+ * Always evaluate string resources (via `stringResource`) BEFORE calling `AlertDialog`,
+ * store them in local variables `val text = ...` and pass them into the dialog
+ * pre-built [String] objects.
+ */
 
 @Composable
 fun ClearCacheConfirmationDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
+    val titleText = stringResource(R.string.settings_label_cache)
+    val messageText = stringResource(R.string.settings_cache_dialog_message)
+    val confirmText = stringResource(R.string.settings_action_clear_cache)
+    val cancelText = stringResource(DSR.string.core_btn_cancel)
+
     AlertDialog(
         onDismissRequest = onDismiss,
         icon = { Icon(painterResource(DSR.drawable.ic_delete), null) },
-        title = { Text(stringResource(R.string.settings_label_cache)) },
-        text = { Text(stringResource(R.string.settings_cache_dialog_message)) },
+        title = { Text(titleText) },
+        text = { Text(messageText) },
         confirmButton = {
             TextButton(onClick = onConfirm) {
-                Text(stringResource(R.string.settings_action_clear_cache), color = MaterialTheme.colorScheme.error)
+                Text(confirmText, color = MaterialTheme.colorScheme.error)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(DSR.string.core_btn_cancel))
+                Text(cancelText)
             }
         },
     )
@@ -56,14 +78,27 @@ fun ThemeSelectionDialog(
     onThemeSelected: (ThemeConfig) -> Unit,
     onDismiss: () -> Unit,
 ) {
+    val titleText = stringResource(R.string.settings_theme_dialog_title)
+    val cancelText = stringResource(DSR.string.core_btn_cancel)
+
+    val systemText = stringResource(R.string.settings_theme_option_system)
+    val lightText = stringResource(R.string.settings_theme_option_light)
+    val darkText = stringResource(R.string.settings_theme_option_dark)
+
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.settings_theme_dialog_title)) },
+        title = { Text(titleText) },
         text = {
             Column(Modifier.selectableGroup()) {
                 ThemeConfig.entries.forEach { themeOption ->
+                    val displayName = when (themeOption) {
+                        ThemeConfig.FOLLOW_SYSTEM -> systemText
+                        ThemeConfig.LIGHT -> lightText
+                        ThemeConfig.DARK -> darkText
+                    }
+
                     ThemeOptionRow(
-                        themeOption = themeOption,
+                        displayName = displayName,
                         isSelected = themeOption == currentTheme,
                         onClick = { onThemeSelected(themeOption) },
                     )
@@ -71,14 +106,14 @@ fun ThemeSelectionDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = onDismiss) { Text(stringResource(DSR.string.core_btn_cancel)) }
+            TextButton(onClick = onDismiss) { Text(cancelText) }
         },
     )
 }
 
 @Composable
 private fun ThemeOptionRow(
-    themeOption: ThemeConfig,
+    displayName: String,
     isSelected: Boolean,
     onClick: () -> Unit,
 ) {
@@ -96,7 +131,7 @@ private fun ThemeOptionRow(
     ) {
         RadioButton(selected = isSelected, onClick = null)
         Text(
-            text = getThemeDisplayName(themeOption),
+            text = displayName,
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(start = 16.dp),
         )
@@ -118,31 +153,42 @@ fun LanguageSelectionDialog(
     onLanguageSelected: (String) -> Unit,
     onDismiss: () -> Unit,
 ) {
+    val titleText = stringResource(R.string.settings_language_dialog_title)
+    val cancelText = stringResource(DSR.string.core_btn_cancel)
+    val unknownText = stringResource(R.string.settings_language_option_unknown)
+
+    val languageNames = LanguageConfig.supportedLanguages.map { language ->
+        val name = when {
+            language.nativeName != null -> language.nativeName
+            language.nameResId != null -> stringResource(language.nameResId!!)
+            else -> LocaleListCompat.forLanguageTags(language.tag).get(0)?.displayName ?: unknownText
+        }
+        language.tag to name
+    }
+
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.settings_language_dialog_title)) },
+        title = { Text(titleText) },
         text = {
             Column(Modifier.selectableGroup()) {
-                LanguageConfig.supportedLanguages.forEach { language ->
+                languageNames.forEach { (tag, displayName) ->
                     LanguageOptionRow(
-                        language = language,
-                        isSelected = (language.tag == currentLanguageTag),
-                        onClick = { onLanguageSelected(language.tag) },
+                        displayName = displayName,
+                        isSelected = (tag == currentLanguageTag),
+                        onClick = { onLanguageSelected(tag) },
                     )
                 }
             }
         },
         confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(DSR.string.core_btn_cancel))
-            }
+            TextButton(onClick = onDismiss) { Text(cancelText) }
         },
     )
 }
 
 @Composable
 private fun LanguageOptionRow(
-    language: LanguageItem,
+    displayName: String,
     isSelected: Boolean,
     onClick: () -> Unit,
 ) {
@@ -160,7 +206,7 @@ private fun LanguageOptionRow(
     ) {
         RadioButton(selected = isSelected, onClick = null)
         Text(
-            text = language.nativeName ?: stringResource(language.nameResId!!),
+            text = displayName,
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(start = 16.dp),
         )
