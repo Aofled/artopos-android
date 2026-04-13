@@ -19,5 +19,6 @@ object LanguageConfig {
         LanguageItem(tag = "zh", nameResId = R.string.language_zh),
         LanguageItem(tag = "de", nameResId = R.string.language_de),
         LanguageItem(tag = "it", nameResId = R.string.language_it),
+        LanguageItem(tag = "es", nameResId = R.string.language_es),
     )
 }

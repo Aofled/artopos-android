@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="details_title_specifications">Especificaciones</string>
+    <string name="details_label_date">Fecha</string>
+    <string name="details_label_culture">Cultura</string>
+    <string name="details_label_period">Período</string>
+    <string name="details_label_style">Estilo</string>
+    <string name="details_label_classification">Clasificación</string>
+    <string name="details_label_century">Siglo</string>
+    <string name="details_label_medium">Medio</string>
+    <string name="details_label_dimensions">Dimensiones</string>
+    <string name="details_label_gallery">Galería</string>
+    <string name="details_label_credit_line">Línea de crédito</string>
+    <string name="details_label_provenance">Procedencia</string>
+
+    <string name="details_label_translation_service">Traducido por Google ML Kit</string>
+    <string name="details_label_original_text">Ver original</string>
+    <string name="details_btn_show_original">Texto original</string>
+
+    <string name="details_msg_save_success">Guardado en %1$s</string>
+
+    <string name="details_error_save_failed">Error al guardar: Comprueba tu conexión o almacenamiento</string>
+    <string name="details_error_save_generic">Ocurrió un error al guardar la imagen</string>
+</resources>

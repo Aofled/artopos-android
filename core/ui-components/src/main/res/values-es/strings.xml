@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="core_cd_favorite_add">Añadir a favoritos</string>
+    <string name="core_cd_favorite_remove">Eliminar de favoritos</string>
+
+    <string name="core_cd_download">Descargar</string>
+</resources>
