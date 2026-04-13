@@ -107,9 +107,9 @@ class SettingsViewModelTest {
 
         // THEN
         // "Clearing..."
-        coVerify { uiMessageManager.sendSideEffect(UiText.StringResource(R.string.msg_clearing_cache)) }
+        coVerify { uiMessageManager.sendSideEffect(UiText.StringResource(R.string.settings_msg_cache_clearing)) }
         // Cleared 10 MB
-        coVerify { uiMessageManager.sendSideEffect(UiText.StringResource(R.string.msg_cache_cleared, 10L)) }
+        coVerify { uiMessageManager.sendSideEffect(UiText.StringResource(R.string.settings_msg_cache_cleared, 10L)) }
 
         // THEN
         coVerify(exactly = 1) { getImageCacheSizeUseCase() }

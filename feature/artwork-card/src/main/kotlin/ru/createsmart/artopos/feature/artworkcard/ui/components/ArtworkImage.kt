@@ -19,13 +19,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
-import ru.createsmart.artopos.core.designsystem.R
 import ru.createsmart.artopos.core.uicomponents.components.RetryDecision
 import ru.createsmart.artopos.core.uicomponents.components.RetryPlaceholder
 import ru.createsmart.artopos.core.uicomponents.components.ShimmerBox
 import ru.createsmart.artopos.core.uicomponents.components.analyzeRetry
 import ru.createsmart.artopos.feature.artworkcard.model.ArtworkListItem
-import ru.createsmart.artopos.core.designsystem.R as UiR
+import ru.createsmart.artopos.core.designsystem.R as DSR
 
 private const val RETRY_HASH = "retry_hash"
 
@@ -59,7 +58,7 @@ internal fun ArtworkImage(
                         } else {
                             // Fallback: The error is transient (e.g. timeout), but since the manual
                             // retry failed, we must provide generic feedback to the user.
-                            onShowMessage(UiText.StringResource(UiR.string.error_load_image))
+                            onShowMessage(UiText.StringResource(DSR.string.core_error_load_image))
                         }
                     }
                 },
@@ -70,7 +69,7 @@ internal fun ArtworkImage(
     // Note: We use SubcomposeAsyncImage to support Custom Composables (Shimmer)
     SubcomposeAsyncImage(
         model = imageRequest,
-        contentDescription = stringResource(R.string.description_image),
+        contentDescription = stringResource(DSR.string.core_cd_image),
         contentScale = ContentScale.Crop,
         modifier = Modifier
             .fillMaxWidth()

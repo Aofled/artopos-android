@@ -77,9 +77,9 @@ fun ExpandableDetailsSection(
                     painterResource(id = R.drawable.ic_action_keyboard_arrow_down)
                 },
                 contentDescription = if (isExpanded) {
-                    stringResource(R.string.description_collapse)
+                    stringResource(R.string.core_cd_collapse)
                 } else {
-                    stringResource(R.string.description_expand)
+                    stringResource(R.string.core_cd_expand)
                 },
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )

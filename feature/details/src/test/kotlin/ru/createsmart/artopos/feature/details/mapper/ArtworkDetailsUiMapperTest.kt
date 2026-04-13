@@ -51,10 +51,14 @@ class ArtworkDetailsUiMapperTest {
         val details = uiModel.details
         assertEquals(3, details.size)
 
-        assertTrue(details.any { it.label is UiText.StringResource && it.label.resId == R.string.details_date })
-        assertTrue(details.any { it.label is UiText.StringResource && it.label.resId == R.string.details_medium })
-        assertTrue(details.any { it.label is UiText.StringResource && it.label.resId == R.string.details_credit_line })
-        assertTrue(details.none { it.label is UiText.StringResource && it.label.resId == R.string.details_provenance })
+        assertTrue(details.any { it.label is UiText.StringResource && it.label.resId == R.string.details_label_date })
+        assertTrue(details.any { it.label is UiText.StringResource && it.label.resId == R.string.details_label_medium })
+        assertTrue(
+            details.any { it.label is UiText.StringResource && it.label.resId == R.string.details_label_credit_line },
+        )
+        assertTrue(
+            details.none { it.label is UiText.StringResource && it.label.resId == R.string.details_label_provenance },
+        )
     }
 
     @Test
@@ -72,7 +76,7 @@ class ArtworkDetailsUiMapperTest {
 
         // THEN
         val mediumDetail = uiModel.details.find {
-            it.label is UiText.StringResource && it.label.resId == R.string.details_medium
+            it.label is UiText.StringResource && it.label.resId == R.string.details_label_medium
         }
         assertEquals("Oil", mediumDetail?.value)
     }
@@ -92,7 +96,7 @@ class ArtworkDetailsUiMapperTest {
 
         // THEN
         val mediumDetail = uiModel.details.find {
-            it.label is UiText.StringResource && it.label.resId == R.string.details_medium
+            it.label is UiText.StringResource && it.label.resId == R.string.details_label_medium
         }
         assertEquals("Pencil", mediumDetail?.value)
     }

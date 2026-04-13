@@ -16,7 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
-import ru.createsmart.artopos.core.designsystem.R as UiR
+import ru.createsmart.artopos.feature.discover.R
 
 @Composable
 fun EmptyDataView() {
@@ -29,13 +29,13 @@ fun EmptyDataView() {
     ) {
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = stringResource(UiR.string.label_no_results),
+            text = stringResource(R.string.discover_empty_title),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurface,
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = stringResource(UiR.string.incorrect_filters),
+            text = stringResource(R.string.discover_empty_subtitle),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

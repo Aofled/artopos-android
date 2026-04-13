@@ -67,7 +67,7 @@ import ru.createsmart.artopos.feature.discover.R
 import ru.createsmart.artopos.feature.discover.model.FilterListItem
 import ru.createsmart.artopos.feature.discover.model.FiltersUiState
 import ru.createsmart.artopos.feature.discover.ui.preview.FilterPreviewData
-import ru.createsmart.artopos.core.designsystem.R as UiR
+import ru.createsmart.artopos.core.designsystem.R as DSR
 
 private val FILTER_GRID_HEIGHT = 130.dp
 private val FILTER_SECTION_HEADER_HEIGHT = 50.dp
@@ -144,7 +144,7 @@ private fun FilterSheetContent(
 
         FilterSection(
             context,
-            stringResource(R.string.filter_classification),
+            stringResource(R.string.discover_filter_label_type),
             filtersState.classifications,
             query,
             FilterType.CLASSIFICATION,
@@ -152,7 +152,7 @@ private fun FilterSheetContent(
         )
         FilterSection(
             context,
-            stringResource(R.string.filter_century),
+            stringResource(R.string.discover_filter_label_period),
             filtersState.centuries,
             query,
             FilterType.CENTURY,
@@ -160,7 +160,7 @@ private fun FilterSheetContent(
         )
         FilterSection(
             context,
-            stringResource(R.string.filter_culture),
+            stringResource(R.string.discover_filter_label_culture),
             filtersState.cultures,
             query,
             FilterType.CULTURE,
@@ -184,7 +184,7 @@ private fun FilterSheetHeader(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = stringResource(R.string.title_filters),
+            text = stringResource(DSR.string.core_title_filters),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface,
@@ -194,7 +194,7 @@ private fun FilterSheetHeader(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             TextButton(onClick = onReset) {
-                Text(stringResource(R.string.btn_reset))
+                Text(stringResource(DSR.string.core_btn_reset))
             }
 
             SortToggleButton(sort = sort, onClick = onToggleSort)
@@ -231,21 +231,21 @@ private fun SortToggleButton(
         AnimatedContent(targetState = sort, label = "sort_anim") { targetSort ->
             val (iconRes, textRes) = when (targetSort) {
                 FilterSortOption.RANK ->
-                    UiR.drawable.ic_action_sort to R.string.sort_rank // "Curator's Pick"
+                    DSR.drawable.ic_action_sort to R.string.discover_sort_option_rank // "Curator's Pick"
                 FilterSortOption.TOTAL_PAGE_VIEWS ->
-                    UiR.drawable.ic_action_person_heart to R.string.sort_views // "Most Viewed"
+                    DSR.drawable.ic_action_person_heart to R.string.discover_sort_option_views // "Most Viewed"
                 FilterSortOption.ACCESSION_YEAR ->
-                    UiR.drawable.ic_action_schedule to R.string.sort_newest // "New Arrivals"
+                    DSR.drawable.ic_action_schedule to R.string.discover_sort_option_newest // "New Arrivals"
                 FilterSortOption.DATE_BEGIN ->
-                    UiR.drawable.ic_action_hourglass to R.string.sort_oldest // "Oldest First"
+                    DSR.drawable.ic_action_hourglass to R.string.discover_sort_option_oldest // "Oldest First"
                 FilterSortOption.RANDOM ->
-                    UiR.drawable.ic_action_shuffle to R.string.sort_random // "Shuffle"
+                    DSR.drawable.ic_action_shuffle to R.string.discover_sort_option_random // "Shuffle"
             }
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     painter = painterResource(id = iconRes),
-                    contentDescription = stringResource(R.string.description_search_sort),
+                    contentDescription = stringResource(R.string.discover_cd_sort),
                     modifier = Modifier.size(16.dp),
                 )
                 Spacer(modifier = Modifier.width(6.dp))
@@ -276,8 +276,8 @@ private fun FilterSearchBar(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
-            painter = painterResource(id = UiR.drawable.ic_search),
-            contentDescription = stringResource(R.string.description_search_filters),
+            painter = painterResource(id = DSR.drawable.ic_search),
+            contentDescription = stringResource(R.string.discover_cd_search),
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(20.dp),
         )
@@ -316,7 +316,7 @@ private fun SearchInputField(
                 Box(contentAlignment = Alignment.CenterStart) {
                     if (query.isEmpty()) {
                         Text(
-                            text = stringResource(R.string.search_filters_placeholder),
+                            text = stringResource(R.string.discover_search_hint),
                             style = LocalTextStyle.current.copy(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                                 fontSize = 14.sp,
@@ -334,8 +334,8 @@ private fun SearchInputField(
                 modifier = Modifier.size(24.dp),
             ) {
                 Icon(
-                    painter = painterResource(id = UiR.drawable.ic_action_close),
-                    contentDescription = stringResource(R.string.description_search_clear),
+                    painter = painterResource(id = DSR.drawable.ic_action_close),
+                    contentDescription = stringResource(R.string.discover_cd_clear_search),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(16.dp),
                 )
@@ -462,7 +462,7 @@ private fun AnyFilterChip(isSelected: Boolean, onClick: () -> Unit) {
     FilterChip(
         selected = isSelected,
         onClick = onClick,
-        label = { Text(text = stringResource(R.string.item_any)) },
+        label = { Text(text = stringResource(R.string.discover_filter_value_any)) },
         colors = FilterChipDefaults.filterChipColors(
             selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
         ),

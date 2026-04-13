@@ -1,26 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="title_discover">Discover</string>
-    <string name="title_favorites">Favorites</string>
-    <string name="title_settings">Settings</string>
+    <string name="core_title_discover">Discover</string>
+    <string name="core_title_favorites">Favorites</string>
+    <string name="core_title_settings">Settings</string>
+    <string name="core_title_filters">Filters</string>
 
-    <string name="btn_filter">Filters</string>
-    <string name="label_wrong">Something went wrong</string>
-    <string name="label_no_results">No results!</string>
-    <string name="incorrect_filters">Try adjusting your filters</string>
+    <string name="core_cd_back">Back</string>
+    <string name="core_cd_retry">Retry</string>
+    <string name="core_cd_image">Image</string>
+    <string name="core_cd_remove_filter">Remove filter</string>
+    <string name="core_cd_collapse">Collapse</string>
+    <string name="core_cd_expand">Expand</string>
 
-    <string name="description_btn_retry">Retry</string>
-    <string name="description_btn_back">Back</string>
-    <string name="description_remove_filter">Remove filter</string>
-    <string name="description_collapse">Collapse</string>
-    <string name="description_expand">Expand</string>
-    <string name="description_image">Image</string>
+    <string name="core_btn_reset">Reset</string>
+    <string name="core_btn_translate">Translate</string>
+    <string name="core_btn_filter">Filters</string>
+    <string name="core_btn_cancel">Cancel</string>
 
-    <string name="error_load_image">Failed to load image</string>
-    <string name="error_not_found">Image not found (404)</string>
-    <string name="error_no_internet">No internet connection</string>
-    <string name="error_failed_connect">Failed to connect to the server</string>
-    <string name="error_timed_out">"Download timed out"</string>
-    <string name="error_network_error">"Network error. Check your connection."</string>
-    <string name="error_server">"Server error""</string>
+    <string name="core_error_generic">Something went wrong</string>
+    <string name="core_error_not_found">Image not found (404)</string>
+    <string name="core_error_no_internet">No internet connection</string>
+    <string name="core_error_failed_connect">Failed to connect to the server</string>
+    <string name="core_error_timed_out">Download timed out</string>
+    <string name="core_error_network">Network error. Check your connection.</string>
+    <string name="core_error_server">Server error</string>
+    <string name="core_error_load_image">Failed to load image</string>
+
+    <string name="core_placeholder_artist">Unknown Artist</string>
+    <string name="core_placeholder_title">Untitled</string>
 </resources>

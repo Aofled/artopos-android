@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.sp
 import ru.createsmart.artopos.core.designsystem.theme.FontFamilySerif
 import ru.createsmart.artopos.feature.details.R
 import ru.createsmart.artopos.feature.details.model.ArtworkDetailUi
+import ru.createsmart.artopos.core.designsystem.R as DSR
 
 @Composable
 internal fun ArtistAndTitle(
@@ -29,7 +30,7 @@ internal fun ArtistAndTitle(
 ) {
     Column(modifier = Modifier.padding(24.dp)) {
         val displayArtist = artwork.artist.ifBlank {
-            stringResource(R.string.unknown_artist)
+            stringResource(DSR.string.core_placeholder_artist)
         }
         Text(
             text = displayArtist,
@@ -38,7 +39,7 @@ internal fun ArtistAndTitle(
         )
         Spacer(modifier = Modifier.height(8.dp))
         val displayTitle = artwork.title.ifBlank {
-            stringResource(R.string.unknown_title)
+            stringResource(DSR.string.core_placeholder_title)
         }
         Text(
             text = displayTitle,
@@ -80,7 +81,7 @@ internal fun KeyFactsRow(artwork: ArtworkDetailUi) {
                 ) {
                     if (!artwork.classification.isNullOrBlank()) {
                         FactItem(
-                            labelRes = R.string.details_classification,
+                            labelRes = R.string.details_label_classification,
                             value = artwork.classification,
                             modifier = Modifier.weight(1f),
                         )
@@ -88,7 +89,7 @@ internal fun KeyFactsRow(artwork: ArtworkDetailUi) {
 
                     if (!artwork.culture.isNullOrBlank()) {
                         FactItem(
-                            labelRes = R.string.details_culture,
+                            labelRes = R.string.details_label_culture,
                             value = artwork.culture,
                             modifier = Modifier.weight(1f),
                         )
@@ -98,7 +99,7 @@ internal fun KeyFactsRow(artwork: ArtworkDetailUi) {
 
             if (!artwork.century.isNullOrBlank()) {
                 FactItem(
-                    labelRes = R.string.details_century,
+                    labelRes = R.string.details_label_century,
                     value = artwork.century,
                     modifier = Modifier.fillMaxWidth(),
                 )

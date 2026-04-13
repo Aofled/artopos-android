@@ -24,7 +24,7 @@ class UiMessageManager @Inject constructor(
 
     fun checkInternetAndNotify(): Boolean {
         if (!networkMonitor.isOnline()) {
-            sendSideEffect(UiText.StringResource(R.string.error_no_internet))
+            sendSideEffect(UiText.StringResource(R.string.core_error_no_internet))
             return false
         }
         return true

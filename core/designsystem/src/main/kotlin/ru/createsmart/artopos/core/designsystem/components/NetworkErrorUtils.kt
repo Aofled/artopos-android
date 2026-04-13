@@ -9,15 +9,15 @@ import java.net.UnknownHostException
 fun Throwable.toUiText(): UiText {
     return when (this) {
         // Specific network errors (No DNS / No Internet)
-        is UnknownHostException -> UiText.StringResource(R.string.error_failed_connect)
+        is UnknownHostException -> UiText.StringResource(R.string.core_error_failed_connect)
 
         // Slow connection
-        is SocketTimeoutException -> UiText.StringResource(R.string.error_timed_out)
+        is SocketTimeoutException -> UiText.StringResource(R.string.core_error_timed_out)
 
         // Generic Network IO error (must be checked AFTER specific subclasses like SocketTimeoutException)
-        is IOException -> UiText.StringResource(R.string.error_network_error)
+        is IOException -> UiText.StringResource(R.string.core_error_network)
 
         // Fallback: Any other crash (NPE, JsonParsing, etc.) -> "Server Error"
-        else -> UiText.StringResource(R.string.error_server)
+        else -> UiText.StringResource(R.string.core_error_server)
     }
 }

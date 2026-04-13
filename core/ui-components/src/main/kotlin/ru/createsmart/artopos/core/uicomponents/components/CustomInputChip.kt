@@ -27,7 +27,7 @@ fun CustomInputChip(
         trailingIcon = {
             Icon(
                 painter = painterResource(id = R.drawable.ic_action_close),
-                contentDescription = stringResource(R.string.description_remove_filter),
+                contentDescription = stringResource(R.string.core_cd_remove_filter),
                 modifier = Modifier.size(16.dp),
             )
         },

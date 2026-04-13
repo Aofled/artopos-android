@@ -27,13 +27,13 @@ fun EmptyFavoritesView() {
         verticalArrangement = Arrangement.Center,
     ) {
         Text(
-            text = stringResource(R.string.no_favorites),
+            text = stringResource(R.string.favorites_empty_title),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurface,
 
         )
         Text(
-            text = stringResource(R.string.no_favorites_description),
+            text = stringResource(R.string.favorites_empty_message),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,

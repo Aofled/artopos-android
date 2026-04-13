@@ -16,8 +16,10 @@ fun Throwable?.isNotFound(): Boolean = (this as? HttpException)?.response?.code 
 
 fun Throwable?.analyzeRetry(context: Context): RetryDecision {
     return when {
-        !context.isNetworkAvailable() -> RetryDecision.ShowMessage(UiText.StringResource(R.string.error_no_internet))
-        this.isNotFound() -> RetryDecision.ShowMessage(UiText.StringResource(R.string.error_not_found))
+        !context.isNetworkAvailable() -> RetryDecision.ShowMessage(
+            UiText.StringResource(R.string.core_error_no_internet),
+        )
+        this.isNotFound() -> RetryDecision.ShowMessage(UiText.StringResource(R.string.core_error_not_found))
         else -> RetryDecision.CanRetry
     }
 }

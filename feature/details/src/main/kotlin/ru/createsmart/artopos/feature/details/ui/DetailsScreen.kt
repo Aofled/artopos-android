@@ -35,7 +35,7 @@ import ru.createsmart.artopos.feature.details.ArtworkDetailUiState
 import ru.createsmart.artopos.feature.details.DetailsViewModel
 import ru.createsmart.artopos.feature.details.ui.components.DetailsContent
 import ru.createsmart.artopos.feature.details.ui.preview.ArtworkDetailStateProvider
-import ru.createsmart.artopos.core.designsystem.R as UiR
+import ru.createsmart.artopos.core.designsystem.R as DSR
 
 @Composable
 fun DetailsScreenRoute(
@@ -113,7 +113,7 @@ fun DetailsScreen(
                 is ArtworkDetailUiState.Error -> {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Text(
-                            text = stringResource(UiR.string.label_wrong),
+                            text = stringResource(DSR.string.core_error_generic),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.error,
                         )

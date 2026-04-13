@@ -1,32 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="title_settings">Settings</string>
-    <string name="title_appearance">Appearance</string>
-    <string name="title_storage">Storage</string>
+    <string name="settings_section_appearance">Appearance</string>
+    <string name="settings_section_storage">Storage</string>
 
-    <string name="setting_theme">Theme</string>
-    <string name="setting_language">Language</string>
-    <string name="setting_cache">Clear Image Cache</string>
+    <string name="settings_label_theme">Theme</string>
+    <string name="settings_label_language">Language</string>
+    <string name="settings_label_cache">Clear Image Cache</string>
+    <string name="settings_label_cache_subtitle">Free up device storage</string>
 
-    <string name="theme_system">System Default</string>
-    <string name="theme_light">Light</string>
-    <string name="theme_dark">Dark</string>
+    <string name="settings_theme_dialog_title">Choose Theme</string>
+    <string name="settings_theme_option_system">System Default</string>
+    <string name="settings_theme_option_light">Light</string>
+    <string name="settings_theme_option_dark">Dark</string>
 
-    <string name="action_cancel">"Cancel""</string>
-    <string name="action_clear">"Clear""</string>
+    <string name="settings_language_dialog_title">Choose Language</string>
+    <string name="settings_language_option_system">System Default</string>
+    <string name="settings_language_option_unknown">Unknown</string>
 
-    <string name="choose_theme">Choose Theme</string>
-    <string name="clear_cache_description">This will remove all downloaded images from your device. They will be downloaded again when you view them.</string>
-    <string name="subtitle_clear_cache">Free up device storage</string>
+    <string name="settings_cache_dialog_message">This will remove all downloaded images from your device. They will be downloaded again when you view them.</string>
+    <string name="settings_cache_status_calculating">Calculating size...</string>
+    <string name="settings_cache_status_size_used">%1$d MB of local storage used</string>
 
-    <string name="msg_clearing_cache">Clearing cache...</string>
-    <string name="msg_cache_cleared">Cleared %1$d MB of images</string>
-    <string name="msg_cache_empty">Cache is already empty</string>
+    <string name="settings_action_clear_cache">Clear</string>
 
-    <string name="settings_cache_calculating">Calculating size...</string>
-    <string name="settings_cache_size_used">%1$d MB of local storage used</string>
-
-    <string name="language_system">System Default</string>
-    <string name="language_unknown">Unknown</string>
-    <string name="language_dialog_title">Choose Language</string>
+    <string name="settings_msg_cache_clearing">Clearing cache...</string>
+    <string name="settings_msg_cache_cleared">Cleared %1$d MB of images</string>
+    <string name="settings_msg_cache_empty">Cache is already empty</string>
 </resources>

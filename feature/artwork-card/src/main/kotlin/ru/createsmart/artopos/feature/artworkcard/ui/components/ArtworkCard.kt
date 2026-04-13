@@ -18,8 +18,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
 import ru.createsmart.artopos.core.uicomponents.components.FavoriteButton
-import ru.createsmart.artopos.feature.artworkcard.R
 import ru.createsmart.artopos.feature.artworkcard.model.ArtworkListItem
+import ru.createsmart.artopos.core.designsystem.R as DSR
 
 @Composable
 fun ArtworkCard(
@@ -52,7 +52,7 @@ fun ArtworkCard(
             modifier = Modifier.padding(top = 8.dp),
         ) {
             val displayArtist = artwork.artist.ifBlank {
-                stringResource(R.string.unknown_artist)
+                stringResource(DSR.string.core_placeholder_artist)
             }
             Text(
                 text = displayArtist,
@@ -65,7 +65,7 @@ fun ArtworkCard(
             )
         }
         val displayTitle = artwork.title.ifBlank {
-            stringResource(R.string.unknown_title)
+            stringResource(DSR.string.core_placeholder_title)
         }
         Text(
             text = displayTitle,

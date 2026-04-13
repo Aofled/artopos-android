@@ -19,14 +19,14 @@ fun Artwork.toDetailUi(
             }
         }
 
-        addIfNotNull(R.string.details_date, date)
-        addIfNotNull(R.string.details_period, period)
-        addIfNotNull(R.string.details_style, style)
-        addIfNotNull(R.string.details_medium, medium ?: technique, isWide = true)
-        addIfNotNull(R.string.details_dimensions, dimensions.clearText(), isWide = true)
-        addIfNotNull(R.string.details_gallery, galleryLocation, isWide = true)
-        addIfNotNull(R.string.details_credit_line, creditLine, isWide = true)
-        addIfNotNull(R.string.details_provenance, provenance, isWide = true)
+        addIfNotNull(R.string.details_label_date, date)
+        addIfNotNull(R.string.details_label_period, period)
+        addIfNotNull(R.string.details_label_style, style)
+        addIfNotNull(R.string.details_label_medium, medium ?: technique, isWide = true)
+        addIfNotNull(R.string.details_label_dimensions, dimensions.clearText(), isWide = true)
+        addIfNotNull(R.string.details_label_gallery, galleryLocation, isWide = true)
+        addIfNotNull(R.string.details_label_credit_line, creditLine, isWide = true)
+        addIfNotNull(R.string.details_label_provenance, provenance, isWide = true)
     }
 
     return ArtworkDetailUi(

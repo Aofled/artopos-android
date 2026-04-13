@@ -12,7 +12,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import ru.createsmart.artopos.core.uicomponents.R
-import ru.createsmart.artopos.core.designsystem.R as UiR
+import ru.createsmart.artopos.core.designsystem.R as DSR
 
 @Composable
 fun FavoriteButton(
@@ -31,17 +31,17 @@ fun FavoriteButton(
             .size(if (isFullScreen) 40.dp else 36.dp),
     ) {
         val iconRes = if (isFavorite) {
-            UiR.drawable.ic_action_favorite
+            DSR.drawable.ic_action_favorite
         } else {
-            UiR.drawable.ic_action_favorite_border
+            DSR.drawable.ic_action_favorite_border
         }
 
         Icon(
             painter = painterResource(id = iconRes),
             contentDescription = if (isFavorite) {
-                stringResource(R.string.description_remove_favorites)
+                stringResource(R.string.core_cd_favorite_remove)
             } else {
-                stringResource(R.string.description_add_favorites)
+                stringResource(R.string.core_cd_favorite_add)
             },
             tint = Color.White,
             modifier = Modifier

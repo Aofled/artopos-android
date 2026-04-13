@@ -29,7 +29,7 @@ fun BackButton(
     ) {
         Icon(
             painter = painterResource(id = R.drawable.ic_action_arrow_back),
-            contentDescription = stringResource(R.string.description_btn_back),
+            contentDescription = stringResource(R.string.core_cd_back),
             tint = Color.White,
             modifier = Modifier.size(24.dp),
         )

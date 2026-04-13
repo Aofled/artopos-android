@@ -35,44 +35,44 @@ val artworkPreview = ArtworkDetailUi(
     webUrl = "https://www.harvardartmuseums.org/collections/object/357597",
     details = listOf(
         DetailItem(
-            label = UiText.StringResource(R.string.details_period),
+            label = UiText.StringResource(R.string.details_label_period),
             value = "Edo period 1615 - 1868",
             isWide = false,
         ),
         DetailItem(
-            label = UiText.StringResource(R.string.details_style),
+            label = UiText.StringResource(R.string.details_label_style),
             value = "Shijo",
             isWide = false,
         ),
         DetailItem(
-            label = UiText.StringResource(R.string.details_classification),
+            label = UiText.StringResource(R.string.details_label_classification),
             value = "Paintings",
             isWide = false,
         ),
         DetailItem(
-            label = UiText.StringResource(R.string.details_date),
+            label = UiText.StringResource(R.string.details_label_date),
             value = "late 18th-early 19th century",
             isWide = false,
         ),
         DetailItem(
-            label = UiText.StringResource(R.string.details_medium),
+            label = UiText.StringResource(R.string.details_label_medium),
             value = "Left scroll of a pair of hanging scrolls; ink and light color on paper.",
             isWide = true,
         ),
         DetailItem(
-            label = UiText.StringResource(R.string.details_dimensions),
+            label = UiText.StringResource(R.string.details_label_dimensions),
             value = "H.136.8 × W . 63.6 cm (53 7 / 8 × 25 1 / 16 in .)" +
                 " overall mounting, including roller ends and suspension cord:" +
                 " H. 198.5 × W. 71 cm (78 1/8 × 27 15/16 in .)",
             isWide = true,
         ),
         DetailItem(
-            label = UiText.StringResource(R.string.details_gallery),
+            label = UiText.StringResource(R.string.details_label_gallery),
             value = "East Asian Art",
             isWide = true,
         ),
         DetailItem(
-            label = UiText.StringResource(R.string.details_credit_line),
+            label = UiText.StringResource(R.string.details_label_credit_line),
             value = "Promised gift of Robert S.and Betsy G.Feinberg",
             isWide = true,
         ),

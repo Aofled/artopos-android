@@ -30,6 +30,7 @@ import java.net.ConnectException
 import java.net.UnknownHostException
 import java.util.Locale
 import javax.inject.Inject
+import ru.createsmart.artopos.core.designsystem.R as DSR
 
 private const val TRANSLATION_TIMEOUT_MS = 300L
 
@@ -175,21 +176,21 @@ class DetailsViewModel @Inject constructor(
             val result = imageDownloader.downloadImage(url, title)
 
             result.onSuccess { path ->
-                messageManager.sendSideEffect(UiText.StringResource(R.string.msg_saved_to, path))
+                messageManager.sendSideEffect(UiText.StringResource(R.string.details_msg_save_success, path))
             }.onFailure { error ->
 
                 val uiMessage = when (error) {
                     is UnknownHostException, is ConnectException -> {
                         // Network error (and the image is not in the offline cache)
-                        UiText.StringResource(R.string.error_no_internet)
+                        UiText.StringResource(DSR.string.core_error_no_internet)
                     }
                     is IOException -> {
                         // Network or disk problems (e.g. no space)
-                        UiText.StringResource(R.string.error_no_save)
+                        UiText.StringResource(R.string.details_error_save_failed)
                     }
                     else -> {
                         // Unknown failure (e.g. MediaStore crashed)
-                        UiText.StringResource(R.string.error_no_image)
+                        UiText.StringResource(R.string.details_error_save_generic)
                     }
                 }
                 messageManager.sendSideEffect(uiMessage)

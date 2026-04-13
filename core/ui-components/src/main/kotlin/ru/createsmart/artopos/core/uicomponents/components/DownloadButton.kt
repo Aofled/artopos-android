@@ -12,7 +12,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import ru.createsmart.artopos.core.uicomponents.R
-import ru.createsmart.artopos.core.designsystem.R as UiR
+import ru.createsmart.artopos.core.designsystem.R as DSR
 
 @Composable
 fun DownloadButton(
@@ -32,8 +32,8 @@ fun DownloadButton(
             .size(40.dp),
     ) {
         Icon(
-            painter = painterResource(id = UiR.drawable.ic_action_download),
-            contentDescription = stringResource(R.string.description_download),
+            painter = painterResource(id = DSR.drawable.ic_action_download),
+            contentDescription = stringResource(R.string.core_cd_download),
             tint = Color.White,
             modifier = Modifier.size(24.dp),
         )

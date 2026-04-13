@@ -64,7 +64,7 @@ import ru.createsmart.artopos.feature.settings.ui.components.ThemeSelectionDialo
 import ru.createsmart.artopos.feature.settings.ui.components.getLanguageDisplayName
 import ru.createsmart.artopos.feature.settings.ui.components.getThemeDisplayName
 import ru.createsmart.artopos.feature.settings.ui.preview.ArtworkSettingsStateProvider
-import ru.createsmart.artopos.core.designsystem.R as UiR
+import ru.createsmart.artopos.core.designsystem.R as DSR
 
 @Composable
 fun SettingsRoute(
@@ -243,7 +243,7 @@ private fun SettingsTopAppBar() {
     TopAppBar(
         title = {
             Text(
-                text = stringResource(R.string.title_settings),
+                text = stringResource(DSR.string.core_title_settings),
                 style = MaterialTheme.typography.displaySmall,
                 color = MaterialTheme.colorScheme.onBackground,
             )
@@ -265,12 +265,12 @@ private fun SettingsContent(
     onLanguageClick: () -> Unit,
 ) {
     LazyColumn(modifier = modifier.fillMaxSize()) {
-        item { SettingsSectionTitle(stringResource(R.string.title_appearance)) }
+        item { SettingsSectionTitle(stringResource(R.string.settings_section_appearance)) }
 
         item {
             SettingsItem(
-                painter = painterResource(UiR.drawable.ic_color_lens),
-                title = stringResource(R.string.setting_theme),
+                painter = painterResource(DSR.drawable.ic_color_lens),
+                title = stringResource(R.string.settings_label_theme),
                 subtitle = getThemeDisplayName(settings.themeConfig),
                 onClick = onThemeClick,
             )
@@ -278,8 +278,8 @@ private fun SettingsContent(
 
         item {
             SettingsItem(
-                painter = painterResource(id = UiR.drawable.ic_language),
-                title = stringResource(R.string.setting_language),
+                painter = painterResource(id = DSR.drawable.ic_language),
+                title = stringResource(R.string.settings_label_language),
                 subtitle = getLanguageDisplayName(currentLanguageTag),
                 onClick = onLanguageClick,
             )
@@ -287,19 +287,19 @@ private fun SettingsContent(
 
         item {
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-            SettingsSectionTitle(stringResource(R.string.title_storage))
+            SettingsSectionTitle(stringResource(R.string.settings_section_storage))
         }
 
         item {
             val cacheSubtitle = if (cacheSizeMb == null) {
-                stringResource(R.string.settings_cache_calculating)
+                stringResource(R.string.settings_cache_status_calculating)
             } else {
-                stringResource(R.string.settings_cache_size_used, cacheSizeMb)
+                stringResource(R.string.settings_cache_status_size_used, cacheSizeMb)
             }
 
             SettingsItem(
-                painter = painterResource(UiR.drawable.ic_delete),
-                title = stringResource(R.string.setting_cache),
+                painter = painterResource(DSR.drawable.ic_delete),
+                title = stringResource(R.string.settings_label_cache),
                 subtitle = cacheSubtitle,
                 onClick = onClearCacheClick,
             )

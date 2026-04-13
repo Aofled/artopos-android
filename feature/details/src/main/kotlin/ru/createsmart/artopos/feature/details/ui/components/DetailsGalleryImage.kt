@@ -21,12 +21,11 @@ import coil.request.ImageRequest
 import coil.size.Size
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
-import ru.createsmart.artopos.core.designsystem.R
 import ru.createsmart.artopos.core.uicomponents.components.FullscreenShimmerBox
 import ru.createsmart.artopos.core.uicomponents.components.RetryDecision
 import ru.createsmart.artopos.core.uicomponents.components.RetryPlaceholder
 import ru.createsmart.artopos.core.uicomponents.components.analyzeRetry
-import ru.createsmart.artopos.core.designsystem.R as UiR
+import ru.createsmart.artopos.core.designsystem.R as DSR
 
 private const val RETRY_HASH = "retry_hash"
 private const val ZOOM_ACTIVATION_THRESHOLD = 1.25f
@@ -74,7 +73,7 @@ fun DetailsGalleryImage(
     ) {
         SubcomposeAsyncImage(
             model = imageRequest,
-            contentDescription = stringResource(R.string.description_image),
+            contentDescription = stringResource(DSR.string.core_cd_image),
             contentScale = contentScale,
             modifier = Modifier.fillMaxSize(),
             loading = {
@@ -119,7 +118,7 @@ private fun rememberGalleryImageRequest(
                     val message = if (decision is RetryDecision.ShowMessage) {
                         decision.message
                     } else {
-                        UiText.StringResource(UiR.string.error_load_image)
+                        UiText.StringResource(DSR.string.core_error_load_image)
                     }
                     onErrorMessage(message)
                 },

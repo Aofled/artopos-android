@@ -1,6 +1,6 @@
 package ru.createsmart.artopos.core.navigation
 
-import ru.createsmart.artopos.core.designsystem.R as UiR
+import ru.createsmart.artopos.core.designsystem.R as DSR
 
 enum class TopLevelDestination(
     val route: Any,
@@ -10,20 +10,20 @@ enum class TopLevelDestination(
 ) {
     DISCOVER(
         route = DiscoverRoute,
-        iconUnselected = UiR.drawable.ic_nav_home_outlined,
-        iconSelected = UiR.drawable.ic_nav_home_filled,
-        titleTextId = UiR.string.title_discover,
+        iconUnselected = DSR.drawable.ic_nav_home_outlined,
+        iconSelected = DSR.drawable.ic_nav_home_filled,
+        titleTextId = DSR.string.core_title_discover,
     ),
     FAVORITES(
         route = FavoritesRoute,
-        iconUnselected = UiR.drawable.ic_nav_heart_outlined,
-        iconSelected = UiR.drawable.ic_nav_heart_filled,
-        titleTextId = UiR.string.title_favorites,
+        iconUnselected = DSR.drawable.ic_nav_heart_outlined,
+        iconSelected = DSR.drawable.ic_nav_heart_filled,
+        titleTextId = DSR.string.core_title_favorites,
     ),
     SETTINGS(
         route = SettingsRoute,
-        iconUnselected = UiR.drawable.ic_nav_settings_outlined,
-        iconSelected = UiR.drawable.ic_nav_settings_filled,
-        titleTextId = UiR.string.title_settings,
+        iconUnselected = DSR.drawable.ic_nav_settings_outlined,
+        iconSelected = DSR.drawable.ic_nav_settings_filled,
+        titleTextId = DSR.string.core_title_settings,
     ),
 }

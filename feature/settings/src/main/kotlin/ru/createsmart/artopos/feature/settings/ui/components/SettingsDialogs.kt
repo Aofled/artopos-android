@@ -25,7 +25,7 @@ import ru.createsmart.artopos.core.model.settings.ThemeConfig
 import ru.createsmart.artopos.feature.settings.R
 import ru.createsmart.artopos.feature.settings.model.LanguageConfig
 import ru.createsmart.artopos.feature.settings.model.LanguageItem
-import ru.createsmart.artopos.core.designsystem.R as UiR
+import ru.createsmart.artopos.core.designsystem.R as DSR
 
 @Composable
 fun ClearCacheConfirmationDialog(
@@ -34,17 +34,17 @@ fun ClearCacheConfirmationDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        icon = { Icon(painterResource(UiR.drawable.ic_delete), null) },
-        title = { Text(stringResource(R.string.setting_cache)) },
-        text = { Text(stringResource(R.string.clear_cache_description)) },
+        icon = { Icon(painterResource(DSR.drawable.ic_delete), null) },
+        title = { Text(stringResource(R.string.settings_label_cache)) },
+        text = { Text(stringResource(R.string.settings_cache_dialog_message)) },
         confirmButton = {
             TextButton(onClick = onConfirm) {
-                Text(stringResource(R.string.action_clear), color = MaterialTheme.colorScheme.error)
+                Text(stringResource(R.string.settings_action_clear_cache), color = MaterialTheme.colorScheme.error)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.action_cancel))
+                Text(stringResource(DSR.string.core_btn_cancel))
             }
         },
     )
@@ -58,7 +58,7 @@ fun ThemeSelectionDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.choose_theme)) },
+        title = { Text(stringResource(R.string.settings_theme_dialog_title)) },
         text = {
             Column(Modifier.selectableGroup()) {
                 ThemeConfig.entries.forEach { themeOption ->
@@ -71,7 +71,7 @@ fun ThemeSelectionDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
+            TextButton(onClick = onDismiss) { Text(stringResource(DSR.string.core_btn_cancel)) }
         },
     )
 }
@@ -106,9 +106,9 @@ private fun ThemeOptionRow(
 @Composable
 fun getThemeDisplayName(themeConfig: ThemeConfig): String {
     return when (themeConfig) {
-        ThemeConfig.FOLLOW_SYSTEM -> stringResource(R.string.theme_system)
-        ThemeConfig.LIGHT -> stringResource(R.string.theme_light)
-        ThemeConfig.DARK -> stringResource(R.string.theme_dark)
+        ThemeConfig.FOLLOW_SYSTEM -> stringResource(R.string.settings_theme_option_system)
+        ThemeConfig.LIGHT -> stringResource(R.string.settings_theme_option_light)
+        ThemeConfig.DARK -> stringResource(R.string.settings_theme_option_dark)
     }
 }
 
@@ -120,7 +120,7 @@ fun LanguageSelectionDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.language_dialog_title)) },
+        title = { Text(stringResource(R.string.settings_language_dialog_title)) },
         text = {
             Column(Modifier.selectableGroup()) {
                 LanguageConfig.supportedLanguages.forEach { language ->
@@ -134,7 +134,7 @@ fun LanguageSelectionDialog(
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.action_cancel))
+                Text(stringResource(DSR.string.core_btn_cancel))
             }
         },
     )
@@ -174,6 +174,6 @@ fun getLanguageDisplayName(languageTag: String): String {
         language?.nativeName != null -> language.nativeName
         language?.nameResId != null -> stringResource(language.nameResId)
         else -> LocaleListCompat.forLanguageTags(languageTag).get(0)?.displayName
-            ?: stringResource(R.string.language_unknown)
+            ?: stringResource(R.string.settings_language_option_unknown)
     }
 }

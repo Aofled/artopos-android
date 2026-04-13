@@ -24,7 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ru.createsmart.artopos.feature.details.R
-import ru.createsmart.artopos.core.designsystem.R as UiR
+import ru.createsmart.artopos.core.designsystem.R as DSR
 
 @Composable
 fun TranslationBadge(
@@ -49,7 +49,7 @@ fun TranslationBadge(
                 )
             } else {
                 Icon(
-                    painter = painterResource(id = UiR.drawable.ic_translate),
+                    painter = painterResource(id = DSR.drawable.ic_translate),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(16.dp),
@@ -58,9 +58,9 @@ fun TranslationBadge(
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = if (isTranslated) {
-                    stringResource(R.string.label_translated_mlkit)
+                    stringResource(R.string.details_label_translation_service)
                 } else {
-                    stringResource(R.string.label_original_text)
+                    stringResource(R.string.details_btn_show_original)
                 },
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -78,9 +78,9 @@ fun TranslationBadge(
             ) {
                 Text(
                     text = if (isTranslated) {
-                        stringResource(R.string.btn_show_original)
+                        stringResource(R.string.details_label_original_text)
                     } else {
-                        stringResource(R.string.btn_translate)
+                        stringResource(DSR.string.core_btn_translate)
                     },
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.primary,

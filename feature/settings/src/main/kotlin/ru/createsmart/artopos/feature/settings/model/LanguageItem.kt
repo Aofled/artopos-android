@@ -10,7 +10,7 @@ data class LanguageItem(
 
 object LanguageConfig {
     val supportedLanguages = listOf(
-        LanguageItem(tag = "", nameResId = R.string.language_system),
+        LanguageItem(tag = "", nameResId = R.string.settings_language_option_system),
         LanguageItem(tag = "en", nameResId = R.string.language_en),
         LanguageItem(tag = "ru", nameResId = R.string.language_ru),
         LanguageItem(tag = "fr", nameResId = R.string.language_fr),

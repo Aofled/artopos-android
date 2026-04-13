@@ -21,7 +21,7 @@ import ru.createsmart.artopos.core.designsystem.R
 fun RetryPlaceholder(
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
-    hint: String = stringResource(R.string.description_btn_retry),
+    hint: String = stringResource(R.string.core_cd_retry),
 ) {
     Box(
         modifier = modifier

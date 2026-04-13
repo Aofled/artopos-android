@@ -64,16 +64,16 @@ class SettingsViewModel @Inject constructor(
     fun clearAppCache() {
         viewModelScope.launch {
             uiMessageManager.sendSideEffect(
-                UiText.StringResource(R.string.msg_clearing_cache),
+                UiText.StringResource(R.string.settings_msg_cache_clearing),
             )
 
             val freedBytes = useCases.clearAppCacheUseCase()
             val freedMb = freedBytes / (BYTES_IN_MEGABYTE)
 
             val message = if (freedMb > 0) {
-                UiText.StringResource(R.string.msg_cache_cleared, freedMb)
+                UiText.StringResource(R.string.settings_msg_cache_cleared, freedMb)
             } else {
-                UiText.StringResource(R.string.msg_cache_empty)
+                UiText.StringResource(R.string.settings_msg_cache_empty)
             }
 
             uiMessageManager.sendSideEffect(message)

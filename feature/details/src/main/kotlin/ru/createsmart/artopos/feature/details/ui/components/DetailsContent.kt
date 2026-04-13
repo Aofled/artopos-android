@@ -136,7 +136,7 @@ private fun LazyListScope.detailsItems(
 
     // 4. Details Table
     item {
-        ExpandableDetailsSection(title = stringResource(R.string.details_specifications)) {
+        ExpandableDetailsSection(title = stringResource(R.string.details_title_specifications)) {
             DetailsTable(artwork)
         }
     }

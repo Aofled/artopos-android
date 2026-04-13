@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="description_remove_favorites">Remove from favorites</string>
-    <string name="description_add_favorites">Add to favorites</string>
-    <string name="description_download">Download</string>
+    <string name="core_cd_favorite_add">Add to favorites</string>
+    <string name="core_cd_favorite_remove">Remove from favorites</string>
+
+    <string name="core_cd_download">Download</string>
 </resources>

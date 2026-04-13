@@ -35,8 +35,8 @@ import ru.createsmart.artopos.core.uicomponents.notifiers.BottomBarCommand
 import ru.createsmart.artopos.core.uicomponents.notifiers.LocalBottomBarStateNotifier
 import ru.createsmart.artopos.feature.artworkcard.model.ArtworkListItem
 import ru.createsmart.artopos.feature.artworkcard.ui.components.ArtworkCard
-import ru.createsmart.artopos.feature.favorites.R
 import ru.createsmart.artopos.feature.favorites.model.FavoritesActions
+import ru.createsmart.artopos.core.designsystem.R as DSR
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -122,7 +122,7 @@ fun FavoritesView(
 @Composable
 private fun FavoritesHeader() {
     Text(
-        text = stringResource(R.string.label_favorites),
+        text = stringResource(DSR.string.core_title_favorites),
         style = MaterialTheme.typography.displaySmall,
         color = MaterialTheme.colorScheme.onBackground,
     )

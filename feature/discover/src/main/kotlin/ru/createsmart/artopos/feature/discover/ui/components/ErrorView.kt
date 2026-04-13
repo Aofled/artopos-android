@@ -15,7 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
-import ru.createsmart.artopos.core.designsystem.R as UiR
+import ru.createsmart.artopos.core.designsystem.R as DSR
 
 @Composable
 fun ErrorView(onRetry: () -> Unit) {
@@ -25,7 +25,7 @@ fun ErrorView(onRetry: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            text = stringResource(UiR.string.label_wrong),
+            text = stringResource(DSR.string.core_error_generic),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.error,
         )
@@ -34,7 +34,7 @@ fun ErrorView(onRetry: () -> Unit) {
             modifier = Modifier.padding(top = 16.dp),
         ) {
             Text(
-                text = stringResource(UiR.string.description_btn_retry),
+                text = stringResource(DSR.string.core_cd_retry),
             )
         }
     }

@@ -59,10 +59,9 @@ import ru.createsmart.artopos.core.uicomponents.notifiers.BottomBarCommand
 import ru.createsmart.artopos.core.uicomponents.notifiers.LocalBottomBarStateNotifier
 import ru.createsmart.artopos.feature.artworkcard.model.ArtworkListItem
 import ru.createsmart.artopos.feature.artworkcard.ui.components.ArtworkCard
-import ru.createsmart.artopos.feature.discover.R
 import ru.createsmart.artopos.feature.discover.model.DiscoverActions
 import ru.createsmart.artopos.feature.discover.model.DiscoverEvent
-import ru.createsmart.artopos.core.designsystem.R as UiR
+import ru.createsmart.artopos.core.designsystem.R as DSR
 
 @Composable
 fun ArtworksView(
@@ -205,7 +204,7 @@ private fun FavoritesHeader(
         modifier = Modifier.fillMaxWidth(),
     ) {
         Text(
-            text = stringResource(R.string.label_discover),
+            text = stringResource(DSR.string.core_title_discover),
             style = MaterialTheme.typography.displaySmall,
             color = MaterialTheme.colorScheme.onBackground,
         )
@@ -309,7 +308,7 @@ private fun ErrorFooter(onRetry: () -> Unit) {
             onClick = onRetry,
         ) {
             Text(
-                text = stringResource(UiR.string.description_btn_retry),
+                text = stringResource(DSR.string.core_cd_retry),
             )
         }
     }
