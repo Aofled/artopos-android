@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_section_appearance">Aspetto</string>
+    <string name="settings_section_storage">Archiviazione</string>
+
+    <string name="settings_label_theme">Tema</string>
+    <string name="settings_label_language">Lingua</string>
+    <string name="settings_label_cache">Svuota cache immagini</string>
+    <string name="settings_label_cache_subtitle">Libera spazio sul dispositivo</string>
+
+    <string name="settings_theme_dialog_title">Scegli tema</string>
+    <string name="settings_theme_option_system">Predefinito di sistema</string>
+    <string name="settings_theme_option_light">Chiaro</string>
+    <string name="settings_theme_option_dark">Scuro</string>
+
+    <string name="settings_language_dialog_title">Scegli lingua</string>
+    <string name="settings_language_option_system">Predefinito di sistema</string>
+    <string name="settings_language_option_unknown">Sconosciuta</string>
+
+    <string name="settings_cache_dialog_message">Questo rimuoverà tutte le immagini scaricate dal dispositivo. Verranno scaricate di nuovo quando le visualizzerai.</string>
+    <string name="settings_cache_status_calculating">Calcolo dimensione in corso...</string>
+    <string name="settings_cache_status_size_used">%1$d MB di memoria locale utilizzati</string>
+
+    <string name="settings_action_clear_cache">Svuota</string>
+
+    <string name="settings_msg_cache_clearing">Svuotamento cache...</string>
+    <string name="settings_msg_cache_cleared">Svuotati %1$d MB di immagini</string>
+    <string name="settings_msg_cache_empty">La cache è già vuota</string>
+</resources>

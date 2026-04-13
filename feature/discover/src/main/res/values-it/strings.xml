@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="discover_filter_label_type">Tipo</string>
+    <string name="discover_filter_label_period">Periodo storico</string>
+    <string name="discover_filter_label_culture">Cultura</string>
+    <string name="discover_filter_value_any">Qualsiasi</string>
+
+    <string name="discover_title_sort_filters">Ordina filtri</string>
+    <string name="discover_search_hint">Cerca filtri...</string>
+
+    <string name="discover_cd_search">Cerca</string>
+    <string name="discover_cd_clear_search">Cancella</string>
+    <string name="discover_cd_sort">Ordinamento</string>
+
+    <string name="discover_sort_option_rank">Scelta del curatore</string>
+    <string name="discover_sort_option_views">Più visti</string>
+    <string name="discover_sort_option_newest">Nuovi arrivi</string>
+    <string name="discover_sort_option_oldest">I più antichi</string>
+    <string name="discover_sort_option_random">Casuale</string>
+
+    <string name="discover_empty_title">Nessun risultato!</string>
+    <string name="discover_empty_subtitle">Prova a modificare i filtri</string>
+</resources>

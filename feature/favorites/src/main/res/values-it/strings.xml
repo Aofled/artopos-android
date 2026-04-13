@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="favorites_empty_title">Preferiti</string>
+    <string name="favorites_empty_message">Tocca l\'icona a forma di cuore su qualsiasi opera d\'arte per salvarla qui.</string>
+</resources>
