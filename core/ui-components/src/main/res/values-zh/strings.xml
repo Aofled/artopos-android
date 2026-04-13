@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="core_cd_favorite_add">添加到收藏</string>
+    <string name="core_cd_favorite_remove">取消收藏</string>
+
+    <string name="core_cd_download">下载</string>
+</resources>

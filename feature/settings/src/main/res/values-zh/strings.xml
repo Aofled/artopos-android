@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_section_appearance">外观</string>
+    <string name="settings_section_storage">存储</string>
+
+    <string name="settings_label_theme">主题</string>
+    <string name="settings_label_language">语言</string>
+    <string name="settings_label_cache">清除图片缓存</string>
+    <string name="settings_label_cache_subtitle">释放设备存储空间</string>
+
+    <string name="settings_theme_dialog_title">选择主题</string>
+    <string name="settings_theme_option_system">系统默认</string>
+    <string name="settings_theme_option_light">浅色</string>
+    <string name="settings_theme_option_dark">深色</string>
+
+    <string name="settings_language_dialog_title">选择语言</string>
+    <string name="settings_language_option_system">系统默认</string>
+    <string name="settings_language_option_unknown">未知</string>
+
+    <string name="settings_cache_dialog_message">这将从您的设备中移除所有已下载的图片。当您查看它们时，将会重新下载。</string>
+    <string name="settings_cache_status_calculating">正在计算大小...</string>
+    <string name="settings_cache_status_size_used">已使用 %1$d MB 本地存储空间</string>
+
+    <string name="settings_action_clear_cache">清除</string>
+
+    <string name="settings_msg_cache_clearing">正在清除缓存...</string>
+    <string name="settings_msg_cache_cleared">已清除 %1$d MB 图片</string>
+    <string name="settings_msg_cache_empty">缓存已空</string>
+</resources>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="discover_filter_label_type">类型</string>
+    <string name="discover_filter_label_period">时间段</string>
+    <string name="discover_filter_label_culture">文化</string>
+    <string name="discover_filter_value_any">不限</string>
+
+    <string name="discover_title_sort_filters">筛选排序</string>
+    <string name="discover_search_hint">搜索筛选条件...</string>
+
+    <string name="discover_cd_search">搜索</string>
+    <string name="discover_cd_clear_search">清除</string>
+    <string name="discover_cd_sort">排序</string>
+
+    <string name="discover_sort_option_rank">策展人精选</string>
+    <string name="discover_sort_option_views">最多浏览</string>
+    <string name="discover_sort_option_newest">最新</string>
+    <string name="discover_sort_option_oldest">最早</string>
+    <string name="discover_sort_option_random">随机</string>
+
+    <string name="discover_empty_title">没有结果！</string>
+    <string name="discover_empty_subtitle">尝试调整您的筛选条件</string>
+</resources>

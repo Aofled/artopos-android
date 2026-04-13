@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="core_title_discover">展覽</string>
+    <string name="core_title_favorites">收藏</string>
+    <string name="core_title_settings">设置</string>
+    <string name="core_title_filters">筛选</string>
+
+    <string name="core_cd_back">返回</string>
+    <string name="core_cd_retry">重试</string>
+    <string name="core_cd_image">图片</string>
+    <string name="core_cd_remove_filter">移除筛选</string>
+    <string name="core_cd_collapse">折叠</string>
+    <string name="core_cd_expand">展开</string>
+
+    <string name="core_btn_reset">重置</string>
+    <string name="core_btn_translate">翻译</string>
+    <string name="core_btn_filter">筛选</string>
+    <string name="core_btn_cancel">取消</string>
+
+    <string name="core_error_generic">出错了</string>
+    <string name="core_error_not_found">未找到图片 (404)</string>
+    <string name="core_error_no_internet">无网络连接</string>
+    <string name="core_error_failed_connect">无法连接到服务器</string>
+    <string name="core_error_timed_out">下载超时</string>
+    <string name="core_error_network">网络错误。请检查您的连接。</string>
+    <string name="core_error_server">服务器错误</string>
+    <string name="core_error_load_image">无法加载图片</string>
+
+    <string name="core_placeholder_artist">未知艺术家</string>
+    <string name="core_placeholder_title">无题</string>
+</resources>

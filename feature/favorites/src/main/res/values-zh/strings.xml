@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="favorites_empty_title">收藏</string>
+    <string name="favorites_empty_message">点击任何艺术品上的心形图标即可将其保存到这里。</string>
+</resources>

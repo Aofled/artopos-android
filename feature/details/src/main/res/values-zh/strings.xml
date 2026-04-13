@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="details_title_specifications">规格</string>
+    <string name="details_label_date">日期</string>
+    <string name="details_label_culture">文化</string>
+    <string name="details_label_period">时期</string>
+    <string name="details_label_style">风格</string>
+    <string name="details_label_classification">分类</string>
+    <string name="details_label_century">世纪</string>
+    <string name="details_label_medium">材质</string>
+    <string name="details_label_dimensions">尺寸</string>
+    <string name="details_label_gallery">展厅</string>
+    <string name="details_label_credit_line">鸣谢</string>
+    <string name="details_label_provenance">出处</string>
+
+    <string name="details_label_translation_service">由 Google ML Kit 翻译</string>
+    <string name="details_label_original_text">查看原文</string>
+    <string name="details_btn_show_original">原文</string>
+
+    <string name="details_msg_save_success">已保存至 %1$s</string>
+
+    <string name="details_error_save_failed">保存失败：请检查您的连接或存储空间</string>
+    <string name="details_error_save_generic">保存图片时出错</string>
+</resources>
