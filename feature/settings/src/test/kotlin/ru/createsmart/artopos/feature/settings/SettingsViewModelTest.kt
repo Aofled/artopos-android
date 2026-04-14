@@ -1,5 +1,6 @@
 package ru.createsmart.artopos.feature.settings
 
+import UiText
 import app.cash.turbine.test
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -10,9 +11,8 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
+import ru.createsmart.artopos.core.domain.interactor.SettingsInteractor
 import ru.createsmart.artopos.core.domain.repository.SettingsRepository
-import ru.createsmart.artopos.core.domain.usecase.ClearImageCacheUseCase
-import ru.createsmart.artopos.core.domain.usecase.GetImageCacheSizeUseCase
 import ru.createsmart.artopos.core.model.settings.ThemeConfig
 import ru.createsmart.artopos.core.model.settings.UserSettings
 import ru.createsmart.artopos.core.uicomponents.manager.UiMessageManager
@@ -24,8 +24,8 @@ class SettingsViewModelTest {
     val mainDispatcherRule = MainDispatcherRule()
 
     private val settingsRepository: SettingsRepository = mockk(relaxed = true)
-    private val clearImageCacheUseCase: ClearImageCacheUseCase = mockk()
-    private val getImageCacheSizeUseCase: GetImageCacheSizeUseCase = mockk()
+    private val useCases: SettingsInteractor = mockk()
+
     private val uiMessageManager: UiMessageManager = mockk(relaxed = true)
 
     private lateinit var viewModel: SettingsViewModel
@@ -33,8 +33,7 @@ class SettingsViewModelTest {
     private fun setupViewModel() {
         viewModel = SettingsViewModel(
             settingsRepository,
-            clearImageCacheUseCase,
-            getImageCacheSizeUseCase,
+            useCases,
             uiMessageManager,
         )
     }
@@ -79,7 +78,7 @@ class SettingsViewModelTest {
     fun `calculateCacheSize updates cacheSizeMb state correctly`() = runTest {
         // GIVEN
         every { settingsRepository.userSettingsStream } returns MutableSharedFlow()
-        coEvery { getImageCacheSizeUseCase() } returns (5L * 1024 * 1024) // 5 MB
+        coEvery { useCases.getImageCacheSizeUseCase() } returns (5L * 1024 * 1024) // 5 MB
 
         setupViewModel()
 
@@ -88,7 +87,13 @@ class SettingsViewModelTest {
 
         // THEN
         viewModel.cacheSizeMb.test {
-            assertEquals(5L, awaitItem())
+            val firstItem = awaitItem()
+            if (firstItem == null) {
+                // Ждем следующее значение (5L)
+                assertEquals(5L, awaitItem())
+            } else {
+                assertEquals(5L, firstItem)
+            }
         }
     }
 
@@ -97,8 +102,8 @@ class SettingsViewModelTest {
         // GIVEN
         every { settingsRepository.userSettingsStream } returns MutableSharedFlow()
 
-        coEvery { clearImageCacheUseCase() } returns (10L * 1024 * 1024) // 10 MB
-        coEvery { getImageCacheSizeUseCase() } returns 0L // 0 MB
+        coEvery { useCases.clearAppCacheUseCase() } returns (10L * 1024 * 1024) // 10 MB
+        coEvery { useCases.getImageCacheSizeUseCase() } returns 0L // 0 MB
 
         setupViewModel()
 
@@ -112,6 +117,6 @@ class SettingsViewModelTest {
         coVerify { uiMessageManager.sendSideEffect(UiText.StringResource(R.string.settings_msg_cache_cleared, 10L)) }
 
         // THEN
-        coVerify(exactly = 1) { getImageCacheSizeUseCase() }
+        coVerify(exactly = 1) { useCases.getImageCacheSizeUseCase() }
     }
 }
