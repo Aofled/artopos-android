@@ -11,8 +11,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
-import ru.createsmart.artopos.core.domain.usecase.GetFavoriteArtworksUseCase
-import ru.createsmart.artopos.core.domain.usecase.ToggleFavoriteUseCase
+import ru.createsmart.artopos.core.domain.interactor.FavoritesInteractor
 import ru.createsmart.artopos.core.model.Artwork
 import ru.createsmart.artopos.core.model.ImageDimensions
 import ru.createsmart.artopos.core.uicomponents.manager.UiMessageManager
@@ -24,16 +23,18 @@ class FavoritesViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
-    private val getFavoritesUseCase: GetFavoriteArtworksUseCase = mockk()
-    private val toggleFavoriteUseCase: ToggleFavoriteUseCase = mockk(relaxed = true)
+    private val useCases: FavoritesInteractor = mockk()
     private val messageManager: UiMessageManager = mockk(relaxed = true)
 
     private lateinit var viewModel: FavoritesViewModel
     private val favoritesFlow = MutableSharedFlow<List<Artwork>>()
 
     private fun setupViewModel() {
-        every { getFavoritesUseCase() } returns favoritesFlow
-        viewModel = FavoritesViewModel(getFavoritesUseCase, toggleFavoriteUseCase, messageManager)
+        every { useCases.getFavoritesUseCase() } returns favoritesFlow
+        viewModel = FavoritesViewModel(
+            useCases,
+            messageManager,
+        )
     }
 
     @Test
