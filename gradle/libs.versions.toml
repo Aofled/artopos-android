@@ -3,8 +3,6 @@
 android-sdk-target = "36"
 android-sdk-min = "26"
 android-sdk-compile = "36"
-version-code = "1"
-version-name = "1.0"
 agp = "9.1.0"
 
 # Core & Kotlin

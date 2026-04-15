@@ -28,11 +28,11 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                 defaultConfig.targetSdk =
                     libs.findVersion("android-sdk-target").get().toString().toInt()
 
-                defaultConfig.versionCode =
-                    libs.findVersion("version-code").get().toString().toInt()
+                val vCode = (findProperty("ARTOPOS_VERSION_CODE") as? String)?.toIntOrNull() ?: 1
+                defaultConfig.versionCode = vCode
 
-                defaultConfig.versionName =
-                    libs.findVersion("version-name").get().toString()
+                val vName = (findProperty("ARTOPOS_VERSION_NAME") as? String) ?: "1.0"
+                defaultConfig.versionName = vName
 
                 defaultConfig.testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
             }
