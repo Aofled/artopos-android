@@ -10,13 +10,12 @@ import com.google.mlkit.nl.translate.Translation
 import com.google.mlkit.nl.translate.Translator
 import com.google.mlkit.nl.translate.TranslatorOptions
 import kotlinx.coroutines.tasks.await
-import ru.createsmart.artopos.core.domain.translation.TextTranslator
 import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class MLKitTranslatorImpl @Inject constructor() : TextTranslator {
+class MLKitTranslationDataSource @Inject constructor() {
 
     private var currentTranslator: Translator? = null
     private var activeLanguage: String = ""
@@ -58,7 +57,7 @@ class MLKitTranslatorImpl @Inject constructor() : TextTranslator {
         }
     }
 
-    override suspend fun translate(text: String?, targetLanguage: String): String? {
+    suspend fun translate(text: String?, targetLanguage: String): String? {
         // Try to get the translator only if text not empty.
         val translator = if (text.isNullOrBlank()) null else getOrCreateTranslator(targetLanguage)
 
@@ -77,7 +76,7 @@ class MLKitTranslatorImpl @Inject constructor() : TextTranslator {
         } ?: text // If translator was null or text is empty, return the original
     }
 
-    override suspend fun preloadModel(targetLanguage: String) {
+    suspend fun preloadModel(targetLanguage: String) {
         val translator = getOrCreateTranslator(targetLanguage) ?: return
         // Language packs are downloaded via Wi-Fi and mobile internet (.requireWifi() <- only Wi-Fi)
         try {
@@ -88,9 +87,13 @@ class MLKitTranslatorImpl @Inject constructor() : TextTranslator {
         }
     }
 
-    override suspend fun isModelDownloaded(): Boolean {
-        val targetLanguage = TranslateLanguage.fromLanguageTag(targetLanguageCode)
-            ?: return true
+    suspend fun isModelDownloaded(targetLanguageCode: String): Boolean {
+        val actualLangCode = getActualLanguage(targetLanguageCode)
+        val targetLanguage = TranslateLanguage.fromLanguageTag(actualLangCode)
+
+        if (actualLangCode == "en" || targetLanguage == null) {
+            return true
+        }
 
         val modelManager = RemoteModelManager.getInstance()
         val model = TranslateRemoteModel.Builder(targetLanguage).build()

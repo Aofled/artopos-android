@@ -29,7 +29,6 @@ android {
 
 dependencies {
     implementation(libs.bundles.network)
-    implementation(projects.core.domain)
 
     testImplementation(libs.bundles.test.unit.minimal)
     testImplementation(libs.kotlinx.serialization.json)

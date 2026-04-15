@@ -13,7 +13,6 @@ import coil.request.SuccessResult
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import ru.createsmart.artopos.core.domain.repository.ImageDownloader
 import java.io.IOException
 import javax.inject.Inject
 
@@ -21,9 +20,8 @@ private const val BITMAP_QUALITY = 100
 
 class AndroidImageDownloader @Inject constructor(
     @ApplicationContext private val context: Context,
-) : ImageDownloader {
-
-    override suspend fun downloadImage(url: String, fileName: String): Result<String> =
+) {
+    suspend fun downloadImage(url: String, fileName: String): Result<String> =
         withContext(Dispatchers.IO) {
             return@withContext try {
                 // 1. COIL gives us a picture (from cache or network)

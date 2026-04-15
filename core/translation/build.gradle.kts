@@ -8,8 +8,6 @@ android {
 }
 
 dependencies {
-    implementation(projects.core.domain)
-    
     implementation(libs.google.mlkit.translate)
 
     implementation(libs.kotlinx.coroutines.core)

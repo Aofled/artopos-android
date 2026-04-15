@@ -19,7 +19,7 @@ import ru.createsmart.artopos.core.model.settings.ThemeConfig
 const val TEST_FILE_PREFERENCES = "test_settings.preferences_pb"
 const val TEST_THEME_CONFIG = "test_settings.theme_config"
 
-class DataStoreSettingsRepositoryTest {
+class DataStoreSettingsDataSourceTest {
 
     // Temporary folder that will be automatically deleted after the test
     @get:Rule
@@ -30,7 +30,7 @@ class DataStoreSettingsRepositoryTest {
     private val testScope = TestScope(testDispatcher)
 
     private lateinit var dataStore: DataStore<Preferences>
-    private lateinit var repository: DataStoreSettingsRepository
+    private lateinit var repository: DataStoreSettingsDataSource
 
     @Before
     fun setup() {
@@ -40,7 +40,7 @@ class DataStoreSettingsRepositoryTest {
             produceFile = { tmpFolder.newFile(TEST_FILE_PREFERENCES) },
         )
 
-        repository = DataStoreSettingsRepository(dataStore)
+        repository = DataStoreSettingsDataSource(dataStore)
     }
 
     @Test

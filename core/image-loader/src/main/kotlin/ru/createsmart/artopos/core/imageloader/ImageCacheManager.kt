@@ -7,7 +7,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
-import ru.createsmart.artopos.core.domain.repository.ImageCacheRepository
 import ru.createsmart.artopos.core.network.di.ImageClient
 import java.io.File
 import java.io.IOException
@@ -18,12 +17,12 @@ import javax.inject.Singleton
 class ImageCacheManager @Inject constructor(
     @ApplicationContext private val context: Context,
     @ImageClient private val imageOkHttpClient: OkHttpClient,
-) : ImageCacheRepository {
+) {
     /**
      * The current strategy does not provide for a default coil cache.
      */
     @OptIn(ExperimentalCoilApi::class)
-    override suspend fun clearCache(): Long = withContext(Dispatchers.IO) {
+    suspend fun clearCache(): Long = withContext(Dispatchers.IO) {
         var freedSpace = 0L
 
         // 1. Clear our custom OkHttp cache (folder "http_cache")
@@ -47,7 +46,7 @@ class ImageCacheManager @Inject constructor(
         return@withContext freedSpace
     }
 
-    override suspend fun getCacheSize(): Long = withContext(Dispatchers.IO) {
+    suspend fun getCacheSize(): Long = withContext(Dispatchers.IO) {
         var totalSize = 0L
 
         // 1. Calculating the size of the http_cache folder (our custom OkHttp)
