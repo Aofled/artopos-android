@@ -14,7 +14,7 @@
  *
  * 3. AUTO-CORRECT (Main Project Only)
  *    Fixes formatting (spaces, indents, imports) automatically.
- *    Command: ./gradlew detekt --auto-correct
+ *    Command: ./gradlew detektAll -Pdetekt.autocorrect=true
  *
  * 4. CHECK SPECIFIC MODULE
  *    Runs checks only for the specified module (faster).
@@ -26,7 +26,7 @@
  *
  * 6. AUTO-CORRECT BUILD LOGIC
  *    Fixes formatting inside build-logic.
- *    Command: ./gradlew -p build-logic detekt --auto-correct
+ *    Command: ./gradlew -p build-logic detekt -Pdetekt.autocorrect=true
  *
  * 7. GENERATE CONFIG
  *    Updates detekt.yml with default values.

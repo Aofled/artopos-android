@@ -18,9 +18,11 @@ dependencies {
     implementation(libs.room.gradlePlugin)
 }
 
+val isAutoCorrectEnabled = providers.gradleProperty("detekt.autocorrect").orNull == "true"
+
 detekt {
     config.setFrom(files("../../config/detekt/detekt.yml"))
-    autoCorrect = true
+    autoCorrect = isAutoCorrectEnabled
 }
 
 gradlePlugin {
