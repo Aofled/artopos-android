@@ -31,8 +31,6 @@ dependencies {
     implementation(libs.bundles.network)
     implementation(projects.core.domain)
 
-    implementation(libs.coil.base)
-
     testImplementation(libs.bundles.test.unit.minimal)
     testImplementation(libs.kotlinx.serialization.json)
 }

@@ -1,4 +1,4 @@
-package ru.createsmart.artopos.core.network.image
+package ru.createsmart.artopos.core.imageloader
 
 import android.content.Context
 import coil.annotation.ExperimentalCoilApi
