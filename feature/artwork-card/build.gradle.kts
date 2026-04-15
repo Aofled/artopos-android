@@ -12,5 +12,7 @@ dependencies {
     implementation(projects.core.model)
     implementation(projects.core.uiComponents)
 
+    implementation(libs.coil.compose)
+
     testImplementation(libs.bundles.test.unit.minimal)
 }

@@ -39,8 +39,5 @@ internal fun Project.configureAndroidCompose(
         // Safer state collection: collectAsStateWithLifecycle()
         // Stops updating UI when app is in background (saves battery).
         add("implementation", libs.findLibrary("androidx-lifecycle-runtime-compose").get())
-
-        // Async Image Loading
-        add("implementation", libs.findLibrary("coil-compose").get())
     }
 }

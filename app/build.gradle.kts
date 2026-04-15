@@ -30,8 +30,6 @@ android {
 }
 
 dependencies {
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -49,4 +47,9 @@ dependencies {
     implementation(projects.feature.favorites)
     implementation(projects.feature.details)
     implementation(projects.feature.settings)
+
+    implementation(libs.okhttp3)
+    implementation(libs.coil.base)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.material)
 }

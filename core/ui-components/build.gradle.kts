@@ -13,4 +13,5 @@ dependencies {
     // Architecture: Standard Java annotations (@Inject).
     // Allows Dependency Injection without depending on the heavy Hilt library.
     implementation(libs.javax.inject)
+    implementation(libs.coil.base)
 }
