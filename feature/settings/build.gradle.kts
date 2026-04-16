@@ -11,7 +11,6 @@ android {
 dependencies {
     implementation(projects.core.uiComponents)
     implementation(projects.core.model)
-    implementation(projects.core.datastore)
     implementation(projects.core.common)
     implementation(projects.core.domain)
 

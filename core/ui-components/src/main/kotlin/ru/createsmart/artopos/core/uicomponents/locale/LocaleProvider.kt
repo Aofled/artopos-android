@@ -1,5 +1,6 @@
-package ru.createsmart.artopos.core.designsystem.locale
+package ru.createsmart.artopos.core.uicomponents.locale
 
+import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
@@ -12,9 +13,9 @@ fun LocaleProvider(
     languageCode: String,
     content: @Composable () -> Unit,
 ) {
-    val baseContext = LocalContext.current
+    val baseContext: Context = LocalContext.current
 
-    val localizedContext = remember(languageCode) {
+    val localizedContext: Context = remember(languageCode) {
         LocaleHelper.getLocalizedContext(baseContext, languageCode)
     }
 
