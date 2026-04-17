@@ -1,11 +1,10 @@
 package ru.createsmart.artopos.core.network.model
 
-import kotlinx.serialization.json.Json
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.io.File
+import ru.createsmart.artopos.core.network.di.NetworkJson
+import ru.createsmart.artopos.core.network.util.TestResourceReader
 
 /**
  * Test Case:
@@ -15,17 +14,11 @@ import java.io.File
  */
 class ArtworkDetailsResponseTest {
 
-    private val json = Json {
-        ignoreUnknownKeys = true // Stability: Don't crash if API adds new fields
-        coerceInputValues = true // Stability: Convert nulls/errors to default values (safe parsing)
-        encodeDefaults = true
-    }
-
     @Test
     fun `parsing details json maps all required fields correctly`() {
-        val jsonString = loadJsonFromResources("artworks_details_response.json")
-
-        val artwork = json.decodeFromString<ArtworkDTO>(jsonString)
+        val jsonString = TestResourceReader.loadJson("artworks_details_response.json")
+        // We use the PRODUCTION parser configuration
+        val artwork = NetworkJson.decodeFromString<ArtworkDTO>(jsonString)
 
         assertEquals(357597, artwork.id)
         assertEquals("Blossoming Plum with Moon and Snow (left scroll)", artwork.title)
@@ -35,34 +28,27 @@ class ArtworkDetailsResponseTest {
         assertEquals("Shijo", artwork.style)
         assertEquals("https://www.harvardartmuseums.org/collections/object/357597", artwork.webUrl)
 
-        assertNotNull(artwork.description)
-        assertTrue(artwork.description!!.startsWith("Pair of scrolls depicting blossoming plum trees."))
+        val description = requireNotNull(artwork.description)
+        assertTrue(description.startsWith("Pair of scrolls depicting blossoming plum trees."))
 
         assertEquals("Left scroll of a pair of hanging scrolls; ink and light color on paper.", artwork.medium)
         assertEquals("Promised gift of Robert S. and Betsy G. Feinberg", artwork.creditLine)
 
         assertEquals(null, artwork.provenance)
 
-        assertNotNull(artwork.gallery)
-        assertEquals("2600", artwork.gallery?.number)
-        assertEquals("East Asian Art", artwork.gallery?.name)
+        val gallery = requireNotNull(artwork.gallery)
+        assertEquals("2600", gallery.number)
+        assertEquals("East Asian Art", gallery.name)
 
-        assertNotNull(artwork.images)
-        assertEquals(7, artwork.images?.size)
+        val images = requireNotNull(artwork.images)
+        assertEquals(7, images.size)
 
-        val firstImage = artwork.images?.first()
-        assertEquals(1165, firstImage?.width)
-        assertEquals("https://nrs.harvard.edu/urn-3:HUAM:765757", firstImage?.url)
+        val firstImage = images.first()
+        assertEquals(1165, firstImage.width)
+        assertEquals("https://nrs.harvard.edu/urn-3:HUAM:765757", firstImage.url)
 
-        val lastImage = artwork.images?.last()
-        assertEquals(953, lastImage?.width)
-        assertEquals("https://nrs.harvard.edu/urn-3:HUAM:765758", lastImage?.url)
-    }
-
-    private fun loadJsonFromResources(fileName: String): String {
-        val classLoader = javaClass.classLoader
-        val resource = classLoader?.getResource(fileName)
-            ?: throw IllegalArgumentException("File not found: $fileName")
-        return File(resource.path).readText()
+        val lastImage = images.last()
+        assertEquals(953, lastImage.width)
+        assertEquals("https://nrs.harvard.edu/urn-3:HUAM:765758", lastImage.url)
     }
 }

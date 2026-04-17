@@ -1,10 +1,9 @@
 package ru.createsmart.artopos.core.network.model
 
-import kotlinx.serialization.json.Json
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import org.junit.Test
-import java.io.File
+import ru.createsmart.artopos.core.network.di.NetworkJson
+import ru.createsmart.artopos.core.network.util.TestResourceReader
 
 /**
  * Test Case:
@@ -14,39 +13,24 @@ import java.io.File
  */
 class ArtworkResponseTest {
 
-    private val json = Json {
-        ignoreUnknownKeys = true // Stability: Don't crash if API adds new fields
-        coerceInputValues = true // Stability: Convert nulls/errors to default values (safe parsing)
-        encodeDefaults = true
-    }
-
     @Test
     fun `parsing valid json returns correct ArtworkDto list`() {
-        val jsonString = loadJsonFromResources("artworks_response.json")
-
-        val response = json.decodeFromString<NetworkResponse<ArtworkDTO>>(jsonString)
-
-        assertNotNull(response.info)
+        val jsonString = TestResourceReader.loadJson("artworks_response.json")
+        // We use the PRODUCTION parser configuration
+        val response = NetworkJson.decodeFromString<NetworkResponse<ArtworkDTO>>(jsonString)
 
         assertEquals(5535, response.info.totalRecords)
 
-        assertNotNull(response.records)
         val firstItem = response.records.first()
 
         assertEquals(357597, firstItem.id)
         assertEquals("Blossoming Plum with Moon and Snow (left scroll)", firstItem.title)
         assertEquals("late 18th-early 19th century", firstItem.date)
 
-        assertNotNull(firstItem.images)
-        val firstImage = firstItem.images?.first()
-        assertEquals(1165, firstImage?.width)
-        assertEquals("https://nrs.harvard.edu/urn-3:HUAM:765757", firstImage?.url)
-    }
+        val images = requireNotNull(firstItem.images)
+        val firstImage = images.first()
 
-    private fun loadJsonFromResources(fileName: String): String {
-        val classLoader = javaClass.classLoader
-        val resource = classLoader?.getResource(fileName)
-            ?: throw IllegalArgumentException("File not found: $fileName")
-        return File(resource.path).readText()
+        assertEquals(1165, firstImage.width)
+        assertEquals("https://nrs.harvard.edu/urn-3:HUAM:765757", firstImage.url)
     }
 }

@@ -29,11 +29,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideJson(): Json = Json {
-        ignoreUnknownKeys = true // Stability: Don't crash if API adds new fields
-        coerceInputValues = true // Stability: Convert nulls/errors to default values (safe parsing)
-        encodeDefaults = true
-    }
+    fun provideJson(): Json = NetworkJson
 
     @Provides
     @Singleton

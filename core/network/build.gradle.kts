@@ -30,6 +30,6 @@ android {
 dependencies {
     implementation(libs.bundles.network)
 
-    testImplementation(libs.bundles.test.unit.minimal)
+    testImplementation(libs.bundles.test.unit.full)
     testImplementation(libs.kotlinx.serialization.json)
 }
