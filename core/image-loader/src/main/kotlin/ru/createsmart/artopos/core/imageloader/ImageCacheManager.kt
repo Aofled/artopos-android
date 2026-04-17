@@ -64,16 +64,6 @@ class ImageCacheManager @Inject constructor(
         return@withContext totalSize
     }
 
-    private fun getFolderSize(folder: File): Long {
-        var size = 0L
-        val files = folder.listFiles() ?: return 0L
-        for (file in files) {
-            size += if (file.isDirectory) {
-                getFolderSize(file)
-            } else {
-                file.length()
-            }
-        }
-        return size
-    }
+    private fun getFolderSize(folder: File): Long =
+        folder.walkTopDown().filter { it.isFile }.sumOf { it.length() }
 }
