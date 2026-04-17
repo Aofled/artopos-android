@@ -20,7 +20,7 @@ import ru.createsmart.artopos.core.network.interceptor.HarvardApiKeyInterceptor
 import java.io.File
 import javax.inject.Singleton
 
-private const val CACHE_SIZE_MB = 200L
+private const val CACHE_SIZE_MB = 300L
 private const val BYTES_IN_KB = 1024L
 
 @Module
@@ -37,6 +37,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
+    @ApiClient // Use a specific Qualifier to inject THIS client into API, not the Coil client
     fun provideOkHttpClient(): OkHttpClient {
         val builder = OkHttpClient.Builder()
 
@@ -61,7 +62,7 @@ object NetworkModule {
     ): OkHttpClient {
         val builder = OkHttpClient.Builder()
 
-        // Dedicated Cache: 200MB on disk.
+        // Dedicated Cache: 300MB on disk.
         // Separated from API cache to prevent images from pushing out small JSON responses.
         val cacheDir = File(context.cacheDir, "http_cache")
         if (!cacheDir.exists()) {
@@ -86,7 +87,10 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(client: OkHttpClient, json: Json): Retrofit {
+    fun provideRetrofit(
+        @ApiClient client: OkHttpClient,
+        json: Json,
+    ): Retrofit {
         val contentType = "application/json".toMediaType()
 
         return Retrofit.Builder()
