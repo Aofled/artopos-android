@@ -14,9 +14,9 @@ data class ArtworkDTO(
     @SerialName("primaryimageurl") val imageUrl: String? = null,
     @SerialName("description") val description: String? = null,
     @SerialName("url") val webUrl: String? = null, // Link to museum site
-    @SerialName("people") val artists: List<PersonDTO>? = null,
-    @SerialName("images") val images: List<ImageDTO>? = null,
-    @SerialName("places") val places: List<PlaceDTO>? = null,
+    @SerialName("people") val artists: List<PersonDTO> = emptyList(),
+    @SerialName("images") val images: List<ImageDTO>? = emptyList(),
+    @SerialName("places") val places: List<PlaceDTO>? = emptyList(),
     // Details
     @SerialName("provenance") val provenance: String? = null,
     @SerialName("creditline") val creditLine: String? = null,

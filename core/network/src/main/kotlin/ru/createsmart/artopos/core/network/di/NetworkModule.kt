@@ -21,7 +21,7 @@ import java.io.File
 import javax.inject.Singleton
 
 private const val CACHE_SIZE_MB = 200L
-private const val BYTES_IN_KBIT = 1024L
+private const val BYTES_IN_KB = 1024L
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -67,7 +67,7 @@ object NetworkModule {
         if (!cacheDir.exists()) {
             cacheDir.mkdirs()
         }
-        val cache = Cache(cacheDir, CACHE_SIZE_MB * BYTES_IN_KBIT * BYTES_IN_KBIT)
+        val cache = Cache(cacheDir, CACHE_SIZE_MB * BYTES_IN_KB * BYTES_IN_KB)
 
         builder.cache(cache)
 

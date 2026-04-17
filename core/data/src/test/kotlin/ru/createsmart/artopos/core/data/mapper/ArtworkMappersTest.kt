@@ -79,9 +79,9 @@ class ArtworkMappersTest {
             imageUrl = "https://nrs.harvard.edu/urn-3:HUAM:765757",
             description = null,
             webUrl = null,
-            artists = null,
+            artists = emptyList(),
             images = emptyList(),
-            places = null,
+            places = emptyList(),
         )
 
         // WHEN

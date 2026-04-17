@@ -10,10 +10,10 @@ private val YEAR_REGEX = Regex("\\d{4}")
 fun ArtworkDTO.toDBO(): ArtworkDBO {
     // Logic: Extract only "Artist" role, join names
     val artistName = artists
-        ?.filter { it.role == "Artist" }
-        ?.mapNotNull { it.name }
-        ?.joinToString(", ")
-        .takeIf { !it.isNullOrBlank() }
+        .filter { it.role == "Artist" }
+        .mapNotNull { it.name }
+        .joinToString(", ")
+        .takeIf { it.isNotBlank() }
         ?: ""
 
     // Priority: Use "images" array (better quality) -> fallback to "primaryimageurl"
