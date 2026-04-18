@@ -3,6 +3,7 @@ package ru.createsmart.artopos.core.datastore
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
 import app.cash.turbine.test
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -17,7 +18,6 @@ import org.junit.rules.TemporaryFolder
 import ru.createsmart.artopos.core.model.settings.ThemeConfig
 
 const val TEST_FILE_PREFERENCES = "test_settings.preferences_pb"
-const val TEST_THEME_CONFIG = "test_settings.theme_config"
 
 class DataStoreSettingsDataSourceTest {
 
@@ -83,17 +83,17 @@ class DataStoreSettingsDataSourceTest {
 
     @Test
     fun `handles corrupted or invalid enum string gracefully`() = testScope.runTest {
-        dataStore.updateData { preferences ->
-            preferences.toMutablePreferences().apply {
-                val themeConfigKey = androidx.datastore.preferences.core.stringPreferencesKey(TEST_THEME_CONFIG)
-                this[themeConfigKey] = "SOME_INVALID_THEME_STRING"
-            }
+        dataStore.edit { preferences ->
+            val themeConfigKey = androidx.datastore.preferences.core.stringPreferencesKey(
+                DataStoreSettingsDataSource.THEME_CONFIG.toString(),
+            )
+            preferences[themeConfigKey] = "SOME_INVALID_THEME_STRING"
         }
 
+        // WHEN
         val settings = repository.userSettingsStream.first()
 
         // THEN
-        // Must return the fallback(FOLLOW_SYSTEM).
         assertEquals(ThemeConfig.FOLLOW_SYSTEM, settings.themeConfig)
     }
 }

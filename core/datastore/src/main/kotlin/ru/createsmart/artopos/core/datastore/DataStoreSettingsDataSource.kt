@@ -11,30 +11,27 @@ import ru.createsmart.artopos.core.model.settings.UserSettings
 import javax.inject.Inject
 import javax.inject.Singleton
 
-private const val THEME_CONFIG_KEY = "theme_config"
-private const val LANGUAGE_KEY = "language"
-
 @Singleton
 class DataStoreSettingsDataSource @Inject constructor(
     private val dataStore: DataStore<Preferences>,
 ) {
 
-    private object PreferencesKeys {
-        val THEME_CONFIG = stringPreferencesKey(THEME_CONFIG_KEY)
-        val LANGUAGE = stringPreferencesKey(LANGUAGE_KEY)
+    companion object {
+        val THEME_CONFIG = stringPreferencesKey("theme_config")
+        val LANGUAGE = stringPreferencesKey("language")
     }
 
     val userSettingsStream: Flow<UserSettings> = dataStore.data
         .map { preferences ->
             val themeString =
-                preferences[PreferencesKeys.THEME_CONFIG] ?: ThemeConfig.FOLLOW_SYSTEM.name
+                preferences[THEME_CONFIG] ?: ThemeConfig.FOLLOW_SYSTEM.name
             val themeConfig = try {
                 ThemeConfig.valueOf(themeString)
             } catch (ignored: IllegalArgumentException) {
                 ThemeConfig.FOLLOW_SYSTEM
             }
 
-            val language = preferences[PreferencesKeys.LANGUAGE] ?: "" // "" = System Default
+            val language = preferences[LANGUAGE] ?: "" // "" = System Default
 
             UserSettings(
                 themeConfig = themeConfig,
@@ -44,13 +41,13 @@ class DataStoreSettingsDataSource @Inject constructor(
 
     suspend fun setThemeConfig(themeConfig: ThemeConfig) {
         dataStore.edit { preferences ->
-            preferences[PreferencesKeys.THEME_CONFIG] = themeConfig.name
+            preferences[THEME_CONFIG] = themeConfig.name
         }
     }
 
     suspend fun setLanguage(languageCode: String) {
         dataStore.edit { preferences ->
-            preferences[PreferencesKeys.LANGUAGE] = languageCode
+            preferences[LANGUAGE] = languageCode
         }
     }
 }
