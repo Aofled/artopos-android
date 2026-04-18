@@ -21,4 +21,5 @@ data class ArtworkDBO(
     @ColumnInfo(name = "description") val description: String?,
     @ColumnInfo(name = "url") val url: String?,
     @ColumnInfo(name = "gallery_images") val galleryImages: List<StoredImage>?,
+    @ColumnInfo(name = "in_discover_feed") val inDiscoverFeed: Boolean = true, // If this is the current feed
 )
