@@ -5,7 +5,7 @@ import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
-import ru.createsmart.artopos.core.data.mapper.toDBO
+import ru.createsmart.artopos.core.data.mapper.ArtworkMapper
 import ru.createsmart.artopos.core.database.HarvardDatabase
 import ru.createsmart.artopos.core.database.model.ArtworkRemoteKeysEntity
 import ru.createsmart.artopos.core.database.model.ArtworkWithFavoriteFlagDBO
@@ -34,6 +34,7 @@ class ArtworkRemoteMediator(
     private val database: HarvardDatabase,
     private val api: HarvardAPI,
     private val params: FilterParams,
+    private val mapper: ArtworkMapper,
 ) : RemoteMediator<Int, ArtworkWithFavoriteFlagDBO>() {
     @Suppress("ReturnCount")
     override suspend fun load(
@@ -148,7 +149,7 @@ class ArtworkRemoteMediator(
                 // Sort Order: Explicitly save the order index.
                 // Room does not guarantee insertion order, so we need a column to sort by later.
                 val globalIndex = (page - 1) * state.config.pageSize + index
-                dto.toDBO().copy(sortingIndex = globalIndex)
+                mapper.mapDtoToDbo(dto).copy(sortingIndex = globalIndex, inDiscoverFeed = true)
             }
 
             database.artworkRemoteKeysDao().insertAll(keys)

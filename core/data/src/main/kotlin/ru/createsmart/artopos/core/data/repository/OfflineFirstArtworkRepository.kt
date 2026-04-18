@@ -14,8 +14,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import ru.createsmart.artopos.core.common.result.suspendRunCatching
-import ru.createsmart.artopos.core.data.mapper.toDetailsDBO
-import ru.createsmart.artopos.core.data.mapper.toDomain
+import ru.createsmart.artopos.core.data.mapper.ArtworkMapper
 import ru.createsmart.artopos.core.data.mediator.ArtworkRemoteMediator
 import ru.createsmart.artopos.core.database.HarvardDatabase
 import ru.createsmart.artopos.core.database.model.FavoriteDBO
@@ -32,6 +31,7 @@ import javax.inject.Inject
 class OfflineFirstArtworkRepository @Inject constructor(
     private val database: HarvardDatabase,
     private val api: HarvardAPI,
+    private val mapper: ArtworkMapper,
 ) : ArtworkRepository {
 
     private val artworkDao get() = database.artworkDao()
@@ -56,19 +56,20 @@ class OfflineFirstArtworkRepository @Inject constructor(
                 database = database,
                 api = api,
                 params = params,
+                mapper = mapper,
             ),
             pagingSourceFactory = {
                 artworkDao.getArtworksWithFavoriteFlags()
             },
         ).flow
             .map { pagingData ->
-                pagingData.map { it.toDomain() }
+                pagingData.map { mapper.mapToDomain(it) }
             }
     }
 
     override fun getArtwork(id: Int): Flow<Artwork?> {
         return artworkDetailDao.getArtworkWithDetails(id)
-            .map { it?.toDomain() }
+            .map { it?.let { dbo -> mapper.mapDetailsToDomain(dbo) } }
             .distinctUntilChanged()
             .flowOn(Dispatchers.IO)
     }
@@ -81,7 +82,7 @@ class OfflineFirstArtworkRepository @Inject constructor(
 
                 // 2. Save the "heavy" part of the data in a separate table (artwork_details).
                 // Thanks to @Relation, the getArtwork() method will immediately see this new data.
-                val detailsEntity = dto.toDetailsDBO()
+                val detailsEntity = mapper.mapDtoToDetailsDbo(dto)
                 artworkDetailDao.insertDetails(detailsEntity)
             }
         }
@@ -89,7 +90,7 @@ class OfflineFirstArtworkRepository @Inject constructor(
 
     override fun getFavoriteArtworks(): Flow<List<Artwork>> {
         return favoriteDao.getFavorites()
-            .map { list -> list.map { it.toDomain() } }
+            .map { list -> list.map { mapper.mapToDomain(it) } }
             .flowOn(Dispatchers.IO)
     }
 
