@@ -1,9 +1,14 @@
 package ru.createsmart.artopos.core.data.mapper
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Test
 import ru.createsmart.artopos.core.database.converters.StoredImage
 import ru.createsmart.artopos.core.database.model.ArtworkDBO
+import ru.createsmart.artopos.core.database.model.ArtworkDetailsDBO
+import ru.createsmart.artopos.core.database.model.ArtworkDetailsWithFavoriteFlagDBO
+import ru.createsmart.artopos.core.database.model.ArtworkWithDetailsDBO
+import ru.createsmart.artopos.core.database.model.ArtworkWithFavoriteFlagDBO
 import ru.createsmart.artopos.core.model.ImageDimensions
 import ru.createsmart.artopos.core.network.model.ArtworkDTO
 import ru.createsmart.artopos.core.network.model.ImageDTO
@@ -11,6 +16,8 @@ import ru.createsmart.artopos.core.network.model.PersonDTO
 import ru.createsmart.artopos.core.network.model.PlaceDTO
 
 class ArtworkMappersTest {
+
+    private val mapper = ArtworkMapper()
 
     @Test
     fun `map ArtworkDTO to ArtworkDBO correctly`() {
@@ -47,7 +54,7 @@ class ArtworkMappersTest {
         )
 
         // WHEN
-        val dbo = dto.toDBO()
+        val dbo = mapper.mapDtoToDbo(dto)
 
         // THEN
         assertEquals(357597, dbo.id)
@@ -85,7 +92,7 @@ class ArtworkMappersTest {
         )
 
         // WHEN
-        val dbo = dto.toDBO()
+        val dbo = mapper.mapDtoToDbo(dto)
 
         // THEN
         assertEquals("https://nrs.harvard.edu/urn-3:HUAM:765757", dbo.imageUrl)
@@ -135,8 +142,10 @@ class ArtworkMappersTest {
             galleryImages = galleryImages,
         )
 
+        val wrapper = ArtworkWithFavoriteFlagDBO(artwork = dbo, isFavorite = true) // Оборачиваем!
+
         // WHEN
-        val domain = dbo.toDomain()
+        val domain = mapper.mapToDomain(wrapper)
 
         // THEN
         assertEquals(357596, domain.id)
@@ -158,5 +167,92 @@ class ArtworkMappersTest {
         assertEquals(3, domain.images.size)
         assertEquals("https://nrs.harvard.edu/urn-3:HUAM:765757", domain.images[0].url)
         assertEquals(1165, domain.images[0].width)
+        assertEquals(true, domain.isFavorite)
+    }
+
+    @Test
+    fun `mapDetailsToDomain merges details and sets isFavorite flag`() {
+        // GIVEN
+        val baseDbo = ArtworkDBO(
+            id = 1, sortingIndex = 0, title = "Mona Lisa", artist = "Da Vinci",
+            imageUrl = "url", imageDimensions = null, date = null, yearInt = null,
+            technique = null, description = "Basic Desc", url = null, galleryImages = null,
+            inDiscoverFeed = true,
+        )
+        // GIVEN
+        val detailsDbo = ArtworkDetailsDBO(
+            id = 1, provenance = "Louvre", creditLine = "Gift", classification = "Painting",
+            century = "16th C", culture = "Italian", medium = "Oil", period = "Renaissance",
+            style = "Sfumato", dimensions = "77x53", copyright = "Public Domain", galleryLocation = "Room 711",
+        )
+
+        val wrapper = ArtworkDetailsWithFavoriteFlagDBO(
+            artworkWithDetails = ArtworkWithDetailsDBO(baseDbo, detailsDbo),
+            isFavorite = true,
+        )
+
+        // WHEN
+        val domain = mapper.mapDetailsToDomain(wrapper)
+
+        // THEN
+        assertEquals("Mona Lisa", domain.title)
+        assertEquals("Louvre", domain.provenance)
+        assertEquals("Room 711", domain.galleryLocation)
+        assertEquals(true, domain.isFavorite)
+    }
+
+    @Test
+    fun `mapDtoToDbo parses year integer from mixed date string via Regex`() {
+        // GIVEN
+        val dto = ArtworkDTO(id = 1, date = "Circa 1885, autumn")
+
+        // WHEN
+        val dbo = mapper.mapDtoToDbo(dto)
+
+        // THEN
+        assertEquals(1885, dbo.yearInt)
+    }
+
+    @Test
+    fun `mapDtoToDbo returns null yearInt if date contains no 4-digit number`() {
+        // GIVEN
+        val dto = ArtworkDTO(id = 1, date = "17th century")
+
+        // WHEN
+        val dbo = mapper.mapDtoToDbo(dto)
+
+        // THEN
+        assertNull(dbo.yearInt)
+    }
+
+    @Test
+    fun `mapDtoToDbo filters artists by role case-insensitively and joins them`() {
+        // GIVEN
+        val artists = listOf(
+            PersonDTO(name = "Donor Name", role = "Donor"),
+            PersonDTO(name = "Da Vinci", role = "artist"), // Маленькая буква!
+            PersonDTO(name = "Michelangelo", role = "Artist"),
+        )
+        val dto = ArtworkDTO(id = 1, artists = artists)
+
+        // WHEN
+        val dbo = mapper.mapDtoToDbo(dto)
+
+        // THEN
+        assertEquals("Da Vinci, Michelangelo", dbo.artist)
+    }
+
+    @Test
+    fun `mapDtoToDbo ignores image dimensions if width or height is invalid`() {
+        // GIVEN
+        val images = listOf(ImageDTO(width = 0, height = -100, url = "url"))
+        val dto = ArtworkDTO(id = 1, images = images)
+
+        // WHEN
+        val dbo = mapper.mapDtoToDbo(dto)
+
+        // THEN
+        assertNull(dbo.imageDimensions)
+        assertEquals("url", dbo.imageUrl)
     }
 }

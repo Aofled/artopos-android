@@ -8,6 +8,8 @@ import ru.createsmart.artopos.core.network.model.FilterItemDTO
 
 class FilterMappersTest {
 
+    private val mapper = FilterMapper()
+
     @Test
     fun `map FilterDTO to FilterDBO correctly`() {
         val dto = FilterItemDTO(
@@ -18,7 +20,7 @@ class FilterMappersTest {
         )
         val type = FilterType.CLASSIFICATION
 
-        val dbo = dto.toDBO(type)
+        val dbo = mapper.mapDtoToDbo(dto, type)
 
         assertEquals(123L, dbo.id)
         assertEquals("Paintings", dbo.name)
@@ -38,7 +40,7 @@ class FilterMappersTest {
             order = 45,
         )
 
-        val domain = dbo.toDomain()
+        val domain = mapper.mapDboToDomain(dbo)
 
         assertEquals(123L, domain.id)
         assertEquals(FilterType.CENTURY, domain.type)
