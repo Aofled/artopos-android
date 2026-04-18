@@ -2,10 +2,11 @@ package ru.createsmart.artopos.core.data.repository
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
+import ru.createsmart.artopos.core.common.result.suspendRunCatching
 import ru.createsmart.artopos.core.data.mapper.toDBO
 import ru.createsmart.artopos.core.data.mapper.toDomain
 import ru.createsmart.artopos.core.database.dao.FilterItemDao
@@ -26,13 +27,13 @@ class OfflineFirstFilterRepository @Inject constructor(
     }
 
     override suspend fun initializeFilters(): Result<Unit> {
-        return runCatching {
+        return suspendRunCatching {
             withContext(Dispatchers.IO) {
-                val count = dao.hasAllCategories()
-                if (count) {
+                val isInitialized = dao.hasAllCategories()
+                if (isInitialized) {
                     return@withContext
                 }
-                supervisorScope {
+                coroutineScope {
                     val classificationsDeferred = async { api.getClassification() }
                     val centuriesDeferred = async { api.getCentury() }
                     val culturesDeferred = async { api.getCulture() }

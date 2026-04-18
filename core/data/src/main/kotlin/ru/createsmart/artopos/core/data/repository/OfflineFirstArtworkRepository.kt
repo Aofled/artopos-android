@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import ru.createsmart.artopos.core.common.result.suspendRunCatching
 import ru.createsmart.artopos.core.data.mapper.toDetailsDBO
 import ru.createsmart.artopos.core.data.mapper.toDomain
 import ru.createsmart.artopos.core.data.mediator.ArtworkRemoteMediator
@@ -73,7 +74,7 @@ class OfflineFirstArtworkRepository @Inject constructor(
     }
 
     override suspend fun syncArtworkDetails(id: Int): Result<Unit> {
-        return runCatching {
+        return suspendRunCatching {
             withContext(Dispatchers.IO) {
                 // 1. Download fresh JSON with full details
                 val dto = api.getArtworkDetails(id)
