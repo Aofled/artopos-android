@@ -1,4 +1,4 @@
-package ru.createsmart.artopos.core.navigation
+package ru.createsmart.artopos.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -9,6 +9,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import ru.createsmart.artopos.core.navigation.DetailsRoute
 
 @Composable
 fun rememberArtoposAppState(

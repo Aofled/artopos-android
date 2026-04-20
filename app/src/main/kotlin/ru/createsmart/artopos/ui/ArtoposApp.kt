@@ -39,14 +39,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hasRoute
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposDimens
-import ru.createsmart.artopos.core.navigation.ArtoposAppState
 import ru.createsmart.artopos.core.navigation.DiscoverRoute
 import ru.createsmart.artopos.core.navigation.FavoritesRoute
-import ru.createsmart.artopos.core.navigation.rememberArtoposAppState
 import ru.createsmart.artopos.core.uicomponents.notifiers.BottomBarCommand
 import ru.createsmart.artopos.core.uicomponents.notifiers.LocalBottomBarStateNotifier
 import ru.createsmart.artopos.core.uicomponents.notifiers.LocalBottomBarVisibility
 import ru.createsmart.artopos.navigation.AppNavGraph
+import ru.createsmart.artopos.navigation.ArtoposAppState
+import ru.createsmart.artopos.navigation.rememberArtoposAppState
 
 private const val BOTTOM_BAR_ALPHA = 0.85f
 private const val BOTTOM_BAR_ANIMATION = 400

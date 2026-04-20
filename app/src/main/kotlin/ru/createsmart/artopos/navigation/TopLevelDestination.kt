@@ -1,5 +1,8 @@
-package ru.createsmart.artopos.core.navigation
+package ru.createsmart.artopos.navigation
 
+import ru.createsmart.artopos.core.navigation.DiscoverRoute
+import ru.createsmart.artopos.core.navigation.FavoritesRoute
+import ru.createsmart.artopos.core.navigation.SettingsRoute
 import ru.createsmart.artopos.core.designsystem.R as DSR
 
 enum class TopLevelDestination(
