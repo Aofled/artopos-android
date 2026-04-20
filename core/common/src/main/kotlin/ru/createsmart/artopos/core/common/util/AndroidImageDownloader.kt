@@ -6,7 +6,9 @@ import android.graphics.Bitmap
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import android.webkit.MimeTypeMap
 import androidx.core.graphics.drawable.toBitmap
+import coil.annotation.ExperimentalCoilApi
 import coil.imageLoader
 import coil.request.ImageRequest
 import coil.request.SuccessResult
@@ -14,50 +16,44 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
+import java.io.OutputStream
 import javax.inject.Inject
 
 private const val BITMAP_QUALITY = 100
 
+@OptIn(ExperimentalCoilApi::class)
 class AndroidImageDownloader @Inject constructor(
     @ApplicationContext private val context: Context,
 ) {
+
     suspend fun downloadImage(url: String, fileName: String): Result<String> =
         withContext(Dispatchers.IO) {
-            return@withContext try {
-                // 1. COIL gives us a picture (from cache or network)
+            try {
+                // 1. Getting information about the file
+                val (fullFileName, mimeType) = getFileInfo(url, fileName)
+
+                // 2. Coil
                 val request = ImageRequest.Builder(context)
                     .data(url)
                     .allowHardware(false)
                     .build()
 
                 val result = context.imageLoader.execute(request)
-
                 if (result !is SuccessResult) {
                     return@withContext Result.failure(Exception("Failed to load image from Coil"))
                 }
 
-                val bitmap = result.drawable.toBitmap()
-
-                // 2. Preparing metadata for Android MediaStore (Galleries)
+                // 3. Gallery Metadata
                 val resolver = context.contentResolver
-
-                // Clear the name from invalid characters
-                val safeFileName = fileName.replace(Regex("[^a-zA-Z0-9.\\-]"), "_")
-
                 val contentValues = ContentValues().apply {
-                    put(MediaStore.MediaColumns.DISPLAY_NAME, "$safeFileName.jpg")
-                    put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+                    put(MediaStore.MediaColumns.DISPLAY_NAME, fullFileName)
+                    put(MediaStore.MediaColumns.MIME_TYPE, mimeType)
 
-                    // Starting with Android 10 (API 29), we required use MediaStore to write to shared folders
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                         put(
                             MediaStore.MediaColumns.RELATIVE_PATH,
                             Environment.DIRECTORY_PICTURES + "/Artopos",
                         )
-                        /**
-                         * The IS_PENDING flag tells the system that the file is still being written,
-                         * and should not be shown to other applications.
-                         * */
                         put(MediaStore.MediaColumns.IS_PENDING, 1)
                     }
                 }
@@ -68,16 +64,20 @@ class AndroidImageDownloader @Inject constructor(
                     MediaStore.Images.Media.EXTERNAL_CONTENT_URI
                 }
 
-                // 3. Create an "empty" entry in the Gallery
                 val imageUri = resolver.insert(collection, contentValues)
                     ?: return@withContext Result.failure(Exception("Failed to create MediaStore entry"))
 
-                // 4. Open a stream to this URI and write our downloaded bytes there.
+                // 4. Recording
                 resolver.openOutputStream(imageUri)?.use { outputStream ->
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, BITMAP_QUALITY, outputStream)
+                    writeImageToStream(
+                        result,
+                        context.imageLoader.diskCache,
+                        mimeType,
+                        outputStream,
+                    )
                 } ?: return@withContext Result.failure(Exception("Failed to open output stream"))
 
-                // 5. If we set IS_PENDING = 1, now we remove it (the file is ready)
+                // 5. Unlock the file
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     contentValues.clear()
                     contentValues.put(MediaStore.MediaColumns.IS_PENDING, 0)
@@ -85,7 +85,7 @@ class AndroidImageDownloader @Inject constructor(
                 }
 
                 val displayPath = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    "Pictures/Artopos/$safeFileName.jpg"
+                    "Pictures/Artopos/$fullFileName"
                 } else {
                     "Gallery"
                 }
@@ -93,10 +93,47 @@ class AndroidImageDownloader @Inject constructor(
                 Result.success(displayPath)
             } catch (e: IOException) {
                 Result.failure(e)
-            } catch (e: IllegalArgumentException) {
+            } catch (e: SecurityException) {
                 Result.failure(e)
-            } catch (e: IllegalStateException) {
+            } catch (e: IllegalArgumentException) {
                 Result.failure(e)
             }
         }
+
+    private fun getFileInfo(url: String, fileName: String): Pair<String, String> {
+        val fileExtension = MimeTypeMap.getFileExtensionFromUrl(url)
+            ?.takeIf { it.isNotBlank() } ?: "jpg"
+        val mimeType = MimeTypeMap.getSingleton()
+            .getMimeTypeFromExtension(fileExtension.lowercase()) ?: "image/jpeg"
+
+        val cleanFileName = fileName.replace(Regex("[^a-zA-Z0-9.\\-]"), "_")
+        return Pair("$cleanFileName.$fileExtension", mimeType)
+    }
+
+    private fun writeImageToStream(
+        result: SuccessResult,
+        diskCache: coil.disk.DiskCache?,
+        mimeType: String,
+        outputStream: OutputStream,
+    ) {
+        val snapshot = result.diskCacheKey?.let { diskCache?.openSnapshot(it) }
+
+        if (snapshot != null) {
+            // FAST PATH
+            snapshot.use { snap ->
+                snap.data.toFile().inputStream().use { inputStream ->
+                    inputStream.copyTo(outputStream)
+                }
+            }
+        } else {
+            // SLOW PATH
+            val bitmap = result.drawable.toBitmap()
+            val compressFormat = if (mimeType.contains("png", ignoreCase = true)) {
+                Bitmap.CompressFormat.PNG
+            } else {
+                Bitmap.CompressFormat.JPEG
+            }
+            bitmap.compress(compressFormat, BITMAP_QUALITY, outputStream)
+        }
+    }
 }
