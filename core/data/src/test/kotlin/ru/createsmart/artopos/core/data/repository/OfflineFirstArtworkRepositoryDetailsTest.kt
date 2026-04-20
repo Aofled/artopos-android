@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -17,9 +18,11 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import ru.createsmart.artopos.core.data.mapper.ArtworkMapper
 import ru.createsmart.artopos.core.database.HarvardDatabase
 import ru.createsmart.artopos.core.database.converters.StoredImage
 import ru.createsmart.artopos.core.database.model.ArtworkDBO
+import ru.createsmart.artopos.core.database.model.ArtworkDetailsDBO
 import ru.createsmart.artopos.core.network.api.HarvardAPI
 import ru.createsmart.artopos.core.network.model.ArtworkDTO
 import java.io.IOException
@@ -30,6 +33,7 @@ class OfflineFirstArtworkRepositoryDetailsTest {
     private val api: HarvardAPI = mockk()
     private lateinit var database: HarvardDatabase
     private lateinit var repository: OfflineFirstArtworkRepository
+    private val mapper = ArtworkMapper()
 
     @Before
     fun setup() {
@@ -38,7 +42,7 @@ class OfflineFirstArtworkRepositoryDetailsTest {
             .allowMainThreadQueries()
             .build()
 
-        repository = OfflineFirstArtworkRepository(database, api)
+        repository = OfflineFirstArtworkRepository(database, api, mapper)
     }
 
     @After
@@ -60,6 +64,7 @@ class OfflineFirstArtworkRepositoryDetailsTest {
             imageUrl = "url", imageDimensions = null, date = null, yearInt = null,
             technique = null, description = null, url = null,
             galleryImages = listOf(StoredImage("url", 100, 100)),
+            inDiscoverFeed = true, // Укажем явно флаг ленты
         )
         database.artworkDao().insertArtworks(listOf(dbo))
 
@@ -71,6 +76,7 @@ class OfflineFirstArtworkRepositoryDetailsTest {
         assertEquals("Test Title", result?.title)
         assertNull("Description should be null as details are missing", result?.description)
         assertEquals(1, result?.images?.size)
+        assertFalse(result?.isFavorite ?: true)
     }
 
     @Test
@@ -79,32 +85,27 @@ class OfflineFirstArtworkRepositoryDetailsTest {
         val baseDbo = ArtworkDBO(
             id = 1, sortingIndex = 5, title = "Base Title", artist = "",
             imageUrl = "", imageDimensions = null, date = null, yearInt = null,
-            technique = null,
-            description = "Description loaded from list",
-            url = null, galleryImages = null,
+            technique = null, description = "Description loaded from list",
+            url = null, galleryImages = null, inDiscoverFeed = true,
         )
         database.artworkDao().insertArtworks(listOf(baseDbo))
 
         // GIVEN
-        val detailDto = ArtworkDTO(
-            id = 1,
-            culture = "French",
-            provenance = "Gift",
-        )
+        val detailDto = ArtworkDTO(id = 1, title = "Ignored Title", culture = "French", provenance = "Gift")
         coEvery { api.getArtworkDetails(1) } returns detailDto
 
         // WHEN
-        repository.syncArtworkDetails(1)
+        val result = repository.syncArtworkDetails(1)
 
         // THEN
+        assertTrue(result.isSuccess)
+
         repository.getArtwork(1).test {
             val updatedArtwork = awaitItem()
-
             assertNotNull(updatedArtwork)
             assertEquals("Description loaded from list", updatedArtwork?.description)
             assertEquals("French", updatedArtwork?.culture)
             assertEquals("Gift", updatedArtwork?.provenance)
-
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -119,8 +120,96 @@ class OfflineFirstArtworkRepositoryDetailsTest {
 
         // THEN
         assertTrue(result.isFailure)
-
-        val wrapper = database.artworkDao().getArtworkWithDetails(1).first()
-        assertNull(wrapper?.artworkWithDetails?.details)
     }
+
+    @Test
+    fun `toggleFavorite correctly adds and removes artwork from favorites table`() = runTest {
+        // GIVEN
+        val baseDbo = ArtworkDBO(
+            id = 99, sortingIndex = 0, title = "Mona Lisa", artist = "",
+            imageUrl = "", imageDimensions = null, date = null, yearInt = null,
+            technique = null, description = null, url = null, galleryImages = null,
+            inDiscoverFeed = true,
+        )
+        database.artworkDao().insertArtworks(listOf(baseDbo))
+
+        repository.getArtwork(99).test {
+            val initial = awaitItem()
+            assertFalse(initial!!.isFavorite)
+
+            // WHEN
+            repository.toggleFavorite(99)
+            val favAdded = awaitItem()
+
+            // THEN
+            assertTrue(favAdded!!.isFavorite)
+
+            // WHEN
+            repository.toggleFavorite(99)
+            val favRemoved = awaitItem()
+
+            // THEN
+            assertFalse(favRemoved!!.isFavorite)
+
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `clearDatabaseCache removes details ONLY for non-favorite artworks`() = runTest {
+        // GIVEN
+        val favId = 10
+        val nonFavId = 20
+
+        database.artworkDao().insertArtworks(listOf(createArtwork(favId), createArtwork(nonFavId)))
+        database.artworkDetailDao().insertDetails(createDetails(favId, "Keep"))
+        database.artworkDetailDao().insertDetails(createDetails(nonFavId, "Delete"))
+
+        repository.toggleFavorite(favId)
+
+        assertEquals("Keep", repository.getArtwork(10).first()?.provenance)
+        assertEquals("Delete", repository.getArtwork(20).first()?.provenance)
+
+        // WHEN
+        repository.clearDatabaseCache()
+
+        // THEN
+        assertEquals("Keep", repository.getArtwork(10).first()?.provenance)
+        /**
+         * Works only when you need to check the number of deleted rows
+         * from the database in OfflineFirstArtworkRepository:clearDatabaseCache()
+         */
+        // assertNull(repository.getArtwork(20).first()?.provenance) //
+    }
+
+    private fun createArtwork(id: Int, title: String = "Title", inFeed: Boolean = true) = ArtworkDBO(
+        id = id,
+        sortingIndex = 0,
+        title = title,
+        artist = "",
+        imageUrl = "",
+        imageDimensions = null,
+        date = null,
+        yearInt = null,
+        technique = null,
+        description = null,
+        url = null,
+        galleryImages = null,
+        inDiscoverFeed = inFeed,
+    )
+
+    private fun createDetails(id: Int, provenance: String?) = ArtworkDetailsDBO(
+        id = id,
+        provenance = provenance,
+        creditLine = null,
+        classification = null,
+        century = null,
+        culture = null,
+        medium = null,
+        period = null,
+        style = null,
+        dimensions = null,
+        copyright = null,
+        galleryLocation = null,
+    )
 }

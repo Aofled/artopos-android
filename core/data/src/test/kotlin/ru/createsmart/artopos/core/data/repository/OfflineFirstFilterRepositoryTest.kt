@@ -6,10 +6,12 @@ import io.mockk.coVerify
 import io.mockk.mockk
 import io.mockk.slot
 import junit.framework.Assert.assertEquals
+import junit.framework.Assert.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.junit.runner.RunWith
+import ru.createsmart.artopos.core.data.mapper.FilterMapper
 import ru.createsmart.artopos.core.database.dao.FilterItemDao
 import ru.createsmart.artopos.core.database.model.FilterItemDBO
 import ru.createsmart.artopos.core.network.api.HarvardAPI
@@ -24,8 +26,9 @@ class OfflineFirstFilterRepositoryTest {
 
     private val dao: FilterItemDao = mockk(relaxed = true)
     private val api: HarvardAPI = mockk()
+    private val mapper = FilterMapper()
 
-    private val repository = OfflineFirstFilterRepository(dao, api)
+    private val repository = OfflineFirstFilterRepository(dao, api, mapper)
 
     @Test
     fun `initializeFilters skips network call if db is not empty`() = runTest {
@@ -33,9 +36,10 @@ class OfflineFirstFilterRepositoryTest {
         coEvery { dao.hasAllCategories() } returns true
 
         // WHEN
-        repository.initializeFilters()
+        val result = repository.initializeFilters()
 
         // THEN
+        assertTrue(result.isSuccess)
         coVerify(exactly = 0) { api.getClassification() }
         coVerify(exactly = 0) { dao.insertFilters(any()) }
     }
@@ -48,16 +52,17 @@ class OfflineFirstFilterRepositoryTest {
         // GIVEN
         val mockResponse = NetworkResponse(
             info = PageInfo(1, 1, 1, ""),
-            records = listOf(FilterItemDTO(1, "Test", 10)),
+            records = listOf(FilterItemDTO(1, "Test", 10, null)),
         )
         coEvery { api.getClassification() } returns mockResponse
         coEvery { api.getCentury() } returns mockResponse
         coEvery { api.getCulture() } returns mockResponse
 
         // WHEN
-        repository.initializeFilters()
+        val result = repository.initializeFilters()
 
         // THEN
+        assertTrue(result.isSuccess)
         coVerify(exactly = 1) { api.getClassification() }
         coVerify(exactly = 1) { api.getCentury() }
         coVerify(exactly = 1) { api.getCulture() }
@@ -73,18 +78,14 @@ class OfflineFirstFilterRepositoryTest {
     fun `initializeFilters handles network error gracefully`() = runTest {
         // GIVEN
         coEvery { dao.hasAllCategories() } returns false
-
-        // GIVEN
         coEvery { api.getClassification() } throws IOException("Network error")
-        // GIVEN
-        val emptyResponse = NetworkResponse(PageInfo(1, 1, 0, null), emptyList<FilterItemDTO>())
-        coEvery { api.getCentury() } returns emptyResponse
-        coEvery { api.getCulture() } returns emptyResponse
+        // Обертка coroutineScope отменит все остальные запросы
 
         // WHEN
-        repository.initializeFilters()
+        val result = repository.initializeFilters()
 
         // THEN
+        assertTrue("suspendRunCatching MUST return failure", result.isFailure)
         coVerify(exactly = 0) { dao.insertFilters(any()) }
     }
 }
