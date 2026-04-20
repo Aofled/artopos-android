@@ -1,6 +1,5 @@
 package ru.createsmart.artopos.feature.artworkcard.ui.components
 
-import UiText
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,6 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
+import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.core.uicomponents.components.RetryDecision
 import ru.createsmart.artopos.core.uicomponents.components.RetryPlaceholder
 import ru.createsmart.artopos.core.uicomponents.components.ShimmerBox

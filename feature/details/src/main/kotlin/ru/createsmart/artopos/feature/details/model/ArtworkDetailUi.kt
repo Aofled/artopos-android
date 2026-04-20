@@ -1,7 +1,7 @@
 package ru.createsmart.artopos.feature.details.model
 
-import UiText
 import androidx.compose.runtime.Immutable
+import ru.createsmart.artopos.core.designsystem.components.UiText
 
 @Immutable
 data class ArtworkDetailUi(

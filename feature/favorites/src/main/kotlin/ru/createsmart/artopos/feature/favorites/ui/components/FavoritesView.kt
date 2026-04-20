@@ -1,6 +1,5 @@
 package ru.createsmart.artopos.feature.favorites.ui.components
 
-import UiText
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
@@ -30,6 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
 import ru.createsmart.artopos.core.uicomponents.notifiers.BottomBarCommand
 import ru.createsmart.artopos.core.uicomponents.notifiers.LocalBottomBarStateNotifier

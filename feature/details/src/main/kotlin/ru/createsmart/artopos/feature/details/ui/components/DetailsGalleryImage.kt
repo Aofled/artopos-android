@@ -1,6 +1,5 @@
 package ru.createsmart.artopos.feature.details.ui.components
 
-import UiText
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -21,6 +20,7 @@ import coil.request.ImageRequest
 import coil.size.Size
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
+import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.core.uicomponents.components.FullscreenShimmerBox
 import ru.createsmart.artopos.core.uicomponents.components.RetryDecision
 import ru.createsmart.artopos.core.uicomponents.components.RetryPlaceholder

@@ -1,7 +1,10 @@
+package ru.createsmart.artopos.core.designsystem.components
+
 import android.content.Context
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
+import java.util.Arrays
 
 @Suppress("SpreadOperator")
 sealed class UiText {
@@ -19,14 +22,14 @@ sealed class UiText {
             other as StringResource
 
             if (resId != other.resId) return false
-            if (!java.util.Arrays.equals(args, other.args)) return false
+            if (!Arrays.equals(args, other.args)) return false
 
             return true
         }
 
         override fun hashCode(): Int {
             var result = resId
-            result = 31 * result + java.util.Arrays.hashCode(args)
+            result = 31 * result + Arrays.hashCode(args)
             return result
         }
     }

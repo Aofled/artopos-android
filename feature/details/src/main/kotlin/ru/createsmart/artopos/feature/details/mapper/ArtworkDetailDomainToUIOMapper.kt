@@ -1,5 +1,6 @@
 package ru.createsmart.artopos.feature.details.mapper
 
+import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.core.model.Artwork
 import ru.createsmart.artopos.feature.details.R
 import ru.createsmart.artopos.feature.details.model.ArtworkDetailUi

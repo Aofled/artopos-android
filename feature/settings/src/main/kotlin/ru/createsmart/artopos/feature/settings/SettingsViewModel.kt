@@ -1,6 +1,5 @@
 package ru.createsmart.artopos.feature.settings
 
-import UiText
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -11,6 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.core.domain.interactor.SettingsInteractor
 import ru.createsmart.artopos.core.domain.repository.SettingsRepository
 import ru.createsmart.artopos.core.model.settings.ThemeConfig

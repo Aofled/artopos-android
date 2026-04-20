@@ -1,6 +1,5 @@
 package ru.createsmart.artopos.core.designsystem.components
 
-import UiText
 import ru.createsmart.artopos.core.designsystem.R
 import java.io.IOException
 import java.net.SocketTimeoutException

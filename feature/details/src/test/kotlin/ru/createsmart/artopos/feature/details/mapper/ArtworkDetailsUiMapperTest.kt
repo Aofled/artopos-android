@@ -1,9 +1,9 @@
 package ru.createsmart.artopos.feature.details.mapper
 
-import UiText
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.core.model.Artwork
 import ru.createsmart.artopos.core.model.ArtworkImage
 import ru.createsmart.artopos.feature.details.R

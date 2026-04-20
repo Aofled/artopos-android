@@ -1,6 +1,5 @@
 package ru.createsmart.artopos.feature.details.ui.components
 
-import UiText
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -32,6 +31,7 @@ import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.core.uicomponents.components.DownloadButton
 import ru.createsmart.artopos.core.uicomponents.components.FavoriteButton
 import ru.createsmart.artopos.feature.details.model.GalleryImageUi

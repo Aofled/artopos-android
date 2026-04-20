@@ -1,6 +1,5 @@
 package ru.createsmart.artopos.feature.settings
 
-import UiText
 import app.cash.turbine.test
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -11,6 +10,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
+import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.core.domain.interactor.SettingsInteractor
 import ru.createsmart.artopos.core.domain.repository.SettingsRepository
 import ru.createsmart.artopos.core.model.settings.ThemeConfig

@@ -1,6 +1,6 @@
 package ru.createsmart.artopos.feature.details.model
 
-import UiText
+import ru.createsmart.artopos.core.designsystem.components.UiText
 
 data class DetailsActions(
     val onShowMessage: (UiText) -> Unit,

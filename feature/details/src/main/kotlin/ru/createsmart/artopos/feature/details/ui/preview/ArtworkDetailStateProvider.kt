@@ -1,7 +1,7 @@
 package ru.createsmart.artopos.feature.details.ui.preview
 
-import UiText
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.feature.details.ArtworkDetailUiState
 import ru.createsmart.artopos.feature.details.R
 import ru.createsmart.artopos.feature.details.model.ArtworkDetailUi

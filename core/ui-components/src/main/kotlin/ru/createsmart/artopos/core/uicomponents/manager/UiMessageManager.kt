@@ -1,10 +1,10 @@
 package ru.createsmart.artopos.core.uicomponents.manager
 
-import UiText
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import ru.createsmart.artopos.core.common.util.NetworkMonitor
 import ru.createsmart.artopos.core.designsystem.R
+import ru.createsmart.artopos.core.designsystem.components.UiText
 import javax.inject.Inject
 
 private const val ERROR_DEBOUNCE_MS = 3000L

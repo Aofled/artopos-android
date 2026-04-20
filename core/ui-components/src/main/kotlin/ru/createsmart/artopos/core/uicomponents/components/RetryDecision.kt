@@ -1,10 +1,10 @@
 package ru.createsmart.artopos.core.uicomponents.components
 
-import UiText
 import android.content.Context
 import coil.network.HttpException
 import ru.createsmart.artopos.core.common.util.isNetworkAvailable
 import ru.createsmart.artopos.core.designsystem.R
+import ru.createsmart.artopos.core.designsystem.components.UiText
 import java.net.HttpURLConnection
 
 sealed class RetryDecision {
