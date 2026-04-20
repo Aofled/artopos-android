@@ -26,7 +26,7 @@ private const val FILTER_ACCESSION_YEAR = "accessionyear"
 private const val FILTER_DATE_BEGIN = "datebegin"
 private const val FILTER_RANDOM = "random"
 
-private const val SORT_DESK = "desc"
+private const val SORT_DESC = "desc"
 private const val SORT_ASC = "asc"
 
 @OptIn(ExperimentalPagingApi::class)
@@ -115,9 +115,9 @@ class ArtworkRemoteMediator(
 
     private fun resolveEffectiveSort(): String {
         return if (hasFilters()) {
-            if (params.sort == FilterSortOption.DATE_BEGIN) SORT_ASC else SORT_DESK
+            if (params.sort == FilterSortOption.DATE_BEGIN) SORT_ASC else SORT_DESC
         } else {
-            SORT_DESK // For the main page, always "desk"
+            SORT_DESC // For the main page, always "desс"
         }
     }
 
