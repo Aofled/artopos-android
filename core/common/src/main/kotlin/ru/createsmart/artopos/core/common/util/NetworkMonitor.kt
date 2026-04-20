@@ -23,6 +23,6 @@ fun Context.isNetworkAvailable(): Boolean {
 
     return connectivityManager.activeNetwork?.let { network ->
         connectivityManager.getNetworkCapabilities(network)
-            ?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+            ?.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
     } ?: false
 }
