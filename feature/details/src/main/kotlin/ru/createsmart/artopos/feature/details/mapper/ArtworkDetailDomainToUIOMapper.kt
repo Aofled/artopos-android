@@ -1,11 +1,18 @@
 package ru.createsmart.artopos.feature.details.mapper
 
-import ru.createsmart.artopos.core.common.util.clearText
 import ru.createsmart.artopos.core.model.Artwork
 import ru.createsmart.artopos.feature.details.R
 import ru.createsmart.artopos.feature.details.model.ArtworkDetailUi
 import ru.createsmart.artopos.feature.details.model.DetailItem
 import ru.createsmart.artopos.feature.details.model.GalleryImageUi
+
+private fun String?.cleanHarvardApiText(): String? {
+    return this
+        ?.replace("\r\n", " ")
+        ?.replace("painting proper:", "", ignoreCase = true)
+        ?.trim()
+        ?.takeIf { it.isNotEmpty() }
+}
 
 fun Artwork.toDetailUi(
     isTranslated: Boolean,
@@ -23,7 +30,7 @@ fun Artwork.toDetailUi(
         addIfNotNull(R.string.details_label_period, period)
         addIfNotNull(R.string.details_label_style, style)
         addIfNotNull(R.string.details_label_medium, medium ?: technique, isWide = true)
-        addIfNotNull(R.string.details_label_dimensions, dimensions.clearText(), isWide = true)
+        addIfNotNull(R.string.details_label_dimensions, dimensions.cleanHarvardApiText(), isWide = true)
         addIfNotNull(R.string.details_label_gallery, galleryLocation, isWide = true)
         addIfNotNull(R.string.details_label_credit_line, creditLine, isWide = true)
         addIfNotNull(R.string.details_label_provenance, provenance, isWide = true)
@@ -34,7 +41,7 @@ fun Artwork.toDetailUi(
         title = title,
         artist = artist,
         imageUrl = imageUrl,
-        description = description.clearText(),
+        description = description.cleanHarvardApiText(),
         webUrl = url,
         details = detailsList,
         images = images.map {
