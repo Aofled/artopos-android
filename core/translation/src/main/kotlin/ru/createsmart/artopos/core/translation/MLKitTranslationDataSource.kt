@@ -1,6 +1,7 @@
 package ru.createsmart.artopos.core.translation
 
 import android.content.res.Resources
+import android.util.Log
 import com.google.mlkit.common.MlKitException
 import com.google.mlkit.common.model.DownloadConditions
 import com.google.mlkit.common.model.RemoteModelManager
@@ -9,19 +10,19 @@ import com.google.mlkit.nl.translate.TranslateRemoteModel
 import com.google.mlkit.nl.translate.Translation
 import com.google.mlkit.nl.translate.Translator
 import com.google.mlkit.nl.translate.TranslatorOptions
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.tasks.await
-import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class MLKitTranslationDataSource @Inject constructor() {
 
+    private val mutex = Mutex()
+
     private var currentTranslator: Translator? = null
     private var activeLanguage: String = ""
-
-    // Detects system language (e.g. "ru", "fr")
-    private val targetLanguageCode: String = Locale.getDefault().language
 
     private fun getActualLanguage(targetLanguageCode: String): String {
         return targetLanguageCode.ifEmpty {
@@ -29,7 +30,7 @@ class MLKitTranslationDataSource @Inject constructor() {
         }
     }
 
-    private fun getOrCreateTranslator(targetLanguageCode: String): Translator? {
+    private suspend fun getOrCreateTranslator(targetLanguageCode: String): Translator? = mutex.withLock {
         val actualLangCode = getActualLanguage(targetLanguageCode)
 
         return when {
@@ -59,21 +60,27 @@ class MLKitTranslationDataSource @Inject constructor() {
 
     suspend fun translate(text: String?, targetLanguage: String): String? {
         // Try to get the translator only if text not empty.
-        val translator = if (text.isNullOrBlank()) null else getOrCreateTranslator(targetLanguage)
+        if (text.isNullOrBlank()) return text
 
-        return translator?.let { client ->
+        val translator = getOrCreateTranslator(targetLanguage)
+
+        // 2. Второй (и последний) return: возвращаем результат всего блока if/else
+        return if (translator != null) {
             try {
                 // Critical: Ensure the language model (approx. 30MB) is downloaded before translating.
                 // If offline and model missing -> throws Exception.
                 // Language packs are downloaded via Wi-Fi and mobile internet (.requireWifi() <- only Wi-Fi)
                 val conditions = DownloadConditions.Builder().build()
-                client.downloadModelIfNeeded(conditions).await()
-                client.translate(text!!).await()
-            } catch (ignored: MlKitException) {
-                // Stability: On failure (no internet, low storage), show original text instead of crashing.
+                translator.downloadModelIfNeeded(conditions).await()
+                translator.translate(text).await()
+            } catch (e: MlKitException) {
+                Log.e("MLKitTranslator", "Failed to translate text. ML Kit Error Code: ${e.errorCode}", e)
                 text
             }
-        } ?: text // If translator was null or text is empty, return the original
+        } else {
+            // Stability: On failure (no internet, low storage), show original text instead of crashing.
+            text
+        }
     }
 
     suspend fun preloadModel(targetLanguage: String) {
@@ -82,8 +89,8 @@ class MLKitTranslationDataSource @Inject constructor() {
         try {
             val conditions = DownloadConditions.Builder().build()
             translator.downloadModelIfNeeded(conditions).await()
-        } catch (ignored: MlKitException) {
-            // Silent fail is OK for preloading
+        } catch (e: MlKitException) {
+            Log.e("MLKitTranslator", "Failed to preload ML model. ML Kit Error Code: ${e.errorCode}", e)
         }
     }
 
@@ -100,7 +107,8 @@ class MLKitTranslationDataSource @Inject constructor() {
 
         return try {
             modelManager.isModelDownloaded(model).await()
-        } catch (ignored: MlKitException) {
+        } catch (e: MlKitException) {
+            Log.e("MLKitTranslator", "Failed to check if model is downloaded", e)
             false
         }
     }
