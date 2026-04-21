@@ -6,6 +6,7 @@ import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.feature.artworkcard.model.ArtworkListItem
 
 class DiscoverStateProvider : PreviewParameterProvider<Flow<PagingData<ArtworkListItem>>> {
@@ -16,8 +17,8 @@ class DiscoverStateProvider : PreviewParameterProvider<Flow<PagingData<ArtworkLi
                 data = listOf(
                     ArtworkListItem(
                         id = 1,
-                        title = "Egrets and Kingfisher amongst Lotus",
-                        artist = "Okamoto Shūki 岡本秋暉",
+                        title = UiText.DynamicString("Egrets and Kingfisher amongst Lotus"),
+                        artist = UiText.DynamicString("Okamoto Shūki 岡本秋暉"),
                         imageUrl = "https://nrs.harvard.edu/urn-3:HUAM:LEG252412",
                         aspectRatio = 0.44163266f,
                         year = "19th century",
@@ -25,8 +26,8 @@ class DiscoverStateProvider : PreviewParameterProvider<Flow<PagingData<ArtworkLi
                     ),
                     ArtworkListItem(
                         id = 2,
-                        title = "Shirabyōshi",
-                        artist = "Unknown Artist",
+                        title = UiText.DynamicString("Shirabyōshi"),
+                        artist = UiText.DynamicString("Unknown Artist"),
                         imageUrl = "https://nrs.harvard.edu/urn-3:HUAM:763750",
                         aspectRatio = 0.43098038f,
                         year = "mid-17th century",
@@ -34,8 +35,8 @@ class DiscoverStateProvider : PreviewParameterProvider<Flow<PagingData<ArtworkLi
                     ),
                     ArtworkListItem(
                         id = 3,
-                        title = "Grasses and Moon",
-                        artist = "Tani Bunchō 谷文晁",
+                        title = UiText.DynamicString("Grasses and Moon"),
+                        artist = UiText.DynamicString("Tani Bunchō 谷文晁"),
                         imageUrl = "https://nrs.harvard.edu/urn-3:HUAM:LEG252388",
                         aspectRatio = 1.9600308f,
                         year = "15th day of the 8th month, 1817",
@@ -43,8 +44,8 @@ class DiscoverStateProvider : PreviewParameterProvider<Flow<PagingData<ArtworkLi
                     ),
                     ArtworkListItem(
                         id = 4,
-                        title = "Waterfall",
-                        artist = "Mori Ippō 森一鳳",
+                        title = UiText.DynamicString("Waterfall"),
+                        artist = UiText.DynamicString("Mori Ippō 森一鳳"),
                         imageUrl = "https://nrs.harvard.edu/urn-3:HUAM:768168",
                         aspectRatio = 0.5086275f,
                         year = "19th century",
@@ -52,8 +53,8 @@ class DiscoverStateProvider : PreviewParameterProvider<Flow<PagingData<ArtworkLi
                     ),
                     ArtworkListItem(
                         id = 5,
-                        title = "Chinese Roses and Sweetfish",
-                        artist = "Ueda Kōchū 上田耕冲",
+                        title = UiText.DynamicString("Chinese Roses and Sweetfish"),
+                        artist = UiText.DynamicString("Ueda Kōchū 上田耕冲"),
                         imageUrl = "https://nrs.harvard.edu/urn-3:HUAM:765896",
                         aspectRatio = 0.4043137f,
                         year = "1897",
@@ -61,8 +62,8 @@ class DiscoverStateProvider : PreviewParameterProvider<Flow<PagingData<ArtworkLi
                     ),
                     ArtworkListItem(
                         id = 6,
-                        title = "Rushes and Dragonflies",
-                        artist = "Watanabe Seitei 渡辺省亭",
+                        title = UiText.DynamicString("Rushes and Dragonflies"),
+                        artist = UiText.DynamicString("Watanabe Seitei 渡辺省亭"),
                         imageUrl = "https://nrs.harvard.edu/urn-3:HUAM:766941",
                         aspectRatio = 0.37176472f,
                         year = "c. 1893-1917",

@@ -136,8 +136,8 @@ private fun FavoritesHeader() {
 @Composable
 private fun FavoritesViewPreview() {
     val mockArtworks = listOf(
-        ArtworkListItem(1, "Art 1", "Artist 1", "", 1f, "2020", true),
-        ArtworkListItem(2, "Art 2", "Artist 2", "", 2f, "2021", true),
+        ArtworkListItem(1, UiText.DynamicString("Art 1"), UiText.DynamicString("Artist 1"), "", 1f, "2020", true),
+        ArtworkListItem(2, UiText.DynamicString("Art 2"), UiText.DynamicString("Artist 2"), "", 2f, "2021", true),
     )
 
     ArtoposTheme {

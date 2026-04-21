@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import ru.createsmart.artopos.core.domain.interactor.FavoritesInteractor
 import ru.createsmart.artopos.core.uicomponents.manager.UiMessageManager
-import ru.createsmart.artopos.feature.artworkcard.mapper.toUi
+import ru.createsmart.artopos.feature.artworkcard.mapper.ArtworkUiMapper
 import javax.inject.Inject
 
 /**
@@ -29,6 +29,7 @@ private const val REFRESH_DELAY_MS = 300L
 class FavoritesViewModel @Inject constructor(
     private val useCases: FavoritesInteractor,
     private val messageManager: UiMessageManager,
+    private val mapper: ArtworkUiMapper,
 ) : ViewModel() {
 
     private val _contentVersion = MutableStateFlow(0)
@@ -44,7 +45,7 @@ class FavoritesViewModel @Inject constructor(
             if (list.isEmpty()) {
                 FavoritesUiState.Empty
             } else {
-                FavoritesUiState.Success(list.map { it.toUi() })
+                FavoritesUiState.Success(list.map { mapper.mapToUi(it) })
             }
         }
         .stateIn(
