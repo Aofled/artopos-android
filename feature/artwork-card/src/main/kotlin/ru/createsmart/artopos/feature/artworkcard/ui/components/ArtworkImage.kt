@@ -21,8 +21,8 @@ import coil.request.ImageRequest
 import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.core.uicomponents.components.RetryDecision
 import ru.createsmart.artopos.core.uicomponents.components.RetryPlaceholder
-import ru.createsmart.artopos.core.uicomponents.components.ShimmerBox
 import ru.createsmart.artopos.core.uicomponents.components.analyzeRetry
+import ru.createsmart.artopos.core.uicomponents.components.shimmer.ShimmerBox
 import ru.createsmart.artopos.feature.artworkcard.model.ArtworkListItem
 import ru.createsmart.artopos.core.designsystem.R as DSR
 

@@ -9,7 +9,9 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
@@ -46,6 +48,10 @@ private val darkColorScheme = darkColorScheme(
     surface = MapLand,
     onSurface = PaperWhite,
 )
+
+val LocalAppThemeIsDark = staticCompositionLocalOf<Boolean> {
+    error("LocalAppThemeIsDark not provided")
+}
 
 @Composable
 fun ArtoposTheme(
@@ -85,9 +91,13 @@ fun ArtoposTheme(
         }
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = ArtoposTypography,
-        content = content,
-    )
+    CompositionLocalProvider(
+        LocalAppThemeIsDark provides darkTheme,
+    ) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = ArtoposTypography,
+            content = content,
+        )
+    }
 }
