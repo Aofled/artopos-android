@@ -244,10 +244,18 @@ private fun DiscoverScreenEffects(
         effectFlow?.collect { message -> onShowSnackbar(message) }
     }
 
-    LaunchedEffect(pagingItems.loadState) {
-        val state = pagingItems.loadState
-        (state.refresh as? LoadState.Error)?.error?.let { onError(it) }
-        (state.append as? LoadState.Error)?.error?.let { onError(it) }
+    val refreshState = pagingItems.loadState.refresh
+    LaunchedEffect(refreshState) {
+        if (refreshState is LoadState.Error) {
+            onError(refreshState.error)
+        }
+    }
+
+    val appendState = pagingItems.loadState.append
+    LaunchedEffect(appendState) {
+        if (appendState is LoadState.Error) {
+            onError(appendState.error)
+        }
     }
 }
 
