@@ -59,27 +59,27 @@ import ru.createsmart.artopos.core.uicomponents.notifiers.BottomBarCommand
 import ru.createsmart.artopos.core.uicomponents.notifiers.LocalBottomBarStateNotifier
 import ru.createsmart.artopos.feature.artworkcard.model.ArtworkListItem
 import ru.createsmart.artopos.feature.artworkcard.ui.components.ArtworkCard
-import ru.createsmart.artopos.feature.discover.model.DiscoverActions
 import ru.createsmart.artopos.feature.discover.model.DiscoverEvent
+import ru.createsmart.artopos.feature.discover.model.DiscoverIntent
 import ru.createsmart.artopos.core.designsystem.R as DSR
 
 @Composable
-fun ArtworksView(
+internal fun ArtworksView(
     artworks: LazyPagingItems<ArtworkListItem>,
     contentVersion: Int,
     isRefreshing: Boolean,
     contentPadding: PaddingValues,
     onShowMessage: (UiText) -> Unit,
     filterParams: FilterParams,
-    actions: DiscoverActions,
     scrollUp: Flow<DiscoverEvent>,
+    onIntent: (DiscoverIntent) -> Unit,
 ) {
     val pullToRefreshState = rememberPullToRefreshState()
 
     // Material 3 Pull-to-Refresh container
     PullToRefreshBox(
         isRefreshing = isRefreshing,
-        onRefresh = actions.onRefresh,
+        onRefresh = { onIntent(DiscoverIntent.Refresh) },
         state = pullToRefreshState,
         modifier = Modifier.fillMaxSize(),
         indicator = {
@@ -98,8 +98,8 @@ fun ArtworksView(
             contentPadding = contentPadding,
             onShowMessage = onShowMessage,
             filterParams = filterParams,
-            actions = actions,
             scrollUp = scrollUp,
+            onIntent = onIntent,
         )
     }
 }
@@ -111,8 +111,8 @@ private fun ArtworksGrid(
     contentPadding: PaddingValues,
     onShowMessage: (UiText) -> Unit,
     filterParams: FilterParams,
-    actions: DiscoverActions,
     scrollUp: Flow<DiscoverEvent>,
+    onIntent: (DiscoverIntent) -> Unit,
 ) {
     val listState = rememberLazyStaggeredGridState()
     val bottomBarNotifier = LocalBottomBarStateNotifier.current
@@ -173,7 +173,7 @@ private fun ArtworksGrid(
         modifier = Modifier.fillMaxSize(),
     ) {
         item(span = StaggeredGridItemSpan.FullLine) {
-            FavoritesHeader(filterParams = filterParams, onRemoveFilter = actions.onRemoveFilter)
+            FavoritesHeader(filterParams = filterParams, onRemoveFilter = { onIntent(DiscoverIntent.RemoveFilter(it)) })
         }
 
         if (isEmptyResult) {
@@ -182,15 +182,15 @@ private fun ArtworksGrid(
             artworkItems(
                 artworks = artworks,
                 contentVersion = contentVersion,
-                onArtworkClick = actions.onArtworkClick,
-                onFavoriteClick = actions.onToggleFavorite,
+                onArtworkClick = { onIntent(DiscoverIntent.ArtworkClicked(it)) },
+                onFavoriteClick = { onIntent(DiscoverIntent.ToggleFavorite(it)) },
                 onShowMessage = onShowMessage,
             )
         }
 
         pagingFooters(
             loadState = artworks.loadState.append,
-            onRetry = actions.onRetry,
+            onRetry = { onIntent(DiscoverIntent.Retry) },
         )
     }
 }
@@ -351,20 +351,7 @@ private fun ArtworksViewPreview() {
             contentPadding = PaddingValues(0.dp),
             onShowMessage = { },
             filterParams = FilterParams(),
-            actions = DiscoverActions(
-                onRefresh = {},
-                onRetry = {},
-                onArtworkClick = {},
-                onToggleFavorite = {},
-                onError = {},
-                onFilterSelected = { _, _ -> },
-                onFilterApply = {},
-                onFilterReset = {},
-                onFilterOpen = {},
-                onRemoveFilter = { _ -> },
-                onToggleFilterSort = {},
-                onSearchQueryChanged = { },
-            ),
+            onIntent = { },
             scrollUp = emptyFlow(),
         )
     }

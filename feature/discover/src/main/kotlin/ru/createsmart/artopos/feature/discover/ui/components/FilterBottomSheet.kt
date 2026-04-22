@@ -77,7 +77,7 @@ private const val FILTER_GRID_ROWS = 3
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FilterBottomSheet(
+internal fun FilterBottomSheet(
     sheetState: SheetState,
     filtersState: FiltersUiState,
     onFilterSelected: (FilterType, String?) -> Unit,

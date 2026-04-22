@@ -34,6 +34,7 @@ import ru.createsmart.artopos.core.model.FilterType
 import ru.createsmart.artopos.core.uicomponents.manager.UiMessageManager
 import ru.createsmart.artopos.feature.artworkcard.mapper.ArtworkUiMapper
 import ru.createsmart.artopos.feature.discover.model.DiscoverEvent
+import ru.createsmart.artopos.feature.discover.model.DiscoverIntent
 import ru.createsmart.artopos.feature.discover.model.FilterListItem
 import ru.createsmart.artopos.feature.discover.model.FiltersUiState
 import javax.inject.Inject
@@ -64,6 +65,23 @@ class DiscoverViewModel @Inject constructor(
     private val _draftFilterParams = MutableStateFlow(FilterParams())
 
     val activeFilterParams = _activeFilterParams.asStateFlow() // For TopAppBar
+
+    internal fun onIntent(intent: DiscoverIntent) {
+        when (intent) {
+            is DiscoverIntent.Refresh -> onRefresh()
+            is DiscoverIntent.Retry -> onRetryAction()
+            is DiscoverIntent.ErrorOccurred -> onError(intent.error)
+            is DiscoverIntent.FilterSelected -> onFilterSelect(intent.type, intent.value)
+            is DiscoverIntent.FilterApply -> onFilterApply()
+            is DiscoverIntent.FilterReset -> onFilterReset()
+            is DiscoverIntent.FilterOpen -> onFilterOpen()
+            is DiscoverIntent.RemoveFilter -> onRemoveFilter(intent.type)
+            is DiscoverIntent.ToggleFilterSort -> onToggleFilterSort()
+            is DiscoverIntent.ToggleFavorite -> onToggleFavorite(intent.id)
+            is DiscoverIntent.SearchQueryChanged -> onSearchQueryChanged(intent.query)
+            is DiscoverIntent.ArtworkClicked -> Unit
+        }
+    }
 
     // --- UI FLOWS (Depends on DRAFT) ---
 
@@ -170,7 +188,7 @@ class DiscoverViewModel @Inject constructor(
 
     // --- ACTIONS ---
 
-    fun onFilterSelect(type: FilterType, value: String?) {
+    private fun onFilterSelect(type: FilterType, value: String?) {
         val currentDraft = _draftFilterParams.value
         _draftFilterParams.value = when (type) {
             FilterType.CLASSIFICATION -> currentDraft.copy(classification = value)
@@ -179,12 +197,12 @@ class DiscoverViewModel @Inject constructor(
         }
     }
 
-    fun onFilterReset() {
+    private fun onFilterReset() {
         _draftFilterParams.value = FilterParams()
         _searchQuery.value = ""
     }
 
-    fun onFilterApply() {
+    private fun onFilterApply() {
         if (_activeFilterParams.value != _draftFilterParams.value) {
             _activeFilterParams.value = _draftFilterParams.value
 
@@ -194,16 +212,16 @@ class DiscoverViewModel @Inject constructor(
         }
     }
 
-    fun onFilterOpen() {
+    private fun onFilterOpen() {
         _draftFilterParams.value = _activeFilterParams.value
         _searchQuery.value = ""
     }
 
-    fun onSearchQueryChanged(query: String) {
+    private fun onSearchQueryChanged(query: String) {
         _searchQuery.value = query
     }
 
-    fun onRemoveFilter(type: FilterType) { // For TopAppBar
+    private fun onRemoveFilter(type: FilterType) { // For TopAppBar
         val current = _activeFilterParams.value
 
         val newParams = when (type) {
@@ -216,7 +234,7 @@ class DiscoverViewModel @Inject constructor(
         _draftFilterParams.value = newParams
     }
 
-    fun onToggleFilterSort() {
+    private fun onToggleFilterSort() {
         val currentDraft = _draftFilterParams.value
 
         val newSort = when (currentDraft.sort) {
@@ -230,7 +248,7 @@ class DiscoverViewModel @Inject constructor(
         _draftFilterParams.value = currentDraft.copy(sort = newSort)
     }
 
-    fun onToggleFavorite(id: Int) {
+    private fun onToggleFavorite(id: Int) {
         viewModelScope.launch {
             useCases.toggleFavorite(id)
         }
@@ -238,8 +256,8 @@ class DiscoverViewModel @Inject constructor(
 
     // --- ERROR HANDLING ---
 
-    fun onRefresh(): Boolean {
-        if (!messageManager.checkInternetAndNotify()) return false
+    private fun onRefresh() {
+        if (!messageManager.checkInternetAndNotify()) return
 
         viewModelScope.launch {
             val result = useCases.initializeFilters()
@@ -251,25 +269,18 @@ class DiscoverViewModel @Inject constructor(
 
         _contentVersion.value++
         messageManager.resetLastEmittedMessage() // Reset debounce history so new errors can be shown fresh
-
-        return true
     }
 
-    fun onRetryAction(): Boolean {
+    private fun onRetryAction() {
         if (messageManager.checkInternetAndNotify()) {
             viewModelScope.launch {
                 val result = useCases.initializeFilters()
-
-                result.onFailure { error ->
-                    messageManager.sendSideEffect(error.toUiText())
-                }
+                result.onFailure { error -> messageManager.sendSideEffect(error.toUiText()) }
             }
-            return true
         }
-        return false
     }
 
-    fun onError(error: Throwable) {
+    private fun onError(error: Throwable) {
         if (messageManager.checkInternetAndNotify()) {
             messageManager.sendSideEffect(error.toUiText())
         }

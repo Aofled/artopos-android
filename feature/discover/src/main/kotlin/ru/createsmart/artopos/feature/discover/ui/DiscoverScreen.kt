@@ -45,16 +45,16 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
 import ru.createsmart.artopos.core.designsystem.components.UiText
+import ru.createsmart.artopos.core.designsystem.components.toUiText
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposDimens
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
 import ru.createsmart.artopos.core.model.FilterParams
-import ru.createsmart.artopos.core.model.FilterType
 import ru.createsmart.artopos.core.uicomponents.components.FilterFloatingActionButton
 import ru.createsmart.artopos.core.uicomponents.notifiers.LocalBottomBarVisibility
 import ru.createsmart.artopos.feature.artworkcard.model.ArtworkListItem
 import ru.createsmart.artopos.feature.discover.DiscoverViewModel
-import ru.createsmart.artopos.feature.discover.model.DiscoverActions
 import ru.createsmart.artopos.feature.discover.model.DiscoverEvent
+import ru.createsmart.artopos.feature.discover.model.DiscoverIntent
 import ru.createsmart.artopos.feature.discover.model.FiltersUiState
 import ru.createsmart.artopos.feature.discover.ui.components.ArtworksView
 import ru.createsmart.artopos.feature.discover.ui.components.ErrorView
@@ -82,42 +82,36 @@ fun DiscoverRoute(
         contentVersion = contentVersion,
         effectFlow = viewModel.uiEffect,
         filterParams = activeParams,
-        actions = DiscoverActions(
-            onRefresh = {
-                if (viewModel.onRefresh()) {
-                    pagingItems.refresh()
-                }
-            },
-            onRetry = {
-                if (viewModel.onRetryAction()) {
-                    pagingItems.retry()
-                }
-            },
-            onArtworkClick = onArtworkClick,
-            onError = viewModel::onError,
-            onFilterSelected = viewModel::onFilterSelect,
-            onFilterReset = viewModel::onFilterReset,
-            onFilterApply = viewModel::onFilterApply,
-            onFilterOpen = viewModel::onFilterOpen,
-            onRemoveFilter = viewModel::onRemoveFilter,
-            onToggleFilterSort = viewModel::onToggleFilterSort,
-            onToggleFavorite = viewModel::onToggleFavorite,
-            onSearchQueryChanged = viewModel::onSearchQueryChanged,
-        ),
         scrollUp = viewModel.actions,
+        onIntent = { intent ->
+            when (intent) {
+                is DiscoverIntent.ArtworkClicked -> onArtworkClick(intent.id)
+
+                is DiscoverIntent.Refresh -> {
+                    pagingItems.refresh()
+                    viewModel.onIntent(intent)
+                }
+                is DiscoverIntent.Retry -> {
+                    pagingItems.retry()
+                    viewModel.onIntent(intent)
+                }
+
+                else -> viewModel.onIntent(intent)
+            }
+        },
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DiscoverScreen(
+private fun DiscoverScreen(
     pagingItems: LazyPagingItems<ArtworkListItem>,
     filtersState: FiltersUiState,
     contentVersion: Int,
     effectFlow: Flow<UiText>? = null,
     filterParams: FilterParams,
-    actions: DiscoverActions,
     scrollUp: Flow<DiscoverEvent>,
+    onIntent: (DiscoverIntent) -> Unit,
 ) {
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
@@ -138,7 +132,6 @@ fun DiscoverScreen(
         effectFlow = effectFlow,
         pagingItems = pagingItems,
         onShowSnackbar = onShowSnackbar,
-        onError = actions.onError,
     )
 
     val showFab = filtersState.isAvailable
@@ -187,7 +180,7 @@ fun DiscoverScreen(
                 DiscoverFloatingButton(
                     visible = showFab,
                     onFilterClick = {
-                        actions.onFilterOpen()
+                        onIntent(DiscoverIntent.FilterOpen)
                         showFilterSheet = true
                     },
                     modifier = Modifier
@@ -202,8 +195,8 @@ fun DiscoverScreen(
                 innerPadding = innerPadding,
                 onShowMessage = { onShowSnackbar(it) },
                 filterParams = filterParams,
-                actions = actions,
                 scrollUp = scrollUp,
+                onIntent = onIntent,
             )
         }
 
@@ -219,15 +212,15 @@ fun DiscoverScreen(
             FilterBottomSheet(
                 sheetState = sheetState,
                 filtersState = filtersState,
-                onFilterSelected = actions.onFilterSelected,
-                onReset = actions.onFilterReset,
+                onFilterSelected = { type, value -> onIntent(DiscoverIntent.FilterSelected(type, value)) },
+                onSearchQueryChanged = { query -> onIntent(DiscoverIntent.SearchQueryChanged(query)) },
+                onReset = { onIntent(DiscoverIntent.FilterReset) },
+                onToggleSort = { onIntent(DiscoverIntent.ToggleFilterSort) },
                 onDismiss = {
                     showFilterSheet = false
-                    actions.onSearchQueryChanged("")
-                    actions.onFilterApply()
+                    onIntent(DiscoverIntent.SearchQueryChanged(""))
+                    onIntent(DiscoverIntent.FilterApply)
                 },
-                onToggleSort = actions.onToggleFilterSort,
-                onSearchQueryChanged = actions.onSearchQueryChanged,
             )
         }
     }
@@ -237,25 +230,19 @@ fun DiscoverScreen(
 private fun DiscoverScreenEffects(
     effectFlow: Flow<UiText>?,
     pagingItems: LazyPagingItems<ArtworkListItem>,
-    onError: (Throwable) -> Unit,
     onShowSnackbar: (UiText) -> Unit,
 ) {
     LaunchedEffect(effectFlow) {
         effectFlow?.collect { message -> onShowSnackbar(message) }
     }
 
-    val refreshState = pagingItems.loadState.refresh
-    LaunchedEffect(refreshState) {
-        if (refreshState is LoadState.Error) {
-            onError(refreshState.error)
-        }
-    }
+    LaunchedEffect(pagingItems.loadState) {
+        val state = pagingItems.loadState
+        val refreshError = (state.refresh as? LoadState.Error)?.error
+        val appendError = (state.append as? LoadState.Error)?.error
 
-    val appendState = pagingItems.loadState.append
-    LaunchedEffect(appendState) {
-        if (appendState is LoadState.Error) {
-            onError(appendState.error)
-        }
+        refreshError?.let { onShowSnackbar(it.toUiText()) }
+        appendError?.let { onShowSnackbar(it.toUiText()) }
     }
 }
 
@@ -282,8 +269,8 @@ private fun DiscoverScreenContent(
     innerPadding: PaddingValues,
     onShowMessage: (UiText) -> Unit,
     filterParams: FilterParams,
-    actions: DiscoverActions,
     scrollUp: Flow<DiscoverEvent>,
+    onIntent: (DiscoverIntent) -> Unit,
 ) {
     val refreshState = pagingItems.loadState.refresh
     val isListEmpty = pagingItems.itemCount == 0
@@ -301,14 +288,14 @@ private fun DiscoverScreenContent(
                 contentPadding = innerPadding,
                 onShowMessage = onShowMessage,
                 filterParams = filterParams,
-                actions = actions,
                 scrollUp = scrollUp,
+                onIntent = onIntent,
             )
         }
 
         refreshState is LoadState.Error -> {
             Box(modifier = Modifier.padding(innerPadding)) {
-                ErrorView(onRetry = actions.onRetry)
+                ErrorView(onRetry = { onIntent(DiscoverIntent.Retry) })
             }
         }
 
@@ -320,8 +307,8 @@ private fun DiscoverScreenContent(
                 contentPadding = innerPadding,
                 onShowMessage = onShowMessage,
                 filterParams = filterParams,
-                actions = actions,
                 scrollUp = scrollUp,
+                onIntent = onIntent,
             )
         }
 
@@ -335,7 +322,7 @@ private fun DiscoverScreenContent(
 
 @Preview(showBackground = true, name = "Discover States", uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
-fun DiscoverScreenPreview(
+private fun DiscoverScreenPreview(
     @PreviewParameter(DiscoverStateProvider::class) pagingFlow: Flow<PagingData<ArtworkListItem>>,
 ) {
     val pagingItems = pagingFlow.collectAsLazyPagingItems()
@@ -353,20 +340,7 @@ fun DiscoverScreenPreview(
                 isAvailable = false,
             ),
             filterParams = FilterParams(),
-            actions = DiscoverActions(
-                onRefresh = { },
-                onRetry = { },
-                onArtworkClick = { id -> println("Clicked id: $id") },
-                onError = { },
-                onFilterSelected = { filterType: FilterType, query: String? -> },
-                onFilterApply = { },
-                onFilterReset = { },
-                onFilterOpen = { },
-                onRemoveFilter = { _ -> },
-                onToggleFilterSort = { },
-                onToggleFavorite = { id -> println("Favorite id: $id") },
-                onSearchQueryChanged = { },
-            ),
+            onIntent = { intent -> println("Preview Intent: $intent") },
             scrollUp = emptyFlow(),
         )
     }

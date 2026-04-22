@@ -18,7 +18,7 @@ import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
 import ru.createsmart.artopos.core.designsystem.R as DSR
 
 @Composable
-fun ErrorView(onRetry: () -> Unit) {
+internal fun ErrorView(onRetry: () -> Unit) {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,

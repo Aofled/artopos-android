@@ -11,7 +11,7 @@ import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
 import ru.createsmart.artopos.core.uicomponents.components.CustomCircularProgressIndicator
 
 @Composable
-fun LoadingView() {
+internal fun LoadingView() {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,

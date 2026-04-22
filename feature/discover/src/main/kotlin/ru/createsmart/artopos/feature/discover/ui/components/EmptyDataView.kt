@@ -19,7 +19,7 @@ import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
 import ru.createsmart.artopos.feature.discover.R
 
 @Composable
-fun EmptyDataView() {
+internal fun EmptyDataView() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
