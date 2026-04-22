@@ -1,4 +1,4 @@
-package ru.createsmart.artopos.core.uicomponents.components
+package ru.createsmart.artopos.core.uicomponents.components.shimmer
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -6,43 +6,21 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
-
-private const val SHIMMER_DARK_EDGE_ALPHA = 0.6f
-private const val SHIMMER_DARK_HIGHLIGHT_ALPHA = 0.4f
-
-private const val SHIMMER_LIGHT_EDGE_ALPHA = 0.95f
-private const val SHIMMER_LIGHT_HIGHLIGHT_ALPHA = 0.4f
+import androidx.compose.ui.graphics.Color
 
 @Composable
-fun ShimmerBox(modifier: Modifier = Modifier) {
-    val isDark = isSystemInDarkTheme()
-    val baseColor = MaterialTheme.colorScheme.surfaceVariant
-
-    // Visual Tweak: Dark theme needs lower opacity (subtle effect).
-    // Light theme needs higher opacity to be visible on white background.
-    // Optimization: Cache colors to avoid re-allocating List on every frame
-    val shimmerColors = remember(baseColor, isDark) {
-        val (edgeAlpha, highlightAlpha) = if (isDark) {
-            SHIMMER_DARK_EDGE_ALPHA to SHIMMER_DARK_HIGHLIGHT_ALPHA
-        } else {
-            SHIMMER_LIGHT_EDGE_ALPHA to SHIMMER_LIGHT_HIGHLIGHT_ALPHA
-        }
-        listOf(
-            baseColor.copy(alpha = edgeAlpha),
-            baseColor.copy(alpha = highlightAlpha),
-            baseColor.copy(alpha = edgeAlpha),
-        )
-    }
-
+internal fun BaseShimmerBox(
+    shimmerColors: List<Color>,
+    modifier: Modifier = Modifier,
+    waveSizeMultiplier: Float = 1.0f,
+    durationMillis: Int = 1500,
+) {
     val transition = rememberInfiniteTransition(label = "shimmer")
 
     val progress = transition.animateFloat(
@@ -50,7 +28,7 @@ fun ShimmerBox(modifier: Modifier = Modifier) {
         targetValue = 1f,
         animationSpec = infiniteRepeatable(
             animation = tween(
-                durationMillis = 1500,
+                durationMillis = durationMillis,
                 easing = LinearEasing,
             ),
             repeatMode = RepeatMode.Restart,
@@ -64,11 +42,13 @@ fun ShimmerBox(modifier: Modifier = Modifier) {
             // Unlike 'background(brush)', it skips Composition and Layout phases,
             // which is critical for infinite animations (60/120 FPS).
             .drawBehind {
-                val distance = size.width + size.height
+                val waveSize = size.width * waveSizeMultiplier
+
+                val distance = waveSize + size.height
                 val currentOffset = distance * progress.value
 
                 val startOffset = Offset(
-                    x = currentOffset - size.width,
+                    x = currentOffset - waveSize,
                     y = currentOffset - size.height,
                 )
                 val endOffset = Offset(

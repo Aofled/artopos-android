@@ -337,8 +337,8 @@ private fun ActiveFilterChip(
 @Composable
 private fun ArtworksViewPreview() {
     val mockData = listOf(
-        ArtworkListItem(1, "Art 1", "Artist 1", "", 1f, "2020", true),
-        ArtworkListItem(2, "Art 2", "Artist 2", "", 2f, "2021", false),
+        ArtworkListItem(1, UiText.DynamicString("Art 1"), UiText.DynamicString("Artist 1"), "", 1f, "2020", true),
+        ArtworkListItem(2, UiText.DynamicString("Art 2"), UiText.DynamicString("Artist 2"), "", 2f, "2021", false),
     )
 
     val artworks = flowOf(PagingData.from(mockData)).collectAsLazyPagingItems()

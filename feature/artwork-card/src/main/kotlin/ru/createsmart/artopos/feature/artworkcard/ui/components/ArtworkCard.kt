@@ -11,7 +11,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -19,7 +18,6 @@ import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
 import ru.createsmart.artopos.core.uicomponents.components.FavoriteButton
 import ru.createsmart.artopos.feature.artworkcard.model.ArtworkListItem
-import ru.createsmart.artopos.core.designsystem.R as DSR
 
 @Composable
 fun ArtworkCard(
@@ -48,27 +46,18 @@ fun ArtworkCard(
             )
         }
 
-        Column(
-            modifier = Modifier.padding(top = 8.dp),
-        ) {
-            val displayArtist = artwork.artist.ifBlank {
-                stringResource(DSR.string.core_placeholder_artist)
-            }
+        Column(modifier = Modifier.padding(top = 8.dp)) {
             Text(
-                text = displayArtist,
+                text = artwork.artist.asString(),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .padding(bottom = 4.dp),
+                modifier = Modifier.padding(bottom = 4.dp),
             )
         }
-        val displayTitle = artwork.title.ifBlank {
-            stringResource(DSR.string.core_placeholder_title)
-        }
         Text(
-            text = displayTitle,
+            text = artwork.title.asString(),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.secondary,
             maxLines = 1,
@@ -84,8 +73,8 @@ private fun ArtworkCardPreview() {
         ArtworkCard(
             artwork = ArtworkListItem(
                 id = 1,
-                title = "Chinese Roses and Sweetfish",
-                artist = "Ueda Kōchū 上田耕冲",
+                title = UiText.DynamicString("Chinese Roses and Sweetfish"),
+                artist = UiText.DynamicString("Ueda Kōchū 上田耕冲"),
                 imageUrl = "https://nrs.harvard.edu/urn-3:HUAM:765896",
                 aspectRatio = 0.6043137f,
                 year = "1897",

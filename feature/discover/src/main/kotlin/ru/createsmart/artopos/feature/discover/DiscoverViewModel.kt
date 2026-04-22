@@ -24,7 +24,7 @@ import ru.createsmart.artopos.core.model.FilterParams
 import ru.createsmart.artopos.core.model.FilterSortOption
 import ru.createsmart.artopos.core.model.FilterType
 import ru.createsmart.artopos.core.uicomponents.manager.UiMessageManager
-import ru.createsmart.artopos.feature.artworkcard.mapper.toUi
+import ru.createsmart.artopos.feature.artworkcard.mapper.ArtworkUiMapper
 import ru.createsmart.artopos.feature.discover.mapper.toUi
 import ru.createsmart.artopos.feature.discover.model.DiscoverEvent
 import ru.createsmart.artopos.feature.discover.model.FiltersUiState
@@ -35,6 +35,7 @@ import javax.inject.Inject
 class DiscoverViewModel @Inject constructor(
     private val useCases: DiscoverInteractor,
     private val messageManager: UiMessageManager,
+    private val mapper: ArtworkUiMapper,
 ) : ViewModel() {
 
     private val _contentVersion = MutableStateFlow(0)
@@ -99,7 +100,7 @@ class DiscoverViewModel @Inject constructor(
         .flatMapLatest { params ->
             useCases.getArtworks(params) // It depends on the filter
         }
-        .map { pagingData -> pagingData.map { it.toUi() } }
+        .map { pagingData -> pagingData.map { mapper.mapToUi(it) } }
         .cachedIn(viewModelScope)
 
     init {
