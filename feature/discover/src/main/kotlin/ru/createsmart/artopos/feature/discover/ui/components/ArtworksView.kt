@@ -135,7 +135,7 @@ private fun ArtworksGrid(
         }
     }
 
-    LaunchedEffect(artworks.loadState.refresh) { // Auto-scroll up when data is updated
+    LaunchedEffect(scrollUp) { // Auto-scroll up when data is updated
         scrollUp.collect { action ->
             when (action) {
                 is DiscoverEvent.ScrollToTop -> {
