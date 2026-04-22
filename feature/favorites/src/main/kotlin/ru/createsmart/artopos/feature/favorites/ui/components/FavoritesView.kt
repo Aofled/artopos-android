@@ -35,16 +35,16 @@ import ru.createsmart.artopos.core.uicomponents.notifiers.BottomBarCommand
 import ru.createsmart.artopos.core.uicomponents.notifiers.LocalBottomBarStateNotifier
 import ru.createsmart.artopos.feature.artworkcard.model.ArtworkListItem
 import ru.createsmart.artopos.feature.artworkcard.ui.components.ArtworkCard
-import ru.createsmart.artopos.feature.favorites.model.FavoritesActions
+import ru.createsmart.artopos.feature.favorites.model.FavoritesIntent
 import ru.createsmart.artopos.core.designsystem.R as DSR
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FavoritesView(
+internal fun FavoritesView(
     artworks: List<ArtworkListItem>,
     contentVersion: Int,
     isRefreshing: Boolean,
-    actions: FavoritesActions,
+    onIntent: (FavoritesIntent) -> Unit,
     onShowMessage: (UiText) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -82,7 +82,7 @@ fun FavoritesView(
 
     PullToRefreshBox(
         isRefreshing = isRefreshing,
-        onRefresh = actions.onRefresh,
+        onRefresh = { onIntent(FavoritesIntent.Refresh) },
         state = pullState,
         modifier = modifier,
     ) {
@@ -110,8 +110,8 @@ fun FavoritesView(
                 ArtworkCard(
                     artwork = artwork,
                     contentVersion = contentVersion,
-                    onClick = { actions.onArtworkClick(artwork.id) },
-                    onFavoriteClick = { actions.onToggleFavorite(artwork.id) },
+                    onClick = { onIntent(FavoritesIntent.ArtworkClick(artwork.id)) },
+                    onFavoriteClick = { onIntent(FavoritesIntent.ToggleFavorite(artwork.id)) },
                     onShowMessage = onShowMessage,
                 )
             }
@@ -146,11 +146,7 @@ private fun FavoritesViewPreview() {
             contentVersion = 0,
             isRefreshing = false,
             onShowMessage = { },
-            actions = FavoritesActions(
-                onRefresh = { },
-                onArtworkClick = { },
-                onToggleFavorite = { },
-            ),
+            onIntent = { },
         )
     }
 }

@@ -18,7 +18,7 @@ import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
 import ru.createsmart.artopos.feature.favorites.R
 
 @Composable
-fun EmptyFavoritesView() {
+internal fun EmptyFavoritesView() {
     Column(
         modifier = Modifier
             .fillMaxSize()

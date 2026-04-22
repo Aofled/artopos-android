@@ -39,7 +39,7 @@ import ru.createsmart.artopos.core.uicomponents.components.CustomCircularProgres
 import ru.createsmart.artopos.core.uicomponents.notifiers.LocalBottomBarVisibility
 import ru.createsmart.artopos.feature.favorites.FavoritesUiState
 import ru.createsmart.artopos.feature.favorites.FavoritesViewModel
-import ru.createsmart.artopos.feature.favorites.model.FavoritesActions
+import ru.createsmart.artopos.feature.favorites.model.FavoritesIntent
 import ru.createsmart.artopos.feature.favorites.ui.components.EmptyFavoritesView
 import ru.createsmart.artopos.feature.favorites.ui.components.FavoritesView
 import ru.createsmart.artopos.feature.favorites.ui.preview.FavoritesStateProvider
@@ -58,21 +58,22 @@ fun FavoritesRoute(
         contentVersion = contentVersion,
         isRefreshing = isRefreshing,
         effectFlow = viewModel.uiEffect,
-        actions = FavoritesActions(
-            onRefresh = viewModel::onRefresh,
-            onArtworkClick = onArtworkClick,
-            onToggleFavorite = viewModel::onToggleFavorite,
-        ),
+        onIntent = { intent ->
+            when (intent) {
+                is FavoritesIntent.ArtworkClick -> onArtworkClick(intent.id)
+                else -> viewModel.onIntent(intent)
+            }
+        },
     )
 }
 
 @Composable
-fun FavoritesScreen(
+private fun FavoritesScreen(
     state: FavoritesUiState,
     contentVersion: Int,
     isRefreshing: Boolean,
     effectFlow: Flow<UiText>?,
-    actions: FavoritesActions,
+    onIntent: (FavoritesIntent) -> Unit,
 ) {
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
@@ -124,7 +125,7 @@ fun FavoritesScreen(
             contentVersion = contentVersion,
             isRefreshing = isRefreshing,
             innerPadding = innerPadding,
-            actions = actions,
+            onIntent = onIntent,
             onShowMessage = { onShowSnackbar(it) },
         )
     }
@@ -137,7 +138,7 @@ private fun FavoritesScreenContent(
     contentVersion: Int,
     isRefreshing: Boolean,
     innerPadding: PaddingValues,
-    actions: FavoritesActions,
+    onIntent: (FavoritesIntent) -> Unit,
     onShowMessage: (UiText) -> Unit,
 ) {
     Box(
@@ -164,7 +165,7 @@ private fun FavoritesScreenContent(
                     artworks = state.artworks,
                     contentVersion = contentVersion,
                     isRefreshing = isRefreshing,
-                    actions = actions,
+                    onIntent = onIntent,
                     onShowMessage = onShowMessage,
                 )
             }
@@ -183,11 +184,7 @@ private fun FavoritesScreenPreview(
             contentVersion = 1,
             isRefreshing = false,
             effectFlow = null,
-            actions = FavoritesActions(
-                onRefresh = { println("Refreshed") },
-                onArtworkClick = { id -> println("Artwork clicked: $id") },
-                onToggleFavorite = { id -> println("Favorite clicked: $id") },
-            ),
+            onIntent = { intent -> println("Intent triggered: $intent") },
         )
     }
 }

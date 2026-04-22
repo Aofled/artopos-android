@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 import ru.createsmart.artopos.core.domain.interactor.FavoritesInteractor
 import ru.createsmart.artopos.core.uicomponents.manager.UiMessageManager
 import ru.createsmart.artopos.feature.artworkcard.mapper.ArtworkUiMapper
+import ru.createsmart.artopos.feature.favorites.model.FavoritesIntent
 import javax.inject.Inject
 
 /**
@@ -40,6 +41,14 @@ class FavoritesViewModel @Inject constructor(
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing = _isRefreshing.asStateFlow()
 
+    internal fun onIntent(intent: FavoritesIntent) {
+        when (intent) {
+            is FavoritesIntent.Refresh -> handleRefresh()
+            is FavoritesIntent.ToggleFavorite -> handleToggleFavorite(intent.id)
+            is FavoritesIntent.ArtworkClick -> Unit
+        }
+    }
+
     val uiState: StateFlow<FavoritesUiState> = useCases.getFavoritesUseCase()
         .map { list ->
             if (list.isEmpty()) {
@@ -54,20 +63,19 @@ class FavoritesViewModel @Inject constructor(
             initialValue = FavoritesUiState.Loading,
         )
 
-    fun onToggleFavorite(id: Int) {
+    private fun handleToggleFavorite(id: Int) {
         viewModelScope.launch {
             useCases.toggleFavoriteUseCase(id)
         }
     }
 
-    fun onRefresh() {
-        if (!messageManager.checkInternetAndNotify()) {
-            return
-        }
+    private fun handleRefresh() {
+        if (!messageManager.checkInternetAndNotify()) return
+
         viewModelScope.launch {
             _isRefreshing.value = true
             _contentVersion.value++
-            delay(REFRESH_DELAY_MS) // Artificial delay for UI smoothness
+            delay(REFRESH_DELAY_MS)
             _isRefreshing.value = false
         }
         messageManager.resetLastEmittedMessage()
