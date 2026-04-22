@@ -141,8 +141,7 @@ fun DiscoverScreen(
         onError = actions.onError,
     )
 
-    val isListReady = pagingItems.loadState.refresh !is LoadState.Loading
-    val showFab = isListReady && filtersState.isAvailable
+    val showFab = filtersState.isAvailable
     val isBottomBarVisible = LocalBottomBarVisibility.current
 
     // Animate FAB vertical offset to avoid overlapping with the BottomBar
@@ -224,6 +223,7 @@ fun DiscoverScreen(
                 onReset = actions.onFilterReset,
                 onDismiss = {
                     showFilterSheet = false
+                    actions.onSearchQueryChanged("")
                     actions.onFilterApply()
                 },
                 onToggleSort = actions.onToggleFilterSort,

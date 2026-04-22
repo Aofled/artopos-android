@@ -1,12 +1,16 @@
 package ru.createsmart.artopos.feature.discover
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import androidx.paging.map
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -18,15 +22,19 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import ru.createsmart.artopos.core.common.util.LocaleHelper
 import ru.createsmart.artopos.core.designsystem.components.toUiText
+import ru.createsmart.artopos.core.designsystem.util.FilterNameHelper
 import ru.createsmart.artopos.core.domain.interactor.DiscoverInteractor
+import ru.createsmart.artopos.core.model.FilterItem
 import ru.createsmart.artopos.core.model.FilterParams
 import ru.createsmart.artopos.core.model.FilterSortOption
 import ru.createsmart.artopos.core.model.FilterType
 import ru.createsmart.artopos.core.uicomponents.manager.UiMessageManager
 import ru.createsmart.artopos.feature.artworkcard.mapper.ArtworkUiMapper
-import ru.createsmart.artopos.feature.discover.mapper.toUi
 import ru.createsmart.artopos.feature.discover.model.DiscoverEvent
+import ru.createsmart.artopos.feature.discover.model.FilterListItem
 import ru.createsmart.artopos.feature.discover.model.FiltersUiState
 import javax.inject.Inject
 
@@ -36,10 +44,14 @@ class DiscoverViewModel @Inject constructor(
     private val useCases: DiscoverInteractor,
     private val messageManager: UiMessageManager,
     private val mapper: ArtworkUiMapper,
+    @ApplicationContext private val context: Context,
 ) : ViewModel() {
 
     private val _contentVersion = MutableStateFlow(0)
-    val contentVersion = _contentVersion.asStateFlow() // Exposed to UI to force image reload on Pull-to-Refresh
+    val contentVersion =
+        _contentVersion.asStateFlow() // Exposed to UI to force image reload on Pull-to-Refresh
+
+    private val _currentLanguage = MutableStateFlow("")
 
     val uiEffect = messageManager.uiEffect
 
@@ -55,40 +67,80 @@ class DiscoverViewModel @Inject constructor(
 
     // --- UI FLOWS (Depends on DRAFT) ---
 
-    private val _classificationsFlow = combine(
+    private fun combineAndFilterFlow(
+        filtersFlow: Flow<List<FilterItem>>,
+        extractSelectedValue: (FilterParams) -> String?,
+    ): Flow<List<FilterListItem>> {
+        return combine(
+            filtersFlow,
+            _draftFilterParams,
+            _searchQuery,
+            _currentLanguage,
+        ) { list, params, query, languageCode ->
+            val selectedValue = extractSelectedValue(params)
+
+            withContext(Dispatchers.Default) {
+                val locContext = LocaleHelper.getLocalizedContext(context, languageCode)
+
+                list.map { item ->
+                    val locName = FilterNameHelper.getLocalizedName(locContext, item.name)
+                    FilterListItem(
+                        id = item.id,
+                        type = item.type,
+                        name = item.name,
+                        localizedName = locName,
+                        count = item.count,
+                        isSelected = item.name == selectedValue,
+                    )
+                }.filter { uiItem ->
+                    // 1. If the search is empty, we return all list
+                    if (query.isBlank()) return@filter true
+
+                    // 2. Always keep the selected element visible
+                    if (uiItem.isSelected) return@filter true
+
+                    // 3. Else looking for matches in the text
+                    uiItem.localizedName.contains(query, ignoreCase = true) ||
+                        uiItem.name.contains(query, ignoreCase = true)
+                }
+            }
+        }
+    }
+
+    private val isFiltersAvailableFlow = combine(
         useCases.getFilters(FilterType.CLASSIFICATION),
-        _draftFilterParams,
-    ) { list, params ->
-        list.toUi(params.classification)
-    }
-
-    private val _centuriesFlow = combine(
         useCases.getFilters(FilterType.CENTURY),
-        _draftFilterParams,
-    ) { list, params ->
-        list.toUi(params.century)
+        useCases.getFilters(FilterType.CULTURE),
+    ) { classDb, centDb, cultDb ->
+        classDb.isNotEmpty() && centDb.isNotEmpty() && cultDb.isNotEmpty()
     }
 
-    private val _culturesFlow = combine(
+    private val _classificationsFlow = combineAndFilterFlow(
+        useCases.getFilters(FilterType.CLASSIFICATION),
+    ) { it.classification }
+
+    private val _centuriesFlow = combineAndFilterFlow(
+        useCases.getFilters(FilterType.CENTURY),
+    ) { it.century }
+
+    private val _culturesFlow = combineAndFilterFlow(
         useCases.getFilters(FilterType.CULTURE),
-        _draftFilterParams,
-    ) { list, params ->
-        list.toUi(params.culture)
-    }
+    ) { it.culture }
 
     val filtersUiState: StateFlow<FiltersUiState> = combine(
-        _classificationsFlow,
-        _centuriesFlow,
-        _culturesFlow,
-        _draftFilterParams,
-        _searchQuery,
-    ) { classList, centList, cultList, draftParams, query ->
+        combine(_classificationsFlow, _centuriesFlow, _culturesFlow) { c, cen, cul ->
+            Triple(c, cen, cul)
+        },
+        combine(_draftFilterParams, _searchQuery, isFiltersAvailableFlow) { params, query, available ->
+            Triple(params, query, available)
+        },
+    ) { (classList, centList, cultList), (draftParams, query, isAvailable) ->
         FiltersUiState(
             classifications = classList,
             centuries = centList,
             cultures = cultList,
             sort = draftParams.sort,
-            isAvailable = classList.isNotEmpty() && centList.isNotEmpty() && cultList.isNotEmpty(),
+            isAvailable = isAvailable,
             searchQuery = query,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), FiltersUiState())
@@ -110,6 +162,7 @@ class DiscoverViewModel @Inject constructor(
 
         viewModelScope.launch {
             useCases.getUserSettings().collectLatest { settings ->
+                _currentLanguage.value = settings.languageCode
                 useCases.preloadTranslationModel(settings.languageCode) // ML Kit Translation dictionary preloading
             }
         }

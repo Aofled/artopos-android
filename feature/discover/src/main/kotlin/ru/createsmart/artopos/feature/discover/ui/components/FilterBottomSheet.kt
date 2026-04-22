@@ -1,7 +1,6 @@
 package ru.createsmart.artopos.feature.discover.ui.components
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -62,7 +61,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
-import ru.createsmart.artopos.core.designsystem.util.FilterNameHelper
 import ru.createsmart.artopos.core.model.FilterSortOption
 import ru.createsmart.artopos.core.model.FilterType
 import ru.createsmart.artopos.feature.discover.R
@@ -141,30 +139,21 @@ private fun FilterSheetContent(
         FilterSheetHeader(onReset = onReset, sort = filtersState.sort, onToggleSort = onToggleSort)
         FilterSearchBar(query = filtersState.searchQuery, onQueryChanged = onSearchQueryChanged)
 
-        val context = LocalContext.current
-        val query = filtersState.searchQuery
-
         FilterSection(
-            context,
             stringResource(R.string.discover_filter_label_type),
             filtersState.classifications,
-            query,
             FilterType.CLASSIFICATION,
             onFilterSelected,
         )
         FilterSection(
-            context,
             stringResource(R.string.discover_filter_label_period),
             filtersState.centuries,
-            query,
             FilterType.CENTURY,
             onFilterSelected,
         )
         FilterSection(
-            context,
             stringResource(R.string.discover_filter_label_culture),
             filtersState.cultures,
-            query,
             FilterType.CULTURE,
             onFilterSelected,
         )
@@ -211,12 +200,16 @@ private fun SortToggleButton(
     val (containerColor, contentColor) = when (sort) {
         FilterSortOption.RANK ->
             MaterialTheme.colorScheme.surfaceVariant to MaterialTheme.colorScheme.onSurfaceVariant
+
         FilterSortOption.TOTAL_PAGE_VIEWS ->
             MaterialTheme.colorScheme.primaryContainer to MaterialTheme.colorScheme.onPrimaryContainer
+
         FilterSortOption.ACCESSION_YEAR ->
             MaterialTheme.colorScheme.secondary to MaterialTheme.colorScheme.onSecondary
+
         FilterSortOption.DATE_BEGIN ->
             MaterialTheme.colorScheme.tertiaryContainer to MaterialTheme.colorScheme.onTertiaryContainer
+
         FilterSortOption.RANDOM ->
             MaterialTheme.colorScheme.primary to MaterialTheme.colorScheme.onPrimary
     }
@@ -351,31 +344,13 @@ private fun SearchInputField(
 
 @Composable
 private fun FilterSection(
-    context: Context,
     title: String,
     items: List<FilterListItem>,
-    searchQuery: String,
     type: FilterType,
     onSelect: (FilterType, String?) -> Unit,
 ) {
-    if (items.isEmpty()) return
-
     val selectedItem = remember(items) { items.find { it.isSelected } }
-
-    val localizedHeaderName = remember(selectedItem) {
-        selectedItem?.name?.let { FilterNameHelper.getLocalizedName(context, it) }
-    }
-
-    val displayItems = remember(items, searchQuery) {
-        if (searchQuery.isBlank()) return@remember items
-
-        items.filter { item ->
-            val locName = FilterNameHelper.getLocalizedName(context, item.name)
-            item.isSelected ||
-                locName.contains(searchQuery, ignoreCase = true) ||
-                item.name.contains(searchQuery, ignoreCase = true)
-        }
-    }
+    val localizedHeaderName = selectedItem?.localizedName
 
     Column(modifier = Modifier.padding(bottom = 16.dp)) {
         SectionHeaderTitle(
@@ -399,18 +374,15 @@ private fun FilterSection(
                 )
             }
 
-            items(items = displayItems, key = { it.id }) { item ->
-                val itemNameLocalized = remember(item.name) {
-                    FilterNameHelper.getLocalizedName(context, item.name)
-                }
-
+            // Either only the selected element, or completely empty - then there will be only Any
+            items(items = items, key = { it.id }) { item ->
                 FilterChip(
                     selected = item.isSelected,
                     onClick = {
                         val newValue = if (item.isSelected) null else item.name
                         onSelect(type, newValue)
                     },
-                    label = { Text(text = itemNameLocalized) },
+                    label = { Text(text = item.localizedName) },
                 )
             }
         }
