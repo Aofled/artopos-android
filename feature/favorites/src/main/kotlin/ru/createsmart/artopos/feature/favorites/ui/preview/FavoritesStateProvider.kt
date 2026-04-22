@@ -48,7 +48,7 @@ class FavoritesStateProvider : PreviewParameterProvider<FavoritesUiState> {
                 ),
             ),
         ),
-
+        FavoritesUiState.Loading,
         FavoritesUiState.Empty,
     )
 }

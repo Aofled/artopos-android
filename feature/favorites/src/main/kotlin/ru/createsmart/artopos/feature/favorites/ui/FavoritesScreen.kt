@@ -22,6 +22,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,6 +35,7 @@ import kotlinx.coroutines.launch
 import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposDimens
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
+import ru.createsmart.artopos.core.uicomponents.components.CustomCircularProgressIndicator
 import ru.createsmart.artopos.core.uicomponents.notifiers.LocalBottomBarVisibility
 import ru.createsmart.artopos.feature.favorites.FavoritesUiState
 import ru.createsmart.artopos.feature.favorites.FavoritesViewModel
@@ -144,6 +146,15 @@ private fun FavoritesScreenContent(
             .padding(innerPadding),
     ) {
         when (state) {
+            is FavoritesUiState.Loading -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    CustomCircularProgressIndicator()
+                }
+            }
+
             is FavoritesUiState.Empty -> {
                 EmptyFavoritesView()
             }

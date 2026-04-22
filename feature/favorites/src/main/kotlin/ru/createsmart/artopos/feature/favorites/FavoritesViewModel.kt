@@ -51,7 +51,7 @@ class FavoritesViewModel @Inject constructor(
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = FavoritesUiState.Empty,
+            initialValue = FavoritesUiState.Loading,
         )
 
     fun onToggleFavorite(id: Int) {
