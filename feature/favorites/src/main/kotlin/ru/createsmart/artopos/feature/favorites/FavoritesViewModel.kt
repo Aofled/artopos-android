@@ -3,7 +3,6 @@ package ru.createsmart.artopos.feature.favorites
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -23,8 +22,6 @@ import javax.inject.Inject
  * but Coil hasn't finished downloading it yet, or the cache has been cleared.
  * The user opens Favorites without internet access and sees red placeholders. They pull the PullToRefresh button.
  */
-
-private const val REFRESH_DELAY_MS = 300L
 
 @HiltViewModel
 class FavoritesViewModel @Inject constructor(
@@ -72,12 +69,8 @@ class FavoritesViewModel @Inject constructor(
     private fun handleRefresh() {
         if (!messageManager.checkInternetAndNotify()) return
 
-        viewModelScope.launch {
-            _isRefreshing.value = true
-            _contentVersion.value++
-            delay(REFRESH_DELAY_MS)
-            _isRefreshing.value = false
-        }
+        _contentVersion.value++
+
         messageManager.resetLastEmittedMessage()
     }
 }

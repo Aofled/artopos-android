@@ -51,12 +51,10 @@ fun FavoritesRoute(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val contentVersion by viewModel.contentVersion.collectAsStateWithLifecycle()
-    val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
 
     FavoritesScreen(
         state = state,
         contentVersion = contentVersion,
-        isRefreshing = isRefreshing,
         effectFlow = viewModel.uiEffect,
         onIntent = { intent ->
             when (intent) {
@@ -71,7 +69,6 @@ fun FavoritesRoute(
 private fun FavoritesScreen(
     state: FavoritesUiState,
     contentVersion: Int,
-    isRefreshing: Boolean,
     effectFlow: Flow<UiText>?,
     onIntent: (FavoritesIntent) -> Unit,
 ) {
@@ -123,7 +120,6 @@ private fun FavoritesScreen(
         FavoritesScreenContent(
             state = state,
             contentVersion = contentVersion,
-            isRefreshing = isRefreshing,
             innerPadding = innerPadding,
             onIntent = onIntent,
             onShowMessage = { onShowSnackbar(it) },
@@ -136,7 +132,6 @@ private fun FavoritesScreen(
 private fun FavoritesScreenContent(
     state: FavoritesUiState,
     contentVersion: Int,
-    isRefreshing: Boolean,
     innerPadding: PaddingValues,
     onIntent: (FavoritesIntent) -> Unit,
     onShowMessage: (UiText) -> Unit,
@@ -164,7 +159,6 @@ private fun FavoritesScreenContent(
                 FavoritesView(
                     artworks = state.artworks,
                     contentVersion = contentVersion,
-                    isRefreshing = isRefreshing,
                     onIntent = onIntent,
                     onShowMessage = onShowMessage,
                 )
@@ -182,7 +176,6 @@ private fun FavoritesScreenPreview(
         FavoritesScreen(
             state = state,
             contentVersion = 1,
-            isRefreshing = false,
             effectFlow = null,
             onIntent = { intent -> println("Intent triggered: $intent") },
         )

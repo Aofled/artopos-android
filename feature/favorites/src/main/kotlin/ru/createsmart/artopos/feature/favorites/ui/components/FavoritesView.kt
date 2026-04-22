@@ -22,12 +22,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
@@ -38,21 +41,23 @@ import ru.createsmart.artopos.feature.artworkcard.ui.components.ArtworkCard
 import ru.createsmart.artopos.feature.favorites.model.FavoritesIntent
 import ru.createsmart.artopos.core.designsystem.R as DSR
 
+private const val REFRESH_DELAY_MS = 300L
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun FavoritesView(
     artworks: List<ArtworkListItem>,
     contentVersion: Int,
-    isRefreshing: Boolean,
     onIntent: (FavoritesIntent) -> Unit,
     onShowMessage: (UiText) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val pullState = rememberPullToRefreshState()
-
     val listState = rememberLazyStaggeredGridState()
     val bottomBarNotifier = LocalBottomBarStateNotifier.current
     val coroutineScope = rememberCoroutineScope()
+
+    var isRefreshing by remember { mutableStateOf(false) }
 
     val isAtBottom by remember(artworks.size) {
         derivedStateOf {
@@ -82,7 +87,14 @@ internal fun FavoritesView(
 
     PullToRefreshBox(
         isRefreshing = isRefreshing,
-        onRefresh = { onIntent(FavoritesIntent.Refresh) },
+        onRefresh = {
+            coroutineScope.launch {
+                isRefreshing = true
+                onIntent(FavoritesIntent.Refresh)
+                delay(REFRESH_DELAY_MS)
+                isRefreshing = false
+            }
+        },
         state = pullState,
         modifier = modifier,
     ) {
@@ -144,7 +156,6 @@ private fun FavoritesViewPreview() {
         FavoritesView(
             artworks = mockArtworks,
             contentVersion = 0,
-            isRefreshing = false,
             onShowMessage = { },
             onIntent = { },
         )
