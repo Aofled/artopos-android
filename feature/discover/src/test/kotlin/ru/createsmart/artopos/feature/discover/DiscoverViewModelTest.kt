@@ -36,7 +36,7 @@ class DiscoverViewModelTest {
 
     private val useCases: DiscoverInteractor = mockk()
     private val messageManager: UiMessageManager = mockk(relaxed = true)
-    private val mapper: ArtworkUiMapper = mockk()
+    private val mapper: ArtworkUiMapper = ArtworkUiMapper()
     private val context: Context = mockk(relaxed = true)
 
     private lateinit var viewModel: DiscoverViewModel
