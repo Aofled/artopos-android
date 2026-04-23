@@ -29,12 +29,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
 import ru.createsmart.artopos.core.uicomponents.components.ExpandableDetailsSection
 import ru.createsmart.artopos.feature.details.R
 import ru.createsmart.artopos.feature.details.model.ArtworkDetailUi
-import ru.createsmart.artopos.feature.details.model.DetailsActions
+import ru.createsmart.artopos.feature.details.model.DetailsIntent
 import ru.createsmart.artopos.feature.details.model.GalleryState
 import ru.createsmart.artopos.feature.details.ui.preview.artworkPreview
 
@@ -46,12 +45,8 @@ const val HEIGHT_ANIMATION_DELAY = 300
 fun DetailsContent(
     artwork: ArtworkDetailUi,
     contentVersion: Int,
-    onShowMessage: (UiText) -> Unit,
-    onRefresh: () -> Unit,
-    onToggleTranslation: () -> Unit,
-    onFavoriteClick: () -> Unit,
     isRefreshing: Boolean,
-    onDownloadClick: (url: String, title: String) -> Unit,
+    onIntent: (DetailsIntent) -> Unit,
 ) {
     val scrollState = rememberLazyListState()
     val pagerState = rememberPagerState(pageCount = { artwork.images.size })
@@ -68,7 +63,7 @@ fun DetailsContent(
 
     PullToRefreshBox(
         isRefreshing = isRefreshing,
-        onRefresh = onRefresh,
+        onRefresh = { onIntent(DetailsIntent.Refresh) },
         state = pullRefreshState,
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -76,7 +71,8 @@ fun DetailsContent(
             modifier = Modifier.fillMaxSize(),
             state = scrollState,
             contentPadding = PaddingValues(
-                bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + 24.dp,
+                bottom = WindowInsets.navigationBars.asPaddingValues()
+                    .calculateBottomPadding() + 24.dp,
             ),
         ) {
             detailsItems(
@@ -86,12 +82,7 @@ fun DetailsContent(
                     isScrolledDown = isScrolledDown,
                     contentVersion = contentVersion,
                 ),
-                actions = DetailsActions(
-                    onShowMessage = onShowMessage,
-                    onToggleTranslation = onToggleTranslation,
-                    onFavoriteClick = onFavoriteClick,
-                ),
-                onDownloadClick = onDownloadClick,
+                onIntent = onIntent,
             )
         }
     }
@@ -100,21 +91,18 @@ fun DetailsContent(
 private fun LazyListScope.detailsItems(
     artwork: ArtworkDetailUi,
     galleryState: GalleryState,
-    actions: DetailsActions,
-    onDownloadClick: (String, String) -> Unit,
+    onIntent: (DetailsIntent) -> Unit,
 ) {
     // 1. Gallery
     item {
         GalleryHeader(
-            artwork.images,
+            images = artwork.images,
             pagerState = galleryState.pagerState,
             isScrolledDown = galleryState.isScrolledDown,
             contentVersion = galleryState.contentVersion,
-            onShowMessage = actions.onShowMessage,
             isFavorite = artwork.isFavorite,
-            onFavoriteClick = actions.onFavoriteClick,
             artworkTitle = artwork.title,
-            onDownloadClick = onDownloadClick,
+            onIntent = onIntent,
         )
     }
 
@@ -151,7 +139,7 @@ private fun LazyListScope.detailsItems(
         item {
             TranslationBadge(
                 isTranslated = artwork.isTranslated,
-                onToggleClick = actions.onToggleTranslation,
+                onToggleClick = { onIntent(DetailsIntent.ToggleTranslation) },
                 isTranslationPending = artwork.isTranslationPending,
             )
         }
@@ -179,12 +167,8 @@ private fun ArtworksViewPreview() {
         DetailsContent(
             artwork = artworkPreview,
             contentVersion = 1,
-            onShowMessage = { },
-            onRefresh = { },
             isRefreshing = true,
-            onToggleTranslation = { },
-            onFavoriteClick = { },
-            onDownloadClick = { url: String, title: String -> },
+            onIntent = { },
         )
     }
 }

@@ -25,6 +25,7 @@ import ru.createsmart.artopos.core.domain.repository.ImageDownloader
 import ru.createsmart.artopos.core.navigation.DetailsRoute
 import ru.createsmart.artopos.core.uicomponents.manager.UiMessageManager
 import ru.createsmart.artopos.feature.details.mapper.toDetailUi
+import ru.createsmart.artopos.feature.details.model.DetailsIntent
 import ru.createsmart.artopos.feature.details.translation.ArtworkTranslationFacade
 import java.io.IOException
 import java.net.ConnectException
@@ -55,6 +56,16 @@ class DetailsViewModel @Inject constructor(
     val isRefreshing = _isRefreshing.asStateFlow()
 
     private val _showTranslation = MutableStateFlow(true)
+
+    internal fun onIntent(intent: DetailsIntent) {
+        when (intent) {
+            is DetailsIntent.Refresh -> refresh()
+            is DetailsIntent.ToggleFavorite -> toggleFavorite()
+            is DetailsIntent.ToggleTranslation -> toggleTranslation()
+            is DetailsIntent.DownloadImage -> downloadImage(intent.url, intent.title)
+            is DetailsIntent.ShowMessage -> messageManager.sendSideEffect(intent.message)
+        }
+    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val uiState: StateFlow<ArtworkDetailUiState> = combine(
@@ -145,7 +156,7 @@ class DetailsViewModel @Inject constructor(
         }
     }
 
-    fun onRefresh() {
+    private fun refresh() {
         if (!messageManager.checkInternetAndNotify()) return
         viewModelScope.launch {
             _isRefreshing.value = true
@@ -162,17 +173,17 @@ class DetailsViewModel @Inject constructor(
         messageManager.resetLastEmittedMessage() // Reset debounce history so new errors can be shown fresh
     }
 
-    fun toggleTranslation() {
+    private fun toggleTranslation() {
         _showTranslation.value = !_showTranslation.value
     }
 
-    fun toggleFavorite() {
+    private fun toggleFavorite() {
         viewModelScope.launch {
             useCases.toggleFavorite(artworkId)
         }
     }
 
-    fun downloadImage(url: String, title: String) {
+    private fun downloadImage(url: String, title: String) {
         viewModelScope.launch {
             val result = imageDownloader.downloadImage(url, title)
 

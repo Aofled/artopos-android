@@ -33,6 +33,7 @@ import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
 import ru.createsmart.artopos.core.uicomponents.components.BackButton
 import ru.createsmart.artopos.feature.details.ArtworkDetailUiState
 import ru.createsmart.artopos.feature.details.DetailsViewModel
+import ru.createsmart.artopos.feature.details.model.DetailsIntent
 import ru.createsmart.artopos.feature.details.ui.components.DetailsContent
 import ru.createsmart.artopos.feature.details.ui.preview.ArtworkDetailStateProvider
 import ru.createsmart.artopos.core.designsystem.R as DSR
@@ -50,12 +51,9 @@ fun DetailsScreenRoute(
         state = state,
         contentVersion = contentVersion,
         effectFlow = viewModel.uiEffect,
-        onRefresh = viewModel::onRefresh,
-        onBackClick = onBackClick,
-        onFavoriteClick = viewModel::toggleFavorite,
         isRefreshing = isRefreshing,
-        onToggleTranslation = viewModel::toggleTranslation,
-        onDownloadClick = viewModel::downloadImage,
+        onIntent = viewModel::onIntent,
+        onBackClick = onBackClick,
     )
 }
 
@@ -63,13 +61,10 @@ fun DetailsScreenRoute(
 fun DetailsScreen(
     state: ArtworkDetailUiState,
     contentVersion: Int,
-    effectFlow: Flow<UiText>? = null,
-    onRefresh: () -> Unit,
-    onBackClick: () -> Unit,
-    onFavoriteClick: () -> Unit,
+    effectFlow: Flow<UiText>?,
     isRefreshing: Boolean,
-    onToggleTranslation: () -> Unit,
-    onDownloadClick: (url: String, title: String) -> Unit,
+    onIntent: (DetailsIntent) -> Unit, // Заменили 5 лямбд на одну
+    onBackClick: () -> Unit,
 ) {
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
@@ -122,14 +117,10 @@ fun DetailsScreen(
 
                 is ArtworkDetailUiState.Success -> {
                     DetailsContent(
-                        state.artwork,
+                        artwork = state.artwork,
                         contentVersion = contentVersion,
-                        onShowMessage = { onShowSnackbar(it) },
-                        onRefresh = onRefresh,
                         isRefreshing = isRefreshing,
-                        onFavoriteClick = onFavoriteClick,
-                        onToggleTranslation = onToggleTranslation,
-                        onDownloadClick = onDownloadClick,
+                        onIntent = onIntent,
                     )
                 }
             }
@@ -159,12 +150,9 @@ fun DiscoverScreenPreview(
             state = state,
             contentVersion = 0,
             effectFlow = null,
-            onRefresh = { },
             onBackClick = { },
             isRefreshing = true,
-            onToggleTranslation = { },
-            onFavoriteClick = { },
-            onDownloadClick = { url: String, title: String -> },
+            onIntent = { },
         )
     }
 }

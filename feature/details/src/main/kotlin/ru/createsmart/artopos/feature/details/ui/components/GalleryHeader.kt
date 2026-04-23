@@ -31,9 +31,9 @@ import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.core.uicomponents.components.DownloadButton
 import ru.createsmart.artopos.core.uicomponents.components.FavoriteButton
+import ru.createsmart.artopos.feature.details.model.DetailsIntent
 import ru.createsmart.artopos.feature.details.model.GalleryImageUi
 
 private const val RATIO_THRESHOLD_PORTRAIT = 0.8f
@@ -58,10 +58,8 @@ fun GalleryHeader(
     isScrolledDown: Boolean,
     contentVersion: Int,
     isFavorite: Boolean,
-    onShowMessage: (UiText) -> Unit,
-    onFavoriteClick: () -> Unit,
     artworkTitle: String,
-    onDownloadClick: (String, String) -> Unit,
+    onIntent: (DetailsIntent) -> Unit,
 ) {
     if (images.isEmpty()) return
 
@@ -127,7 +125,7 @@ fun GalleryHeader(
             DetailsGalleryImage(
                 imageUrl = images[page].url,
                 globalVersion = contentVersion,
-                onShowMessage = onShowMessage,
+                onShowMessage = { onIntent(DetailsIntent.ShowMessage(it)) },
                 contentScale = ContentScale.Fit,
                 onImageLoaded = { loaded ->
                     loadedPages[page] = loaded
@@ -161,7 +159,7 @@ fun GalleryHeader(
         ) {
             FavoriteButton(
                 isFavorite = isFavorite,
-                onClick = onFavoriteClick,
+                onClick = { onIntent(DetailsIntent.ToggleFavorite) },
                 modifier = Modifier
                     .padding(0.dp),
                 isFullScreen = true,
@@ -177,7 +175,9 @@ fun GalleryHeader(
                 DownloadButton(
                     artworkTitle = artworkTitle,
                     currentUrl = images[pagerState.currentPage].url,
-                    onDownloadClick = onDownloadClick,
+                    onDownloadClick = { url, title ->
+                        onIntent(DetailsIntent.DownloadImage(url, title)) // ИНТЕНТ
+                    },
                 )
             }
         }
