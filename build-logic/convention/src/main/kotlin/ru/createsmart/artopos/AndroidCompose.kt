@@ -3,10 +3,13 @@ package ru.createsmart.artopos
 import com.android.build.api.dsl.CommonExtension
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
+import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
+import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 
 /**
  * Configures Jetpack Compose (Compiler, features, dependencies)
+ * Compose Compiler Metrics & Reports
  */
 internal fun Project.configureAndroidCompose(
     commonExtension: CommonExtension,
@@ -17,6 +20,17 @@ internal fun Project.configureAndroidCompose(
     commonExtension.apply {
         buildFeatures.apply {
             compose = true
+        }
+    }
+
+    // Metrics generation is enabled only when passing a flag, so as not to slow down the regular build.
+    // Usage in the terminal: ./gradlew assembleDebug -PenableComposeCompilerReports=true
+    val enableReports = providers.gradleProperty("enableComposeCompilerReports").orNull == "true"
+    if (enableReports) {
+        extensions.configure<ComposeCompilerGradlePluginExtension> {
+            val metricsDir = layout.buildDirectory.dir("compose_metrics")
+            metricsDestination.set(metricsDir)
+            reportsDestination.set(metricsDir)
         }
     }
 
