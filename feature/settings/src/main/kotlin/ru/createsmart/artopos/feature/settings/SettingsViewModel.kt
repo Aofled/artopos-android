@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.core.domain.interactor.SettingsInteractor
-import ru.createsmart.artopos.core.domain.repository.SettingsRepository
 import ru.createsmart.artopos.core.model.settings.ThemeConfig
 import ru.createsmart.artopos.core.uicomponents.manager.UiMessageManager
 import javax.inject.Inject
@@ -21,12 +20,11 @@ private const val BYTES_IN_MEGABYTE = 1024L * 1024L
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val settingsRepository: SettingsRepository,
     private val useCases: SettingsInteractor,
     private val uiMessageManager: UiMessageManager,
 ) : ViewModel() {
 
-    val uiState: StateFlow<SettingsUiState> = settingsRepository.userSettingsStream
+    val uiState: StateFlow<SettingsUiState> = useCases.getUserSettings()
         .map { settings ->
             SettingsUiState.Success(settings)
         }
@@ -43,13 +41,13 @@ class SettingsViewModel @Inject constructor(
 
     fun updateTheme(themeConfig: ThemeConfig) {
         viewModelScope.launch {
-            settingsRepository.setThemeConfig(themeConfig)
+            useCases.setThemeConfig(themeConfig)
         }
     }
 
     fun updateLanguage(languageCode: String) {
         viewModelScope.launch {
-            settingsRepository.setLanguage(languageCode)
+            useCases.setLanguage(languageCode)
         }
     }
 
