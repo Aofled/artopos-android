@@ -12,10 +12,10 @@ import org.junit.Rule
 import org.junit.Test
 import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.core.domain.interactor.SettingsInteractor
-import ru.createsmart.artopos.core.domain.repository.SettingsRepository
 import ru.createsmart.artopos.core.model.settings.ThemeConfig
 import ru.createsmart.artopos.core.model.settings.UserSettings
 import ru.createsmart.artopos.core.uicomponents.manager.UiMessageManager
+import ru.createsmart.artopos.feature.settings.model.SettingsIntent
 import ru.createsmart.artopos.feature.settings.util.MainDispatcherRule
 
 class SettingsViewModelTest {
@@ -23,26 +23,23 @@ class SettingsViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
-    private val settingsRepository: SettingsRepository = mockk(relaxed = true)
-    private val useCases: SettingsInteractor = mockk()
-
+    private val useCases: SettingsInteractor = mockk(relaxed = true)
     private val uiMessageManager: UiMessageManager = mockk(relaxed = true)
 
     private lateinit var viewModel: SettingsViewModel
 
     private fun setupViewModel() {
         viewModel = SettingsViewModel(
-            settingsRepository,
-            useCases,
-            uiMessageManager,
+            useCases = useCases,
+            uiMessageManager = uiMessageManager,
         )
     }
 
     @Test
-    fun `uiState emits Loading initially, then Success when repository emits data`() = runTest {
+    fun `uiState emits Loading initially, then Success when interactor emits data`() = runTest {
         // GIVEN
         val settingsFlow = MutableSharedFlow<UserSettings>()
-        every { settingsRepository.userSettingsStream } returns settingsFlow
+        every { useCases.getUserSettings() } returns settingsFlow
 
         setupViewModel()
 
@@ -62,22 +59,35 @@ class SettingsViewModelTest {
     }
 
     @Test
-    fun `updateTheme calls repository with correct theme`() = runTest {
+    fun `onIntent UpdateTheme calls interactor with correct theme`() = runTest {
         // GIVEN
-        every { settingsRepository.userSettingsStream } returns MutableSharedFlow()
+        every { useCases.getUserSettings() } returns MutableSharedFlow()
         setupViewModel()
 
         // WHEN
-        viewModel.updateTheme(ThemeConfig.LIGHT)
+        viewModel.onIntent(SettingsIntent.UpdateTheme(ThemeConfig.LIGHT))
 
         // THEN
-        coVerify(exactly = 1) { settingsRepository.setThemeConfig(ThemeConfig.LIGHT) }
+        coVerify(exactly = 1) { useCases.setThemeConfig(ThemeConfig.LIGHT) }
+    }
+
+    @Test
+    fun `onIntent UpdateLanguage calls interactor with correct language`() = runTest {
+        // GIVEN
+        every { useCases.getUserSettings() } returns MutableSharedFlow()
+        setupViewModel()
+
+        // WHEN
+        viewModel.onIntent(SettingsIntent.UpdateLanguage("fr"))
+
+        // THEN
+        coVerify(exactly = 1) { useCases.setLanguage("fr") }
     }
 
     @Test
     fun `calculateCacheSize updates cacheSizeMb state correctly`() = runTest {
         // GIVEN
-        every { settingsRepository.userSettingsStream } returns MutableSharedFlow()
+        every { useCases.getUserSettings() } returns MutableSharedFlow()
         coEvery { useCases.getImageCacheSizeUseCase() } returns (5L * 1024 * 1024) // 5 MB
 
         setupViewModel()
@@ -98,9 +108,9 @@ class SettingsViewModelTest {
     }
 
     @Test
-    fun `clearImageCache sends correct success messages and recalculates size`() = runTest {
+    fun `onIntent ClearCache sends correct success messages and recalculates size`() = runTest {
         // GIVEN
-        every { settingsRepository.userSettingsStream } returns MutableSharedFlow()
+        every { useCases.getUserSettings() } returns MutableSharedFlow()
 
         coEvery { useCases.clearAppCacheUseCase() } returns (10L * 1024 * 1024) // 10 MB
         coEvery { useCases.getImageCacheSizeUseCase() } returns 0L // 0 MB
@@ -108,7 +118,7 @@ class SettingsViewModelTest {
         setupViewModel()
 
         // WHEN
-        viewModel.clearAppCache()
+        viewModel.onIntent(SettingsIntent.ClearCache)
 
         // THEN
         // "Clearing..."
@@ -116,7 +126,6 @@ class SettingsViewModelTest {
         // Cleared 10 MB
         coVerify { uiMessageManager.sendSideEffect(UiText.StringResource(R.string.settings_msg_cache_cleared, 10L)) }
 
-        // THEN
         coVerify(exactly = 1) { useCases.getImageCacheSizeUseCase() }
     }
 }
