@@ -50,4 +50,5 @@ dependencies {
     implementation(libs.coil.base)
     implementation(libs.androidx.core.ktx)
     implementation(libs.material)
+    implementation(libs.androidx.core.splashscreen)
 }
