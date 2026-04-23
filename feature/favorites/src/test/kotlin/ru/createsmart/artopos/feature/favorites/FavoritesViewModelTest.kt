@@ -12,12 +12,12 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
+import ru.createsmart.artopos.core.artworkcard.mapper.ArtworkUiMapper
 import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.core.domain.interactor.FavoritesInteractor
 import ru.createsmart.artopos.core.model.Artwork
 import ru.createsmart.artopos.core.model.ImageDimensions
 import ru.createsmart.artopos.core.uicomponents.manager.UiMessageManager
-import ru.createsmart.artopos.feature.artworkcard.mapper.ArtworkUiMapper
 import ru.createsmart.artopos.feature.favorites.model.FavoritesIntent
 import ru.createsmart.artopos.feature.favorites.util.MainDispatcherRule
 
@@ -43,21 +43,22 @@ class FavoritesViewModelTest {
     }
 
     @Test
-    fun `uiState emits Loading initially and then Empty when use case returns empty list`() = runTest {
-        // GIVEN
-        setupViewModel()
+    fun `uiState emits Loading initially and then Empty when use case returns empty list`() =
+        runTest {
+            // GIVEN
+            setupViewModel()
 
-        viewModel.uiState.test {
-            assertEquals(FavoritesUiState.Loading, awaitItem())
+            viewModel.uiState.test {
+                assertEquals(FavoritesUiState.Loading, awaitItem())
 
-            // WHEN
-            favoritesFlow.emit(emptyList())
+                // WHEN
+                favoritesFlow.emit(emptyList())
 
-            // THEN
-            assertEquals(FavoritesUiState.Empty, awaitItem())
-            cancelAndIgnoreRemainingEvents()
+                // THEN
+                assertEquals(FavoritesUiState.Empty, awaitItem())
+                cancelAndIgnoreRemainingEvents()
+            }
         }
-    }
 
     @Test
     fun `uiState emits Success with mapped items when use case returns data`() = runTest {

@@ -1,4 +1,4 @@
-package ru.createsmart.artopos.feature.artworkcard.ui.components
+package ru.createsmart.artopos.core.artworkcard.ui.components
 
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable
@@ -14,10 +14,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ru.createsmart.artopos.core.artworkcard.model.ArtworkListItem
 import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
 import ru.createsmart.artopos.core.uicomponents.components.FavoriteButton
-import ru.createsmart.artopos.feature.artworkcard.model.ArtworkListItem
 
 @Composable
 fun ArtworkCard(

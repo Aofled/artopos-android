@@ -18,6 +18,7 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
+import ru.createsmart.artopos.core.artworkcard.mapper.ArtworkUiMapper
 import ru.createsmart.artopos.core.common.util.LocaleHelper
 import ru.createsmart.artopos.core.designsystem.util.FilterNameHelper
 import ru.createsmart.artopos.core.domain.interactor.DiscoverInteractor
@@ -26,7 +27,6 @@ import ru.createsmart.artopos.core.model.FilterType
 import ru.createsmart.artopos.core.model.settings.ThemeConfig
 import ru.createsmart.artopos.core.model.settings.UserSettings
 import ru.createsmart.artopos.core.uicomponents.manager.UiMessageManager
-import ru.createsmart.artopos.feature.artworkcard.mapper.ArtworkUiMapper
 import ru.createsmart.artopos.feature.discover.model.DiscoverIntent
 
 @OptIn(ExperimentalCoroutinesApi::class)

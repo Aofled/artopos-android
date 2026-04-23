@@ -10,9 +10,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import ru.createsmart.artopos.core.artworkcard.mapper.ArtworkUiMapper
 import ru.createsmart.artopos.core.domain.interactor.FavoritesInteractor
 import ru.createsmart.artopos.core.uicomponents.manager.UiMessageManager
-import ru.createsmart.artopos.feature.artworkcard.mapper.ArtworkUiMapper
 import ru.createsmart.artopos.feature.favorites.model.FavoritesIntent
 import javax.inject.Inject
 

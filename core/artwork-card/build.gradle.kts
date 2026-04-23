@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "ru.createsmart.artopos.feature.artworkcard"
+    namespace = "ru.createsmart.artopos.core.artworkcard"
 }
 
 dependencies {

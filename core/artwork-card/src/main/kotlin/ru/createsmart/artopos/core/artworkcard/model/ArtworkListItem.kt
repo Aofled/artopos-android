@@ -1,4 +1,4 @@
-package ru.createsmart.artopos.feature.artworkcard.model
+package ru.createsmart.artopos.core.artworkcard.model
 
 import androidx.compose.runtime.Immutable
 import ru.createsmart.artopos.core.designsystem.components.UiText

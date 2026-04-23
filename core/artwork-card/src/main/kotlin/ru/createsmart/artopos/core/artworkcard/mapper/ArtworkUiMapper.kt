@@ -1,8 +1,8 @@
-package ru.createsmart.artopos.feature.artworkcard.mapper
+package ru.createsmart.artopos.core.artworkcard.mapper
 
+import ru.createsmart.artopos.core.artworkcard.model.ArtworkListItem
 import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.core.model.Artwork
-import ru.createsmart.artopos.feature.artworkcard.model.ArtworkListItem
 import javax.inject.Inject
 import ru.createsmart.artopos.core.designsystem.R as DSR
 

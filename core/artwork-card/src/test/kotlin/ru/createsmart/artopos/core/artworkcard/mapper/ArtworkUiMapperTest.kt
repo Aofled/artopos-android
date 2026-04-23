@@ -1,4 +1,4 @@
-package ru.createsmart.artopos.feature.artworkcard.mapper
+package ru.createsmart.artopos.core.artworkcard.mapper
 
 import org.junit.Assert.assertEquals
 import org.junit.Test

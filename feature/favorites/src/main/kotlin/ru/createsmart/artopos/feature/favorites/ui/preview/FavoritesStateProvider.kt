@@ -1,8 +1,8 @@
 package ru.createsmart.artopos.feature.favorites.ui.preview
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import ru.createsmart.artopos.core.artworkcard.model.ArtworkListItem
 import ru.createsmart.artopos.core.designsystem.components.UiText
-import ru.createsmart.artopos.feature.artworkcard.model.ArtworkListItem
 import ru.createsmart.artopos.feature.favorites.FavoritesUiState
 
 class FavoritesStateProvider : PreviewParameterProvider<FavoritesUiState> {

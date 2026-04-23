@@ -47,6 +47,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import ru.createsmart.artopos.core.artworkcard.model.ArtworkListItem
+import ru.createsmart.artopos.core.artworkcard.ui.components.ArtworkCard
 import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposDimens
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
@@ -57,8 +59,6 @@ import ru.createsmart.artopos.core.uicomponents.components.CustomCircularProgres
 import ru.createsmart.artopos.core.uicomponents.components.CustomInputChip
 import ru.createsmart.artopos.core.uicomponents.notifiers.BottomBarCommand
 import ru.createsmart.artopos.core.uicomponents.notifiers.LocalBottomBarStateNotifier
-import ru.createsmart.artopos.feature.artworkcard.model.ArtworkListItem
-import ru.createsmart.artopos.feature.artworkcard.ui.components.ArtworkCard
 import ru.createsmart.artopos.feature.discover.model.DiscoverEvent
 import ru.createsmart.artopos.feature.discover.model.DiscoverIntent
 import ru.createsmart.artopos.core.designsystem.R as DSR

@@ -1,6 +1,6 @@
 package ru.createsmart.artopos.feature.favorites
 
-import ru.createsmart.artopos.feature.artworkcard.model.ArtworkListItem
+import ru.createsmart.artopos.core.artworkcard.model.ArtworkListItem
 
 sealed interface FavoritesUiState {
     data object Loading : FavoritesUiState

@@ -44,6 +44,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
+import ru.createsmart.artopos.core.artworkcard.model.ArtworkListItem
 import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.core.designsystem.components.toUiText
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposDimens
@@ -51,7 +52,6 @@ import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
 import ru.createsmart.artopos.core.model.FilterParams
 import ru.createsmart.artopos.core.uicomponents.components.FilterFloatingActionButton
 import ru.createsmart.artopos.core.uicomponents.notifiers.LocalBottomBarVisibility
-import ru.createsmart.artopos.feature.artworkcard.model.ArtworkListItem
 import ru.createsmart.artopos.feature.discover.DiscoverViewModel
 import ru.createsmart.artopos.feature.discover.model.DiscoverEvent
 import ru.createsmart.artopos.feature.discover.model.DiscoverIntent
