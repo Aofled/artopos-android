@@ -52,12 +52,11 @@ import kotlinx.coroutines.flow.Flow
 import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposDimens
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
-import ru.createsmart.artopos.core.model.settings.ThemeConfig
 import ru.createsmart.artopos.core.model.settings.UserSettings
 import ru.createsmart.artopos.feature.settings.R
 import ru.createsmart.artopos.feature.settings.SettingsUiState
 import ru.createsmart.artopos.feature.settings.SettingsViewModel
-import ru.createsmart.artopos.feature.settings.model.SettingsDialogActions
+import ru.createsmart.artopos.feature.settings.model.SettingsIntent
 import ru.createsmart.artopos.feature.settings.ui.components.ClearCacheConfirmationDialog
 import ru.createsmart.artopos.feature.settings.ui.components.LanguageSelectionDialog
 import ru.createsmart.artopos.feature.settings.ui.components.ThemeSelectionDialog
@@ -72,11 +71,7 @@ fun SettingsRoute(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val cacheSizeMb by viewModel.cacheSizeMb.collectAsStateWithLifecycle()
-    val currentLanguageTag = if (uiState is SettingsUiState.Success) {
-        (uiState as SettingsUiState.Success).settings.languageCode
-    } else {
-        ""
-    }
+    val currentLanguageTag = (uiState as? SettingsUiState.Success)?.settings?.languageCode.orEmpty()
 
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) { // Recalculate the occupied cache
@@ -95,22 +90,18 @@ fun SettingsRoute(
         uiState = uiState,
         cacheSizeMb = cacheSizeMb,
         effectFlow = viewModel.uiEffect,
-        onThemeChange = viewModel::updateTheme,
-        onClearCache = viewModel::clearAppCache,
-        onLanguageChange = viewModel::updateLanguage,
         currentLanguageTag = currentLanguageTag,
+        onIntent = viewModel::onIntent,
     )
 }
 
 @Composable
-fun SettingsScreen(
+private fun SettingsScreen(
     uiState: SettingsUiState,
     cacheSizeMb: Long?,
     effectFlow: Flow<UiText>?,
-    onThemeChange: (ThemeConfig) -> Unit,
-    onClearCache: () -> Unit,
-    onLanguageChange: (String) -> Unit,
     currentLanguageTag: String,
+    onIntent: (SettingsIntent) -> Unit,
 ) {
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
@@ -140,9 +131,7 @@ fun SettingsScreen(
             uiState = uiState,
             cacheSizeMb = cacheSizeMb,
             currentLanguageTag = currentLanguageTag,
-            onThemeChange = onThemeChange,
-            onClearCache = onClearCache,
-            onLanguageChange = onLanguageChange,
+            onIntent = onIntent,
         )
     }
 }
@@ -153,9 +142,7 @@ private fun SettingsScreenContent(
     uiState: SettingsUiState,
     cacheSizeMb: Long?,
     currentLanguageTag: String,
-    onThemeChange: (ThemeConfig) -> Unit,
-    onClearCache: () -> Unit,
-    onLanguageChange: (String) -> Unit,
+    onIntent: (SettingsIntent) -> Unit,
 ) {
     var showThemeDialog by remember { mutableStateOf(false) }
     var showClearCacheDialog by remember { mutableStateOf(false) }
@@ -168,28 +155,10 @@ private fun SettingsScreenContent(
                 modifier = modifier,
                 settings = uiState.settings,
                 cacheSizeMb = cacheSizeMb,
+                currentLanguageTag = currentLanguageTag,
                 onThemeClick = { showThemeDialog = true },
                 onClearCacheClick = { showClearCacheDialog = true },
                 onLanguageClick = { showLanguageDialog = true },
-                currentLanguageTag = currentLanguageTag,
-            )
-
-            val dialogActions = SettingsDialogActions(
-                onThemeChange = {
-                    onThemeChange(it)
-                    showThemeDialog = false
-                },
-                onClearCache = {
-                    onClearCache()
-                    showClearCacheDialog = false
-                },
-                onLanguageChange = { tag ->
-                    onLanguageChange(tag)
-                    showLanguageDialog = false
-                },
-                onDismissTheme = { showThemeDialog = false },
-                onDismissClearCache = { showClearCacheDialog = false },
-                onDismissLanguage = { showLanguageDialog = false },
             )
 
             SettingsDialogs(
@@ -198,7 +167,10 @@ private fun SettingsScreenContent(
                 showClearCache = showClearCacheDialog,
                 showLanguage = showLanguageDialog,
                 currentLanguageTag = currentLanguageTag,
-                actions = dialogActions,
+                onIntent = onIntent,
+                onDismissTheme = { showThemeDialog = false },
+                onDismissClearCache = { showClearCacheDialog = false },
+                onDismissLanguage = { showLanguageDialog = false },
             )
         }
     }
@@ -211,28 +183,40 @@ private fun SettingsDialogs(
     showClearCache: Boolean,
     showLanguage: Boolean,
     currentLanguageTag: String,
-    actions: SettingsDialogActions,
+    onIntent: (SettingsIntent) -> Unit,
+    onDismissTheme: () -> Unit,
+    onDismissClearCache: () -> Unit,
+    onDismissLanguage: () -> Unit,
 ) {
     if (showTheme) {
         ThemeSelectionDialog(
             currentTheme = uiState.settings.themeConfig,
-            onThemeSelected = actions.onThemeChange,
-            onDismiss = actions.onDismissTheme,
+            onThemeSelected = {
+                onIntent(SettingsIntent.UpdateTheme(it))
+                onDismissTheme()
+            },
+            onDismiss = onDismissTheme,
         )
     }
 
     if (showClearCache) {
         ClearCacheConfirmationDialog(
-            onConfirm = actions.onClearCache,
-            onDismiss = actions.onDismissClearCache,
+            onConfirm = {
+                onIntent(SettingsIntent.ClearCache)
+                onDismissClearCache()
+            },
+            onDismiss = onDismissClearCache,
         )
     }
 
     if (showLanguage) {
         LanguageSelectionDialog(
             currentLanguageTag = currentLanguageTag,
-            onLanguageSelected = actions.onLanguageChange,
-            onDismiss = actions.onDismissLanguage,
+            onLanguageSelected = {
+                onIntent(SettingsIntent.UpdateLanguage(it))
+                onDismissLanguage()
+            },
+            onDismiss = onDismissLanguage,
         )
     }
 }
@@ -308,7 +292,7 @@ private fun SettingsContent(
 }
 
 @Composable
-fun SettingsSectionTitle(title: String, modifier: Modifier = Modifier) {
+private fun SettingsSectionTitle(title: String, modifier: Modifier = Modifier) {
     Text(
         text = title.uppercase(),
         style = MaterialTheme.typography.labelMedium,
@@ -320,7 +304,7 @@ fun SettingsSectionTitle(title: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun SettingsItem(
+private fun SettingsItem(
     painter: Painter,
     title: String,
     subtitle: String?,
@@ -363,7 +347,7 @@ fun SettingsItem(
 
 @Preview(showBackground = true, name = "Settings States", uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
-fun SettingsScreenPreview(
+private fun SettingsScreenPreview(
     @PreviewParameter(ArtworkSettingsStateProvider::class) state: SettingsUiState,
 ) {
     ArtoposTheme {
@@ -371,10 +355,8 @@ fun SettingsScreenPreview(
             uiState = state,
             cacheSizeMb = 142L,
             effectFlow = null,
-            onThemeChange = { },
-            onLanguageChange = { },
-            onClearCache = { },
             currentLanguageTag = "en",
+            onIntent = { },
         )
     }
 }

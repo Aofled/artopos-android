@@ -45,7 +45,7 @@ import ru.createsmart.artopos.core.designsystem.R as DSR
  */
 
 @Composable
-fun ClearCacheConfirmationDialog(
+internal fun ClearCacheConfirmationDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -73,7 +73,7 @@ fun ClearCacheConfirmationDialog(
 }
 
 @Composable
-fun ThemeSelectionDialog(
+internal fun ThemeSelectionDialog(
     currentTheme: ThemeConfig,
     onThemeSelected: (ThemeConfig) -> Unit,
     onDismiss: () -> Unit,
@@ -139,7 +139,7 @@ private fun ThemeOptionRow(
 }
 
 @Composable
-fun getThemeDisplayName(themeConfig: ThemeConfig): String {
+internal fun getThemeDisplayName(themeConfig: ThemeConfig): String {
     return when (themeConfig) {
         ThemeConfig.FOLLOW_SYSTEM -> stringResource(R.string.settings_theme_option_system)
         ThemeConfig.LIGHT -> stringResource(R.string.settings_theme_option_light)
@@ -148,7 +148,7 @@ fun getThemeDisplayName(themeConfig: ThemeConfig): String {
 }
 
 @Composable
-fun LanguageSelectionDialog(
+internal fun LanguageSelectionDialog(
     currentLanguageTag: String,
     onLanguageSelected: (String) -> Unit,
     onDismiss: () -> Unit,
@@ -214,7 +214,7 @@ private fun LanguageOptionRow(
 }
 
 @Composable
-fun getLanguageDisplayName(languageTag: String): String {
+internal fun getLanguageDisplayName(languageTag: String): String {
     val language = LanguageConfig.supportedLanguages.find { it.tag == languageTag }
     return when {
         language?.nativeName != null -> language.nativeName

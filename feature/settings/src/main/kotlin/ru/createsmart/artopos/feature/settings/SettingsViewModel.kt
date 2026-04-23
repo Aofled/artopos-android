@@ -14,6 +14,7 @@ import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.core.domain.interactor.SettingsInteractor
 import ru.createsmart.artopos.core.model.settings.ThemeConfig
 import ru.createsmart.artopos.core.uicomponents.manager.UiMessageManager
+import ru.createsmart.artopos.feature.settings.model.SettingsIntent
 import javax.inject.Inject
 
 private const val BYTES_IN_MEGABYTE = 1024L * 1024L
@@ -39,19 +40,27 @@ class SettingsViewModel @Inject constructor(
     private val _cacheSizeMb = MutableStateFlow<Long?>(null)
     val cacheSizeMb = _cacheSizeMb.asStateFlow()
 
-    fun updateTheme(themeConfig: ThemeConfig) {
+    internal fun onIntent(intent: SettingsIntent) {
+        when (intent) {
+            is SettingsIntent.UpdateTheme -> updateTheme(intent.themeConfig)
+            is SettingsIntent.UpdateLanguage -> updateLanguage(intent.languageCode)
+            is SettingsIntent.ClearCache -> clearAppCache()
+        }
+    }
+
+    private fun updateTheme(themeConfig: ThemeConfig) {
         viewModelScope.launch {
             useCases.setThemeConfig(themeConfig)
         }
     }
 
-    fun updateLanguage(languageCode: String) {
+    private fun updateLanguage(languageCode: String) {
         viewModelScope.launch {
             useCases.setLanguage(languageCode)
         }
     }
 
-    fun calculateCacheSize() {
+    internal fun calculateCacheSize() {
         viewModelScope.launch {
             val bytes = useCases.getImageCacheSizeUseCase()
             val megabytes = bytes / (BYTES_IN_MEGABYTE)
@@ -59,7 +68,7 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun clearAppCache() {
+    private fun clearAppCache() {
         viewModelScope.launch {
             uiMessageManager.sendSideEffect(
                 UiText.StringResource(R.string.settings_msg_cache_clearing),
