@@ -30,12 +30,14 @@ fun FullscreenShimmerBox(modifier: Modifier = Modifier) {
             Color.White.copy(alpha = SHIMMER_LIGHT_HIGHLIGHT_ALPHA).compositeOver(baseColor)
         }
 
-        listOf(
-            edgeColor,
-            highlightColor,
-            highlightColor,
-            highlightColor,
-            edgeColor,
+        ShimmerColors(
+            listOf(
+                edgeColor,
+                highlightColor,
+                highlightColor,
+                highlightColor,
+                edgeColor,
+            ),
         )
     }
 

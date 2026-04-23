@@ -3,9 +3,11 @@ package ru.createsmart.artopos.core.designsystem.components
 import android.content.Context
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.res.stringResource
 import java.util.Arrays
 
+@Immutable
 @Suppress("SpreadOperator")
 sealed class UiText {
     data class DynamicString(val value: String) : UiText()

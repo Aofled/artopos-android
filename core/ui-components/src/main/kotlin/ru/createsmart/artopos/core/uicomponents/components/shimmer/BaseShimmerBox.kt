@@ -8,6 +8,7 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
@@ -16,7 +17,7 @@ import androidx.compose.ui.graphics.Color
 
 @Composable
 internal fun BaseShimmerBox(
-    shimmerColors: List<Color>,
+    shimmerColors: ShimmerColors,
     modifier: Modifier = Modifier,
     waveSizeMultiplier: Float = 1.0f,
     durationMillis: Int = 1500,
@@ -57,7 +58,7 @@ internal fun BaseShimmerBox(
                 )
 
                 val brush = Brush.linearGradient(
-                    colors = shimmerColors,
+                    colors = shimmerColors.colors,
                     start = startOffset,
                     end = endOffset,
                 )
@@ -66,3 +67,7 @@ internal fun BaseShimmerBox(
             },
     )
 }
+
+@Immutable
+@JvmInline
+internal value class ShimmerColors(val colors: List<Color>)

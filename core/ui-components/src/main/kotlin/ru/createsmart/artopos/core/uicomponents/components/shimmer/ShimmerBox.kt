@@ -26,10 +26,12 @@ fun ShimmerBox(modifier: Modifier = Modifier) {
         } else {
             SHIMMER_LIGHT_EDGE_ALPHA to SHIMMER_LIGHT_HIGHLIGHT_ALPHA
         }
-        listOf(
-            baseColor.copy(alpha = edgeAlpha),
-            baseColor.copy(alpha = highlightAlpha),
-            baseColor.copy(alpha = edgeAlpha),
+        ShimmerColors(
+            listOf(
+                baseColor.copy(alpha = edgeAlpha),
+                baseColor.copy(alpha = highlightAlpha),
+                baseColor.copy(alpha = edgeAlpha),
+            ),
         )
     }
 
