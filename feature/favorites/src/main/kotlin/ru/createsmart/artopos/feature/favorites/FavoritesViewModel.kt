@@ -3,6 +3,7 @@ package ru.createsmart.artopos.feature.favorites
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -51,7 +52,7 @@ class FavoritesViewModel @Inject constructor(
             if (list.isEmpty()) {
                 FavoritesUiState.Empty
             } else {
-                FavoritesUiState.Success(list.map { mapper.mapToUi(it) })
+                FavoritesUiState.Success(list.map { mapper.mapToUi(it) }.toImmutableList())
             }
         }
         .stateIn(
