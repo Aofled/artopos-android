@@ -23,6 +23,7 @@ import ru.createsmart.artopos.core.domain.usecase.GetUserSettingsUseCase
 import ru.createsmart.artopos.core.domain.usecase.SyncArtworkDetailsUseCase
 import ru.createsmart.artopos.core.domain.usecase.ToggleFavoriteUseCase
 import ru.createsmart.artopos.core.model.Artwork
+import ru.createsmart.artopos.core.model.ArtworkDetails
 import ru.createsmart.artopos.core.model.settings.ThemeConfig
 import ru.createsmart.artopos.core.model.settings.UserSettings
 import ru.createsmart.artopos.core.uicomponents.manager.UiMessageManager
@@ -55,7 +56,7 @@ class DetailsViewModelTest {
 
     private lateinit var viewModel: DetailsViewModel
 
-    private val mockArtwork = createEmptyArtwork().copy(id = 1, description = "English Description")
+    private val mockArtwork = createEmptyArtwork().copy(description = "English Description")
     private val mockFastArtwork = mockArtwork.copy()
     private val mockDeepArtwork = mockArtwork.copy(description = "Русское Описание")
     private val mockSettings = UserSettings(ThemeConfig.FOLLOW_SYSTEM, "ru")
@@ -140,14 +141,23 @@ class DetailsViewModelTest {
         }
     }
 
-    private fun createEmptyArtwork(): Artwork {
-        return Artwork(
-            id = 1, title = "Title", artist = "Artist", imageUrl = "url", imageDimensions = null,
-            date = null, yearInt = null, technique = null,
-            description = null, url = null, provenance = null, creditLine = null,
-            classification = null, culture = null, images = emptyList(),
+    private fun createEmptyArtwork(): ArtworkDetails {
+        val base = Artwork(
+            id = 1,
+            title = "Title",
+            artist = "Artist",
+            imageUrl = "url",
+            imageDimensions = null,
+            date = null,
+            yearInt = null,
+            isFavorite = false,
+        )
+        return ArtworkDetails(
+            baseArtwork = base,
+            technique = null, description = null, url = null, provenance = null,
+            creditLine = null, classification = null, culture = null, images = emptyList(),
             medium = null, period = null, style = null, dimensions = null,
-            copyright = null, galleryLocation = null, isFavorite = false,
+            copyright = null, galleryLocation = null, century = null,
         )
     }
 }

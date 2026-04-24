@@ -16,6 +16,7 @@ import ru.createsmart.artopos.core.common.util.LocaleHelper
 import ru.createsmart.artopos.core.designsystem.util.FilterNameHelper
 import ru.createsmart.artopos.core.domain.translation.TextTranslator
 import ru.createsmart.artopos.core.model.Artwork
+import ru.createsmart.artopos.core.model.ArtworkDetails
 
 class ArtworkTranslationFacadeTest {
 
@@ -104,14 +105,23 @@ class ArtworkTranslationFacadeTest {
         coVerify(exactly = 1) { translator.translate("Unknown Medium", "ru") }
     }
 
-    private fun createEmptyArtwork(): Artwork {
-        return Artwork(
-            id = 1, title = "", artist = "", imageUrl = "", imageDimensions = null,
-            date = null, yearInt = null, technique = null,
-            description = null, url = null, provenance = null, creditLine = null,
-            classification = null, culture = null, images = emptyList(),
+    private fun createEmptyArtwork(): ArtworkDetails {
+        val base = Artwork(
+            id = 1,
+            title = "",
+            artist = "",
+            imageUrl = "",
+            imageDimensions = null,
+            date = null,
+            yearInt = null,
+            isFavorite = false,
+        )
+        return ArtworkDetails(
+            baseArtwork = base,
+            technique = null, description = null, url = null, provenance = null,
+            creditLine = null, classification = null, culture = null, images = emptyList(),
             medium = null, period = null, style = null, dimensions = null,
-            copyright = null, galleryLocation = null,
+            copyright = null, galleryLocation = null, century = null,
         )
     }
 }

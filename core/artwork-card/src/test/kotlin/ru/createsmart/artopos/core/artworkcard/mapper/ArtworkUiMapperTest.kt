@@ -26,9 +26,6 @@ class ArtworkUiMapperTest {
             imageDimensions = imageDimensions,
             date = "late 18th-early 19th century",
             yearInt = null,
-            technique = null,
-            description = null,
-            url = "https://www.harvardartmuseums.org/collections/object/340543",
         )
 
         val listItem = mapper.mapToUi(artwork)
@@ -51,9 +48,6 @@ class ArtworkUiMapperTest {
             imageDimensions = null,
             date = null,
             yearInt = null,
-            technique = null,
-            description = null,
-            url = null,
         )
 
         val listItem = mapper.mapToUi(artwork)
@@ -72,9 +66,6 @@ class ArtworkUiMapperTest {
             imageDimensions = ImageDimensions(100, 0),
             date = "2024",
             yearInt = null,
-            technique = null,
-            description = null,
-            url = null,
         )
 
         val listItem = mapper.mapToUi(artwork)
@@ -92,9 +83,6 @@ class ArtworkUiMapperTest {
             imageDimensions = null,
             date = null,
             yearInt = null,
-            technique = null,
-            description = null,
-            url = null,
         )
 
         val listItem = mapper.mapToUi(artwork)
@@ -114,9 +102,6 @@ class ArtworkUiMapperTest {
             imageDimensions = null,
             date = null,
             yearInt = null,
-            technique = null,
-            description = null,
-            url = null,
         )
 
         val listItem = mapper.mapToUi(artwork)
@@ -135,9 +120,6 @@ class ArtworkUiMapperTest {
             imageDimensions = ImageDimensions(100, 0),
             date = "2024",
             yearInt = null,
-            technique = null,
-            description = null,
-            url = null,
         )
 
         val listItem = mapper.mapToUi(artwork)

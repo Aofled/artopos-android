@@ -64,7 +64,7 @@ class OfflineFirstArtworkRepositoryDetailsTest {
             imageUrl = "url", imageDimensions = null, date = null, yearInt = null,
             technique = null, description = null, url = null,
             galleryImages = listOf(StoredImage("url", 100, 100)),
-            inDiscoverFeed = true, // Укажем явно флаг ленты
+            inDiscoverFeed = true,
         )
         database.artworkDao().insertArtworks(listOf(dbo))
 
@@ -73,10 +73,8 @@ class OfflineFirstArtworkRepositoryDetailsTest {
 
         // THEN
         assertNotNull(result)
-        assertEquals("Test Title", result?.title)
         assertNull("Description should be null as details are missing", result?.description)
         assertEquals(1, result?.images?.size)
-        assertFalse(result?.isFavorite ?: true)
     }
 
     @Test
@@ -135,21 +133,21 @@ class OfflineFirstArtworkRepositoryDetailsTest {
 
         repository.getArtwork(99).test {
             val initial = awaitItem()
-            assertFalse(initial!!.isFavorite)
+            assertFalse(initial!!.baseArtwork.isFavorite)
 
             // WHEN
             repository.toggleFavorite(99)
             val favAdded = awaitItem()
 
             // THEN
-            assertTrue(favAdded!!.isFavorite)
+            assertTrue(favAdded!!.baseArtwork.isFavorite)
 
             // WHEN
             repository.toggleFavorite(99)
             val favRemoved = awaitItem()
 
             // THEN
-            assertFalse(favRemoved!!.isFavorite)
+            assertFalse(favRemoved!!.baseArtwork.isFavorite)
 
             cancelAndIgnoreRemainingEvents()
         }

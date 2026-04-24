@@ -8,7 +8,6 @@ import ru.createsmart.artopos.core.database.model.ArtworkDBO
 import ru.createsmart.artopos.core.database.model.ArtworkDetailsDBO
 import ru.createsmart.artopos.core.database.model.ArtworkDetailsWithFavoriteFlagDBO
 import ru.createsmart.artopos.core.database.model.ArtworkWithDetailsDBO
-import ru.createsmart.artopos.core.database.model.ArtworkWithFavoriteFlagDBO
 import ru.createsmart.artopos.core.model.ImageDimensions
 import ru.createsmart.artopos.core.network.model.ArtworkDTO
 import ru.createsmart.artopos.core.network.model.ImageDTO
@@ -100,7 +99,7 @@ class ArtworkMappersTest {
     }
 
     @Test
-    fun `map ArtworkDBO to Artwork correctly`() {
+    fun `map ArtworkDBO to ArtworkDetails correctly`() {
         // GIVEN
         val imageDimensions = ImageDimensions(
             width = 2550,
@@ -142,32 +141,32 @@ class ArtworkMappersTest {
             galleryImages = galleryImages,
         )
 
-        val wrapper = ArtworkWithFavoriteFlagDBO(artwork = dbo, isFavorite = true) // Оборачиваем!
+        val wrapper = ArtworkDetailsWithFavoriteFlagDBO(ArtworkWithDetailsDBO(dbo, null), true)
 
         // WHEN
-        val domain = mapper.mapToDomain(wrapper)
+        val domain = mapper.mapDetailsToDomain(wrapper)
 
         // THEN
-        assertEquals(357596, domain.id)
-        assertEquals("Blossoming Plum with Moon and Snow (right scroll)", domain.title)
-        assertEquals("Owari", domain.artist)
-        assertEquals("https://nrs.harvard.edu/urn-3:HUAM:765750", domain.imageUrl)
+        assertEquals(357596, domain.baseArtwork.id)
+        assertEquals("Blossoming Plum with Moon and Snow (right scroll)", domain.baseArtwork.title)
+        assertEquals("Owari", domain.baseArtwork.artist)
+        assertEquals("https://nrs.harvard.edu/urn-3:HUAM:765750", domain.baseArtwork.imageUrl)
         assertEquals(
             ImageDimensions(
                 width = 2550,
                 height = 1301,
             ),
-            domain.imageDimensions,
+            domain.baseArtwork.imageDimensions,
         )
-        assertEquals("late 18th-early 19th century", domain.date)
-        assertEquals(null, domain.yearInt)
+        assertEquals("late 18th-early 19th century", domain.baseArtwork.date)
+        assertEquals(null, domain.baseArtwork.yearInt)
         assertEquals(null, domain.technique)
         assertEquals("Pair of scrolls depicting blossoming plum trees.", domain.description)
         assertEquals("https://www.harvardartmuseums.org/collections/object/357596", domain.url)
         assertEquals(3, domain.images.size)
         assertEquals("https://nrs.harvard.edu/urn-3:HUAM:765757", domain.images[0].url)
         assertEquals(1165, domain.images[0].width)
-        assertEquals(true, domain.isFavorite)
+        assertEquals(true, domain.baseArtwork.isFavorite)
     }
 
     @Test
@@ -195,10 +194,10 @@ class ArtworkMappersTest {
         val domain = mapper.mapDetailsToDomain(wrapper)
 
         // THEN
-        assertEquals("Mona Lisa", domain.title)
+        assertEquals("Mona Lisa", domain.baseArtwork.title)
         assertEquals("Louvre", domain.provenance)
         assertEquals("Room 711", domain.galleryLocation)
-        assertEquals(true, domain.isFavorite)
+        assertEquals(true, domain.baseArtwork.isFavorite)
     }
 
     @Test

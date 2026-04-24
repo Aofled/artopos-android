@@ -65,12 +65,14 @@ class FavoritesViewModelTest {
         // GIVEN
         setupViewModel()
         val fakeArtwork = Artwork(
-            id = 1, title = "Mona Lisa", artist = "Da Vinci", imageUrl = "url",
-            imageDimensions = ImageDimensions(100, 100), isFavorite = true,
-            date = null, yearInt = null, technique = null, description = null,
-            url = null, provenance = null, creditLine = null, classification = null,
-            culture = null, medium = null, period = null, style = null,
-            dimensions = null, copyright = null, galleryLocation = null, images = emptyList(),
+            id = 1,
+            title = "Mona Lisa",
+            artist = "Da Vinci",
+            imageUrl = "url",
+            imageDimensions = ImageDimensions(100, 100),
+            isFavorite = true,
+            date = null,
+            yearInt = null,
         )
 
         viewModel.uiState.test {

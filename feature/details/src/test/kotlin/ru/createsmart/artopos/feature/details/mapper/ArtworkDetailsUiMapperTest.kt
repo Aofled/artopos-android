@@ -5,6 +5,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.core.model.Artwork
+import ru.createsmart.artopos.core.model.ArtworkDetails
 import ru.createsmart.artopos.core.model.ArtworkImage
 import ru.createsmart.artopos.feature.details.R
 
@@ -13,14 +14,17 @@ class ArtworkDetailsUiMapperTest {
     @Test
     fun `toDetailUi maps all non-null fields correctly and ignores nulls`() {
         // GIVEN
-        val artwork = Artwork(
-            id = 1,
-            title = "Test Title",
-            artist = "Test Artist",
-            imageUrl = "mainUrl",
-            imageDimensions = null,
-            date = "1890",
-            yearInt = 1890,
+        val artwork = ArtworkDetails(
+            baseArtwork = Artwork(
+                id = 1,
+                title = "Test Title",
+                artist = "Test Artist",
+                imageUrl = "mainUrl",
+                imageDimensions = null,
+                date = "1890",
+                yearInt = 1890,
+                isFavorite = false,
+            ),
             technique = null,
             medium = "Oil",
             description = "Some description",
@@ -29,9 +33,13 @@ class ArtworkDetailsUiMapperTest {
             creditLine = "Gift of Smith",
             classification = "Painting",
             culture = "French",
-            images = listOf(
-                ArtworkImage("url1", 100, 200),
-            ),
+            century = null,
+            images = listOf(ArtworkImage("url1", 100, 200)),
+            period = null,
+            style = null,
+            dimensions = null,
+            copyright = null,
+            galleryLocation = null,
         )
 
         // WHEN
@@ -64,11 +72,32 @@ class ArtworkDetailsUiMapperTest {
     @Test
     fun `toDetailUi prioritizes medium over technique`() {
         // GIVEN
-        val artwork = Artwork(
-            id = 1, title = "", artist = "", imageUrl = "", imageDimensions = null, date = null, yearInt = null,
+        val artwork = ArtworkDetails(
+            baseArtwork = Artwork(
+                id = 1,
+                title = "",
+                artist = "",
+                imageUrl = "",
+                imageDimensions = null,
+                date = null,
+                yearInt = null,
+                isFavorite = false,
+            ),
             technique = "Pencil",
             medium = "Oil",
-            description = null, url = null, provenance = null, creditLine = null, classification = null, culture = null,
+            description = null,
+            url = null,
+            provenance = null,
+            creditLine = null,
+            classification = null,
+            culture = null,
+            century = null,
+            images = emptyList(),
+            period = null,
+            style = null,
+            dimensions = null,
+            copyright = null,
+            galleryLocation = null,
         )
 
         // WHEN
@@ -84,11 +113,32 @@ class ArtworkDetailsUiMapperTest {
     @Test
     fun `toDetailUi uses technique if medium is null`() {
         // GIVEN
-        val artwork = Artwork(
-            id = 1, title = "", artist = "", imageUrl = "", imageDimensions = null, date = null, yearInt = null,
+        val artwork = ArtworkDetails(
+            baseArtwork = Artwork(
+                id = 1,
+                title = "",
+                artist = "",
+                imageUrl = "",
+                imageDimensions = null,
+                date = null,
+                yearInt = null,
+                isFavorite = false,
+            ),
             technique = "Pencil",
-            medium = null,
-            description = null, url = null, provenance = null, creditLine = null, classification = null, culture = null,
+            medium = "Oil",
+            description = null,
+            url = null,
+            provenance = null,
+            creditLine = null,
+            classification = null,
+            culture = null,
+            century = null,
+            images = emptyList(),
+            period = null,
+            style = null,
+            dimensions = null,
+            copyright = null,
+            galleryLocation = null,
         )
 
         // WHEN
@@ -98,6 +148,6 @@ class ArtworkDetailsUiMapperTest {
         val mediumDetail = uiModel.details.find {
             it.label is UiText.StringResource && it.label.resId == R.string.details_label_medium
         }
-        assertEquals("Pencil", mediumDetail?.value)
+        assertEquals("Oil", mediumDetail?.value)
     }
 }

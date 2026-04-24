@@ -79,7 +79,6 @@ class OfflineFirstFilterRepositoryTest {
         // GIVEN
         coEvery { dao.hasAllCategories() } returns false
         coEvery { api.getClassification() } throws IOException("Network error")
-        // Обертка coroutineScope отменит все остальные запросы
 
         // WHEN
         val result = repository.initializeFilters()
