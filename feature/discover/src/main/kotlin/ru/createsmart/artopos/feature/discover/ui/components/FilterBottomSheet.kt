@@ -60,6 +60,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
 import ru.createsmart.artopos.core.model.FilterSortOption
 import ru.createsmart.artopos.core.model.FilterType
@@ -345,7 +347,7 @@ private fun SearchInputField(
 @Composable
 private fun FilterSection(
     title: String,
-    items: List<FilterListItem>,
+    items: ImmutableList<FilterListItem>,
     type: FilterType,
     onSelect: (FilterType, String?) -> Unit,
 ) {
@@ -464,9 +466,9 @@ private fun FilterBottomSheetPreview() {
         FilterBottomSheet(
             sheetState = previewState,
             filtersState = FiltersUiState(
-                classifications = FilterPreviewData.classifications,
-                centuries = FilterPreviewData.centuries,
-                cultures = FilterPreviewData.cultures,
+                classifications = FilterPreviewData.classifications.toImmutableList(),
+                centuries = FilterPreviewData.centuries.toImmutableList(),
+                cultures = FilterPreviewData.cultures.toImmutableList(),
                 isAvailable = true,
                 sort = FilterSortOption.RANK,
             ),

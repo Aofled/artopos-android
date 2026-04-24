@@ -11,6 +11,7 @@ kotlinxCoroutines = "1.10.2"
 coreKtx = "1.18.0"
 appcompat = "1.7.1"
 material = "1.13.0"
+kotlinxImmutable = "0.4.0"
 
 # Compose
 composeBom = "2026.03.00"
@@ -71,6 +72,7 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
 kotlinx-coroutines-play-services = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-play-services", version.ref = "kotlinxCoroutines" }
+kotlinx-collections-immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "kotlinxImmutable" }
 
 # Compose Core
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }

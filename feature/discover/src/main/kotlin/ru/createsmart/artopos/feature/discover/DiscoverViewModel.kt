@@ -7,6 +7,7 @@ import androidx.paging.cachedIn
 import androidx.paging.map
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -154,9 +155,9 @@ class DiscoverViewModel @Inject constructor(
         },
     ) { (classList, centList, cultList), (draftParams, query, isAvailable) ->
         FiltersUiState(
-            classifications = classList,
-            centuries = centList,
-            cultures = cultList,
+            classifications = classList.toImmutableList(),
+            centuries = centList.toImmutableList(),
+            cultures = cultList.toImmutableList(),
             sort = draftParams.sort,
             isAvailable = isAvailable,
             searchQuery = query,

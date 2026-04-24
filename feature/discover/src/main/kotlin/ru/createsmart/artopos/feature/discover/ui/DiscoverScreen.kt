@@ -41,6 +41,7 @@ import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
@@ -55,6 +56,7 @@ import ru.createsmart.artopos.core.uicomponents.notifiers.LocalBottomBarVisibili
 import ru.createsmart.artopos.feature.discover.DiscoverViewModel
 import ru.createsmart.artopos.feature.discover.model.DiscoverEvent
 import ru.createsmart.artopos.feature.discover.model.DiscoverIntent
+import ru.createsmart.artopos.feature.discover.model.FilterListItem
 import ru.createsmart.artopos.feature.discover.model.FiltersUiState
 import ru.createsmart.artopos.feature.discover.ui.components.ArtworksView
 import ru.createsmart.artopos.feature.discover.ui.components.ErrorView
@@ -326,16 +328,16 @@ private fun DiscoverScreenPreview(
     @PreviewParameter(DiscoverStateProvider::class) pagingFlow: Flow<PagingData<ArtworkListItem>>,
 ) {
     val pagingItems = pagingFlow.collectAsLazyPagingItems()
-
+// .toImmutableList(),
     ArtoposTheme {
         DiscoverScreen(
             pagingItems = pagingItems,
             contentVersion = 0,
             effectFlow = null,
             filtersState = FiltersUiState(
-                classifications = emptyList(),
-                centuries = emptyList(),
-                cultures = emptyList(),
+                classifications = persistentListOf<FilterListItem>(),
+                centuries = persistentListOf<FilterListItem>(),
+                cultures = persistentListOf<FilterListItem>(),
                 searchQuery = "",
                 isAvailable = false,
             ),
