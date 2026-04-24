@@ -10,8 +10,7 @@ data class Artwork(
     val artist: String,
     val imageUrl: String,
     val imageDimensions: ImageDimensions?,
-    val date: String?,
-    val yearInt: Int?,
+    val creationDate: CreationDate,
     val isFavorite: Boolean = false,
 )
 

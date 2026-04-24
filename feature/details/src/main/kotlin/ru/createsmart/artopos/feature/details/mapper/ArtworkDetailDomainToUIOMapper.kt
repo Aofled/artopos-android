@@ -3,6 +3,7 @@ package ru.createsmart.artopos.feature.details.mapper
 import kotlinx.collections.immutable.toImmutableList
 import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.core.model.ArtworkDetails
+import ru.createsmart.artopos.core.model.CreationDate
 import ru.createsmart.artopos.feature.details.R
 import ru.createsmart.artopos.feature.details.model.ArtworkDetailUi
 import ru.createsmart.artopos.feature.details.model.DetailItem
@@ -28,7 +29,13 @@ fun ArtworkDetails.toDetailUi(
             }
         }
 
-        addIfNotNull(R.string.details_label_date, baseArtwork.date)
+        val displayDate = when (val date = baseArtwork.creationDate) {
+            is CreationDate.ExactYear -> date.year.toString()
+            is CreationDate.TextOnly -> date.text
+            is CreationDate.Unknown -> null
+        }
+
+        addIfNotNull(R.string.details_label_date, displayDate)
         addIfNotNull(R.string.details_label_period, period)
         addIfNotNull(R.string.details_label_style, style)
         addIfNotNull(R.string.details_label_medium, medium ?: technique, isWide = true)

@@ -9,6 +9,7 @@ import ru.createsmart.artopos.core.common.util.LocaleHelper
 import ru.createsmart.artopos.core.designsystem.util.FilterNameHelper
 import ru.createsmart.artopos.core.domain.translation.TextTranslator
 import ru.createsmart.artopos.core.model.ArtworkDetails
+import ru.createsmart.artopos.core.model.CreationDate
 import javax.inject.Inject
 
 /**
@@ -53,7 +54,20 @@ class ArtworkTranslationFacade @Inject constructor(
             // ML_ONLY: ML Kit
             val descriptionDef = async { translator.translate(originalArtwork.description, languageCode) }
             val dimensionsDef = async { translator.translate(originalArtwork.dimensions, languageCode) }
-            val dateDef = async { translator.translate(originalArtwork.baseArtwork.date, languageCode) }
+            val dateDef = async {
+                // Translate only if it is text (for example, "17th century")
+                when (val current = originalArtwork.baseArtwork.creationDate) {
+                    is CreationDate.TextOnly -> {
+                        val translatedText = translator.translate(current.text, languageCode)
+                        if (translatedText != null) {
+                            CreationDate.TextOnly(translatedText)
+                        } else {
+                            current // If the translation fails, we leave the original
+                        }
+                    }
+                    else -> current // Numbers (1890) or unknown dates are not translated
+                }
+            }
             val styleDef = async { translator.translate(originalArtwork.style, languageCode) }
             val galleryLocationDef = async { translator.translate(originalArtwork.galleryLocation, languageCode) }
             val creditLineDef = async { translator.translate(originalArtwork.creditLine, languageCode) }
@@ -85,7 +99,7 @@ class ArtworkTranslationFacade @Inject constructor(
             }
 
             val updatedBaseArtwork = fastArtwork.baseArtwork.copy(
-                date = dateDef.await(),
+                creationDate = dateDef.await(),
             )
 
             fastArtwork.copy(

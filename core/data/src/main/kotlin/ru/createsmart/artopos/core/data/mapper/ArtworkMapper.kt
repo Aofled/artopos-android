@@ -8,6 +8,7 @@ import ru.createsmart.artopos.core.database.model.ArtworkWithFavoriteFlagDBO
 import ru.createsmart.artopos.core.model.Artwork
 import ru.createsmart.artopos.core.model.ArtworkDetails
 import ru.createsmart.artopos.core.model.ArtworkImage
+import ru.createsmart.artopos.core.model.CreationDate
 import ru.createsmart.artopos.core.model.ImageDimensions
 import ru.createsmart.artopos.core.network.model.ArtworkDTO
 import javax.inject.Inject
@@ -79,14 +80,22 @@ class ArtworkMapper @Inject constructor() {
     // --- DATABASE (DBO) -> DOMAIN ---
 
     fun mapToDomain(dbo: ArtworkWithFavoriteFlagDBO): Artwork {
+        val yearInt = dbo.artwork.yearInt
+        val dateString = dbo.artwork.date
+
+        val creationDate = when {
+            yearInt != null -> CreationDate.ExactYear(yearInt)
+            !dateString.isNullOrBlank() -> CreationDate.TextOnly(dateString)
+            else -> CreationDate.Unknown
+        }
+
         return Artwork(
             id = dbo.artwork.id,
             title = dbo.artwork.title,
             artist = dbo.artwork.artist,
             imageUrl = dbo.artwork.imageUrl,
             imageDimensions = dbo.artwork.imageDimensions,
-            date = dbo.artwork.date ?: "",
-            yearInt = dbo.artwork.yearInt,
+            creationDate = creationDate,
             isFavorite = dbo.isFavorite,
         )
     }

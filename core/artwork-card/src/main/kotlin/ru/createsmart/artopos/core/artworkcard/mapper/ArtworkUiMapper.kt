@@ -3,6 +3,7 @@ package ru.createsmart.artopos.core.artworkcard.mapper
 import ru.createsmart.artopos.core.artworkcard.model.ArtworkListItem
 import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.core.model.Artwork
+import ru.createsmart.artopos.core.model.CreationDate
 import javax.inject.Inject
 import ru.createsmart.artopos.core.designsystem.R as DSR
 
@@ -30,13 +31,19 @@ class ArtworkUiMapper @Inject constructor() {
             UiText.DynamicString(artwork.artist)
         }
 
+        val displayYear = when (val date = artwork.creationDate) {
+            is CreationDate.ExactYear -> date.year.toString()
+            is CreationDate.TextOnly -> date.text
+            is CreationDate.Unknown -> "" // Или UiText.StringResource(R.string.unknown_date)
+        }
+
         return ArtworkListItem(
             id = artwork.id,
             title = displayTitle,
             artist = displayArtist,
             imageUrl = artwork.imageUrl,
             aspectRatio = ratio,
-            year = artwork.date ?: "",
+            year = displayYear,
             isFavorite = artwork.isFavorite,
         )
     }
