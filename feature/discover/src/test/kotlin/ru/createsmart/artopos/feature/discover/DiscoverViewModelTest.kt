@@ -12,6 +12,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
@@ -124,6 +125,8 @@ class DiscoverViewModelTest {
     fun `intent FilterReset clears draft params and search query`() = runTest {
         viewModel.onIntent(DiscoverIntent.SearchQueryChanged("Picasso"))
         viewModel.onIntent(DiscoverIntent.FilterSelected(FilterType.CLASSIFICATION, "Paintings"))
+
+        runCurrent()
 
         viewModel.filtersUiState.test {
             // GIVEN
