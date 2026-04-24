@@ -177,7 +177,7 @@ fun GalleryHeader(
                     artworkTitle = artworkTitle,
                     currentUrl = images[pagerState.currentPage].url,
                     onDownloadClick = { url, title ->
-                        onIntent(DetailsIntent.DownloadImage(url, title)) // ИНТЕНТ
+                        onIntent(DetailsIntent.DownloadImage(url, title))
                     },
                 )
             }

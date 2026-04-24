@@ -6,6 +6,7 @@ import ru.createsmart.artopos.core.database.model.ArtworkDetailsDBO
 import ru.createsmart.artopos.core.database.model.ArtworkDetailsWithFavoriteFlagDBO
 import ru.createsmart.artopos.core.database.model.ArtworkWithFavoriteFlagDBO
 import ru.createsmart.artopos.core.model.Artwork
+import ru.createsmart.artopos.core.model.ArtworkDetails
 import ru.createsmart.artopos.core.model.ArtworkImage
 import ru.createsmart.artopos.core.model.ImageDimensions
 import ru.createsmart.artopos.core.network.model.ArtworkDTO
@@ -78,10 +79,6 @@ class ArtworkMapper @Inject constructor() {
     // --- DATABASE (DBO) -> DOMAIN ---
 
     fun mapToDomain(dbo: ArtworkWithFavoriteFlagDBO): Artwork {
-        val domainImages = dbo.artwork.galleryImages?.map { stored ->
-            ArtworkImage(url = stored.url, width = stored.width, height = stored.height)
-        } ?: emptyList()
-
         return Artwork(
             id = dbo.artwork.id,
             title = dbo.artwork.title,
@@ -90,22 +87,37 @@ class ArtworkMapper @Inject constructor() {
             imageDimensions = dbo.artwork.imageDimensions,
             date = dbo.artwork.date ?: "",
             yearInt = dbo.artwork.yearInt,
-            technique = dbo.artwork.technique,
-            description = dbo.artwork.description,
-            url = dbo.artwork.url,
-            images = domainImages,
             isFavorite = dbo.isFavorite,
         )
     }
 
-    fun mapDetailsToDomain(dbo: ArtworkDetailsWithFavoriteFlagDBO): Artwork {
-        val base = mapToDomain(
+    fun mapDetailsToDomain(dbo: ArtworkDetailsWithFavoriteFlagDBO): ArtworkDetails {
+        val baseArtwork = mapToDomain(
             ArtworkWithFavoriteFlagDBO(dbo.artworkWithDetails.artwork, dbo.isFavorite),
         )
 
-        val details = dbo.artworkWithDetails.details ?: return base
+        // If the details aren't yet in the database (for example - user offline),
+        // return an "empty" object with the details
+        val details = dbo.artworkWithDetails.details ?: return ArtworkDetails(
+            baseArtwork = baseArtwork,
+            technique = dbo.artworkWithDetails.artwork.technique,
+            description = dbo.artworkWithDetails.artwork.description,
+            url = dbo.artworkWithDetails.artwork.url,
+            provenance = null, creditLine = null, classification = null, century = null,
+            culture = null, medium = null, period = null, style = null,
+            dimensions = null, copyright = null, galleryLocation = null,
 
-        return base.copy(
+            images = dbo.artworkWithDetails.artwork.galleryImages?.map { stored ->
+                ArtworkImage(url = stored.url, width = stored.width, height = stored.height)
+            } ?: emptyList(),
+        )
+
+        // If the parts are downloaded, return complete object
+        return ArtworkDetails(
+            baseArtwork = baseArtwork,
+            technique = dbo.artworkWithDetails.artwork.technique,
+            description = dbo.artworkWithDetails.artwork.description,
+            url = dbo.artworkWithDetails.artwork.url,
             provenance = details.provenance,
             creditLine = details.creditLine,
             classification = details.classification,
@@ -117,6 +129,9 @@ class ArtworkMapper @Inject constructor() {
             dimensions = details.dimensions,
             copyright = details.copyright,
             galleryLocation = details.galleryLocation,
+            images = dbo.artworkWithDetails.artwork.galleryImages?.map { stored ->
+                ArtworkImage(url = stored.url, width = stored.width, height = stored.height)
+            } ?: emptyList(),
         )
     }
 }

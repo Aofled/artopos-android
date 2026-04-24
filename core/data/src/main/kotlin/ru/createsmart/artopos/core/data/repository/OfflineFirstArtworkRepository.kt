@@ -20,6 +20,7 @@ import ru.createsmart.artopos.core.database.HarvardDatabase
 import ru.createsmart.artopos.core.database.model.FavoriteDBO
 import ru.createsmart.artopos.core.domain.repository.ArtworkRepository
 import ru.createsmart.artopos.core.model.Artwork
+import ru.createsmart.artopos.core.model.ArtworkDetails
 import ru.createsmart.artopos.core.model.FilterParams
 import ru.createsmart.artopos.core.network.api.HarvardAPI
 import javax.inject.Inject
@@ -67,7 +68,7 @@ class OfflineFirstArtworkRepository @Inject constructor(
             }
     }
 
-    override fun getArtwork(id: Int): Flow<Artwork?> {
+    override fun getArtwork(id: Int): Flow<ArtworkDetails?> {
         return artworkDetailDao.getArtworkWithDetails(id)
             .map { it?.let { dbo -> mapper.mapDetailsToDomain(dbo) } }
             .distinctUntilChanged()

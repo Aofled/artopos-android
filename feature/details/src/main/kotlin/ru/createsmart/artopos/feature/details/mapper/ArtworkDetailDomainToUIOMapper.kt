@@ -2,7 +2,7 @@ package ru.createsmart.artopos.feature.details.mapper
 
 import kotlinx.collections.immutable.toImmutableList
 import ru.createsmart.artopos.core.designsystem.components.UiText
-import ru.createsmart.artopos.core.model.Artwork
+import ru.createsmart.artopos.core.model.ArtworkDetails
 import ru.createsmart.artopos.feature.details.R
 import ru.createsmart.artopos.feature.details.model.ArtworkDetailUi
 import ru.createsmart.artopos.feature.details.model.DetailItem
@@ -16,7 +16,7 @@ private fun String?.cleanHarvardApiText(): String? {
         ?.takeIf { it.isNotEmpty() }
 }
 
-fun Artwork.toDetailUi(
+fun ArtworkDetails.toDetailUi(
     isTranslated: Boolean,
     canBeTranslated: Boolean = false,
     isTranslationPending: Boolean = false,
@@ -28,7 +28,7 @@ fun Artwork.toDetailUi(
             }
         }
 
-        addIfNotNull(R.string.details_label_date, date)
+        addIfNotNull(R.string.details_label_date, baseArtwork.date)
         addIfNotNull(R.string.details_label_period, period)
         addIfNotNull(R.string.details_label_style, style)
         addIfNotNull(R.string.details_label_medium, medium ?: technique, isWide = true)
@@ -39,10 +39,10 @@ fun Artwork.toDetailUi(
     }.toImmutableList()
 
     return ArtworkDetailUi(
-        id = id,
-        title = title,
-        artist = artist,
-        imageUrl = imageUrl,
+        id = baseArtwork.id,
+        title = baseArtwork.title,
+        artist = baseArtwork.artist,
+        imageUrl = baseArtwork.imageUrl,
         description = description.cleanHarvardApiText(),
         webUrl = url,
         details = detailsList,
@@ -53,7 +53,7 @@ fun Artwork.toDetailUi(
         classification = classification,
         century = century,
         culture = culture,
-        isFavorite = isFavorite,
+        isFavorite = baseArtwork.isFavorite,
         isTranslated = isTranslated,
         canBeTranslated = canBeTranslated,
         isTranslationPending = isTranslationPending,

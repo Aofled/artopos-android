@@ -1,5 +1,9 @@
 package ru.createsmart.artopos.core.model
 
+/**
+ * Lightweight model for feeds (Discover / Favorites).
+ * Contains ONLY the data necessary to render an artwork card.
+ */
 data class Artwork(
     val id: Int,
     val title: String,
@@ -8,23 +12,30 @@ data class Artwork(
     val imageDimensions: ImageDimensions?,
     val date: String?,
     val yearInt: Int?,
+    val isFavorite: Boolean = false,
+)
+
+/**
+ * Heavyweight model for the Details screen.
+ * Contains the base [Artwork] plus all deep metadata and gallery images.
+ */
+data class ArtworkDetails(
+    val baseArtwork: Artwork,
     val technique: String?,
     val description: String?,
     val url: String?,
-    // Details
-    val provenance: String? = null,
-    val creditLine: String? = null,
-    val classification: String? = null,
-    val century: String? = null,
-    val culture: String? = null,
+    val provenance: String?,
+    val creditLine: String?,
+    val classification: String?,
+    val century: String?,
+    val culture: String?,
     val images: List<ArtworkImage> = emptyList(),
-    val medium: String? = null,
-    val period: String? = null,
-    val style: String? = null,
-    val dimensions: String? = null,
-    val copyright: String? = null,
-    val galleryLocation: String? = null,
-    val isFavorite: Boolean = false,
+    val medium: String?,
+    val period: String?,
+    val style: String?,
+    val dimensions: String?,
+    val copyright: String?,
+    val galleryLocation: String?,
 )
 
 data class ImageDimensions(

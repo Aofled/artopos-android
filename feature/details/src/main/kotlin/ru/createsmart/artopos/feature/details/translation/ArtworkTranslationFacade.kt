@@ -8,7 +8,7 @@ import kotlinx.coroutines.withContext
 import ru.createsmart.artopos.core.common.util.LocaleHelper
 import ru.createsmart.artopos.core.designsystem.util.FilterNameHelper
 import ru.createsmart.artopos.core.domain.translation.TextTranslator
-import ru.createsmart.artopos.core.model.Artwork
+import ru.createsmart.artopos.core.model.ArtworkDetails
 import javax.inject.Inject
 
 /**
@@ -28,7 +28,7 @@ class ArtworkTranslationFacade @Inject constructor(
     private val translator: TextTranslator,
 ) {
 
-    fun translateFast(artwork: Artwork, languageCode: String): Artwork {
+    fun translateFast(artwork: ArtworkDetails, languageCode: String): ArtworkDetails {
         val localizedContext = LocaleHelper.getLocalizedContext(baseContext, languageCode)
 
         return artwork.copy(
@@ -45,15 +45,15 @@ class ArtworkTranslationFacade @Inject constructor(
     }
 
     suspend fun translateDeep(
-        originalArtwork: Artwork,
-        fastArtwork: Artwork,
+        originalArtwork: ArtworkDetails,
+        fastArtwork: ArtworkDetails,
         languageCode: String,
-    ): Artwork {
+    ): ArtworkDetails {
         return withContext(Dispatchers.IO) {
             // ML_ONLY: ML Kit
             val descriptionDef = async { translator.translate(originalArtwork.description, languageCode) }
             val dimensionsDef = async { translator.translate(originalArtwork.dimensions, languageCode) }
-            val dateDef = async { translator.translate(originalArtwork.date, languageCode) }
+            val dateDef = async { translator.translate(originalArtwork.baseArtwork.date, languageCode) }
             val styleDef = async { translator.translate(originalArtwork.style, languageCode) }
             val galleryLocationDef = async { translator.translate(originalArtwork.galleryLocation, languageCode) }
             val creditLineDef = async { translator.translate(originalArtwork.creditLine, languageCode) }
@@ -84,13 +84,17 @@ class ArtworkTranslationFacade @Inject constructor(
                 }
             }
 
+            val updatedBaseArtwork = fastArtwork.baseArtwork.copy(
+                date = dateDef.await(),
+            )
+
             fastArtwork.copy(
+                baseArtwork = updatedBaseArtwork,
                 description = descriptionDef.await(),
                 medium = mediumDef.await(),
                 technique = techniqueDef.await(),
                 period = periodDef.await(),
                 dimensions = dimensionsDef.await(),
-                date = dateDef.await(),
                 style = styleDef.await(),
                 galleryLocation = galleryLocationDef.await(),
                 creditLine = creditLineDef.await(),
