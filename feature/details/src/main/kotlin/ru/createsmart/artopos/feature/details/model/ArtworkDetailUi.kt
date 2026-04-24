@@ -1,6 +1,8 @@
 package ru.createsmart.artopos.feature.details.model
 
 import androidx.compose.runtime.Immutable
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import ru.createsmart.artopos.core.designsystem.components.UiText
 
 @Immutable
@@ -14,8 +16,8 @@ data class ArtworkDetailUi(
     val classification: String?,
     val century: String?,
     val culture: String?,
-    val details: List<DetailItem>,
-    val images: List<GalleryImageUi> = emptyList(),
+    val details: ImmutableList<DetailItem>,
+    val images: ImmutableList<GalleryImageUi> = persistentListOf(),
     val copyright: String? = null,
     val isFavorite: Boolean,
     val isTranslated: Boolean = false,

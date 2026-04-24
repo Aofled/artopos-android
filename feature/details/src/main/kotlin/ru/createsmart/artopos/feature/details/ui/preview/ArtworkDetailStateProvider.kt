@@ -1,6 +1,7 @@
 package ru.createsmart.artopos.feature.details.ui.preview
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import kotlinx.collections.immutable.persistentListOf
 import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.feature.details.ArtworkDetailUiState
 import ru.createsmart.artopos.feature.details.R
@@ -33,7 +34,7 @@ val artworkPreview = ArtworkDetailUi(
     century = "18 th -19 th century",
     culture = "Japanese",
     webUrl = "https://www.harvardartmuseums.org/collections/object/357597",
-    details = listOf(
+    details = persistentListOf(
         DetailItem(
             label = UiText.StringResource(R.string.details_label_period),
             value = "Edo period 1615 - 1868",
@@ -77,7 +78,7 @@ val artworkPreview = ArtworkDetailUi(
             isWide = true,
         ),
     ),
-    images = listOf(
+    images = persistentListOf(
         GalleryImageUi(
             url = "https://nrs.harvard.edu/urn-3:HUAM:765757",
             aspectRatio = 0.45686275f,

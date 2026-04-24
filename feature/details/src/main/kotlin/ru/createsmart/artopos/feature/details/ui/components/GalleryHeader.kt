@@ -31,6 +31,7 @@ import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import kotlinx.collections.immutable.ImmutableList
 import ru.createsmart.artopos.core.uicomponents.components.DownloadButton
 import ru.createsmart.artopos.core.uicomponents.components.FavoriteButton
 import ru.createsmart.artopos.feature.details.model.DetailsIntent
@@ -53,7 +54,7 @@ private const val ZOOM_MULTIPLIER_EXTRA_LARGE = 5.5f
 
 @Composable
 fun GalleryHeader(
-    images: List<GalleryImageUi>,
+    images: ImmutableList<GalleryImageUi>,
     pagerState: PagerState,
     isScrolledDown: Boolean,
     contentVersion: Int,

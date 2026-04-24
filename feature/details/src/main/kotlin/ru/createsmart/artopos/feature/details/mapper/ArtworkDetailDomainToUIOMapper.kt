@@ -1,5 +1,6 @@
 package ru.createsmart.artopos.feature.details.mapper
 
+import kotlinx.collections.immutable.toImmutableList
 import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.core.model.Artwork
 import ru.createsmart.artopos.feature.details.R
@@ -35,7 +36,7 @@ fun Artwork.toDetailUi(
         addIfNotNull(R.string.details_label_gallery, galleryLocation, isWide = true)
         addIfNotNull(R.string.details_label_credit_line, creditLine, isWide = true)
         addIfNotNull(R.string.details_label_provenance, provenance, isWide = true)
-    }
+    }.toImmutableList()
 
     return ArtworkDetailUi(
         id = id,
@@ -47,7 +48,7 @@ fun Artwork.toDetailUi(
         details = detailsList,
         images = images.map {
             GalleryImageUi(it.url, it.aspectRatio)
-        },
+        }.toImmutableList(),
         copyright = copyright,
         classification = classification,
         century = century,
