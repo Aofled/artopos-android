@@ -104,7 +104,8 @@ class DiscoverViewModel @Inject constructor(
                 list.map { item ->
                     val locName = FilterNameHelper.getLocalizedName(locContext, item.name)
                     FilterListItem(
-                        id = item.id,
+                        // Unique ID for Compose/Room to prevent collisions between different FilterTypes
+                        id = "${item.type.name}_${item.id}",
                         type = item.type,
                         name = item.name,
                         localizedName = locName,

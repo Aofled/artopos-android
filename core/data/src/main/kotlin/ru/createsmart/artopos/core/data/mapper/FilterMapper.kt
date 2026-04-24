@@ -20,7 +20,6 @@ class FilterMapper @Inject constructor() {
 
     fun mapDboToDomain(dbo: FilterItemDBO): FilterItem {
         return FilterItem(
-            uId = dbo.uId,
             id = dbo.id,
             type = FilterType.valueOf(dbo.type),
             name = dbo.name,
