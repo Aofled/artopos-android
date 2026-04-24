@@ -24,7 +24,7 @@ internal fun Project.configureAndroidCompose(
     }
 
     // Metrics generation is enabled only when passing a flag, so as not to slow down the regular build.
-    // Usage in the terminal: ./gradlew assembleDebug -PenableComposeCompilerReports=true
+    // Usage in the terminal: ./gradlew assembleDebug -PenableComposeCompilerReports=true --rerun-tasks
     val enableReports = providers.gradleProperty("enableComposeCompilerReports").orNull == "true"
     if (enableReports) {
         extensions.configure<ComposeCompilerGradlePluginExtension> {
