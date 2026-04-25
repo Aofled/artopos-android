@@ -35,7 +35,7 @@ class FilterResponseTest {
         assertEquals(37525815, item.id)
         assertEquals("20th century", item.name)
 
-        val order = requireNotNull(item.order) { "Поле order не должно быть null" }
+        val order = requireNotNull(item.order) { "Order field should not be null" }
         assertEquals(46, order)
     }
 
