@@ -1,4 +1,4 @@
-package ru.createsmart.artopos.core.network.interceptor
+package ru.createsmart.artopos.core.imageloader.interceptor
 
 import okhttp3.Interceptor
 import okhttp3.Response

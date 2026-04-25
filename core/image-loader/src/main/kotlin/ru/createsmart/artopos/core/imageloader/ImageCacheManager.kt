@@ -7,7 +7,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
-import ru.createsmart.artopos.core.network.di.ImageClient
+import ru.createsmart.artopos.core.imageloader.di.ImageClient
 import java.io.File
 import java.io.IOException
 import javax.inject.Inject

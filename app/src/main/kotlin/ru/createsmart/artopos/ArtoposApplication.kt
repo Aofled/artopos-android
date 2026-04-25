@@ -5,8 +5,8 @@ import coil.ImageLoader
 import coil.ImageLoaderFactory
 import dagger.hilt.android.HiltAndroidApp
 import okhttp3.OkHttpClient
+import ru.createsmart.artopos.core.imageloader.di.ImageClient
 import ru.createsmart.artopos.core.network.BuildConfig
-import ru.createsmart.artopos.core.network.di.ImageClient
 import ru.createsmart.artopos.extensions.createCoilImageLoader
 import javax.inject.Inject
 
