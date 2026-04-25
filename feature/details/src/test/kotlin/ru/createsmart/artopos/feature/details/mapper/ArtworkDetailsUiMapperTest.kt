@@ -7,6 +7,7 @@ import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.core.model.Artwork
 import ru.createsmart.artopos.core.model.ArtworkDetails
 import ru.createsmart.artopos.core.model.ArtworkImage
+import ru.createsmart.artopos.core.model.CreationDate
 import ru.createsmart.artopos.feature.details.R
 
 class ArtworkDetailsUiMapperTest {
@@ -21,8 +22,7 @@ class ArtworkDetailsUiMapperTest {
                 artist = "Test Artist",
                 imageUrl = "mainUrl",
                 imageDimensions = null,
-                date = "1890",
-                yearInt = 1890,
+                creationDate = CreationDate.ExactYear(1890),
                 isFavorite = false,
             ),
             technique = null,
@@ -79,8 +79,7 @@ class ArtworkDetailsUiMapperTest {
                 artist = "",
                 imageUrl = "",
                 imageDimensions = null,
-                date = null,
-                yearInt = null,
+                creationDate = CreationDate.Unknown,
                 isFavorite = false,
             ),
             technique = "Pencil",
@@ -120,8 +119,7 @@ class ArtworkDetailsUiMapperTest {
                 artist = "",
                 imageUrl = "",
                 imageDimensions = null,
-                date = null,
-                yearInt = null,
+                creationDate = CreationDate.Unknown,
                 isFavorite = false,
             ),
             technique = "Pencil",

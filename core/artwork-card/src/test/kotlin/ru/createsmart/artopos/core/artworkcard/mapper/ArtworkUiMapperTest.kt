@@ -4,6 +4,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.core.model.Artwork
+import ru.createsmart.artopos.core.model.CreationDate
 import ru.createsmart.artopos.core.model.ImageDimensions
 import ru.createsmart.artopos.core.designsystem.R as DSR
 
@@ -24,8 +25,8 @@ class ArtworkUiMapperTest {
             artist = "Watanabe Seitei 渡辺省亭",
             imageUrl = "https://nrs.harvard.edu/urn-3:HUAM:766954",
             imageDimensions = imageDimensions,
-            date = "late 18th-early 19th century",
-            yearInt = null,
+            creationDate = CreationDate.TextOnly("late 18th-early 19th century"),
+            isFavorite = false,
         )
 
         val listItem = mapper.mapToUi(artwork)
@@ -46,8 +47,8 @@ class ArtworkUiMapperTest {
             artist = "Artist",
             imageUrl = "url",
             imageDimensions = null,
-            date = null,
-            yearInt = null,
+            creationDate = CreationDate.Unknown,
+            isFavorite = false,
         )
 
         val listItem = mapper.mapToUi(artwork)
@@ -64,8 +65,8 @@ class ArtworkUiMapperTest {
             artist = "Artist",
             imageUrl = "url",
             imageDimensions = ImageDimensions(100, 0),
-            date = "2024",
-            yearInt = null,
+            creationDate = CreationDate.TextOnly("2024"),
+            isFavorite = false,
         )
 
         val listItem = mapper.mapToUi(artwork)
@@ -81,8 +82,9 @@ class ArtworkUiMapperTest {
             artist = "",
             imageUrl = "url",
             imageDimensions = null,
-            date = null,
-            yearInt = null,
+            creationDate = CreationDate.Unknown,
+            isFavorite = false,
+
         )
 
         val listItem = mapper.mapToUi(artwork)
@@ -100,8 +102,8 @@ class ArtworkUiMapperTest {
             artist = "Artist",
             imageUrl = "url",
             imageDimensions = null,
-            date = null,
-            yearInt = null,
+            creationDate = CreationDate.Unknown,
+            isFavorite = false,
         )
 
         val listItem = mapper.mapToUi(artwork)
@@ -118,8 +120,8 @@ class ArtworkUiMapperTest {
             artist = "Artist",
             imageUrl = "url",
             imageDimensions = ImageDimensions(100, 0),
-            date = "2024",
-            yearInt = null,
+            creationDate = CreationDate.ExactYear(2024),
+            isFavorite = false,
         )
 
         val listItem = mapper.mapToUi(artwork)

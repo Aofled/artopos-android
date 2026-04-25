@@ -24,6 +24,7 @@ import ru.createsmart.artopos.core.domain.usecase.SyncArtworkDetailsUseCase
 import ru.createsmart.artopos.core.domain.usecase.ToggleFavoriteUseCase
 import ru.createsmart.artopos.core.model.Artwork
 import ru.createsmart.artopos.core.model.ArtworkDetails
+import ru.createsmart.artopos.core.model.CreationDate
 import ru.createsmart.artopos.core.model.settings.ThemeConfig
 import ru.createsmart.artopos.core.model.settings.UserSettings
 import ru.createsmart.artopos.core.uicomponents.manager.UiMessageManager
@@ -148,8 +149,7 @@ class DetailsViewModelTest {
             artist = "Artist",
             imageUrl = "url",
             imageDimensions = null,
-            date = null,
-            yearInt = null,
+            creationDate = CreationDate.Unknown,
             isFavorite = false,
         )
         return ArtworkDetails(

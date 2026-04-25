@@ -17,6 +17,7 @@ import ru.createsmart.artopos.core.designsystem.util.FilterNameHelper
 import ru.createsmart.artopos.core.domain.translation.TextTranslator
 import ru.createsmart.artopos.core.model.Artwork
 import ru.createsmart.artopos.core.model.ArtworkDetails
+import ru.createsmart.artopos.core.model.CreationDate
 
 class ArtworkTranslationFacadeTest {
 
@@ -112,8 +113,7 @@ class ArtworkTranslationFacadeTest {
             artist = "",
             imageUrl = "",
             imageDimensions = null,
-            date = null,
-            yearInt = null,
+            creationDate = CreationDate.Unknown,
             isFavorite = false,
         )
         return ArtworkDetails(

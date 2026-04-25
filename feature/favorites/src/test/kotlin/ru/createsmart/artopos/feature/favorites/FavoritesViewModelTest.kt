@@ -16,6 +16,7 @@ import ru.createsmart.artopos.core.artworkcard.mapper.ArtworkUiMapper
 import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.core.domain.interactor.FavoritesInteractor
 import ru.createsmart.artopos.core.model.Artwork
+import ru.createsmart.artopos.core.model.CreationDate
 import ru.createsmart.artopos.core.model.ImageDimensions
 import ru.createsmart.artopos.core.uicomponents.manager.UiMessageManager
 import ru.createsmart.artopos.feature.favorites.model.FavoritesIntent
@@ -71,8 +72,7 @@ class FavoritesViewModelTest {
             imageUrl = "url",
             imageDimensions = ImageDimensions(100, 100),
             isFavorite = true,
-            date = null,
-            yearInt = null,
+            creationDate = CreationDate.Unknown,
         )
 
         viewModel.uiState.test {

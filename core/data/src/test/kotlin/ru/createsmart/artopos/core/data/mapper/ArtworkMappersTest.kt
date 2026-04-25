@@ -8,6 +8,7 @@ import ru.createsmart.artopos.core.database.model.ArtworkDBO
 import ru.createsmart.artopos.core.database.model.ArtworkDetailsDBO
 import ru.createsmart.artopos.core.database.model.ArtworkDetailsWithFavoriteFlagDBO
 import ru.createsmart.artopos.core.database.model.ArtworkWithDetailsDBO
+import ru.createsmart.artopos.core.model.CreationDate
 import ru.createsmart.artopos.core.model.ImageDimensions
 import ru.createsmart.artopos.core.network.model.ArtworkDTO
 import ru.createsmart.artopos.core.network.model.ImageDTO
@@ -158,8 +159,8 @@ class ArtworkMappersTest {
             ),
             domain.baseArtwork.imageDimensions,
         )
-        assertEquals("late 18th-early 19th century", domain.baseArtwork.date)
-        assertEquals(null, domain.baseArtwork.yearInt)
+        val expectedDate = CreationDate.TextOnly("late 18th-early 19th century")
+        assertEquals(expectedDate, domain.baseArtwork.creationDate)
         assertEquals(null, domain.technique)
         assertEquals("Pair of scrolls depicting blossoming plum trees.", domain.description)
         assertEquals("https://www.harvardartmuseums.org/collections/object/357596", domain.url)
