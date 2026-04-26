@@ -8,6 +8,7 @@ import ru.createsmart.artopos.core.database.model.ArtworkDBO
 import ru.createsmart.artopos.core.database.model.ArtworkDetailsDBO
 import ru.createsmart.artopos.core.database.model.ArtworkDetailsWithFavoriteFlagDBO
 import ru.createsmart.artopos.core.database.model.ArtworkWithDetailsDBO
+import ru.createsmart.artopos.core.database.model.ImageDimensionsDBO
 import ru.createsmart.artopos.core.model.CreationDate
 import ru.createsmart.artopos.core.model.ImageDimensions
 import ru.createsmart.artopos.core.network.model.ArtworkDTO
@@ -62,7 +63,7 @@ class ArtworkMappersTest {
         assertEquals("Goshun 呉春  (Matsumura Gekkei 松村月渓)", dbo.artist)
         assertEquals("https://ids.lib.harvard.edu/ids/iiif/437167239", dbo.imageUrl)
         assertEquals(
-            ImageDimensions(
+            ImageDimensionsDBO(
                 1165,
                 2550,
             ),
@@ -102,7 +103,7 @@ class ArtworkMappersTest {
     @Test
     fun `map ArtworkDBO to ArtworkDetails correctly`() {
         // GIVEN
-        val imageDimensions = ImageDimensions(
+        val imageDimensions = ImageDimensionsDBO(
             width = 2550,
             height = 1301,
         )
