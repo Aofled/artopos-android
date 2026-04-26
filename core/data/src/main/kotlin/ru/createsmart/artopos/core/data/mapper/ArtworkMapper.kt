@@ -4,7 +4,7 @@ import ru.createsmart.artopos.core.database.converters.StoredImage
 import ru.createsmart.artopos.core.database.model.ArtworkDBO
 import ru.createsmart.artopos.core.database.model.ArtworkDetailsDBO
 import ru.createsmart.artopos.core.database.model.ArtworkDetailsWithFavoriteFlagDBO
-import ru.createsmart.artopos.core.database.model.ArtworkWithFavoriteFlagDBO
+import ru.createsmart.artopos.core.database.model.ArtworkFeedWithFavoriteFlagDBO
 import ru.createsmart.artopos.core.database.model.ImageDimensionsDBO
 import ru.createsmart.artopos.core.model.Artwork
 import ru.createsmart.artopos.core.model.ArtworkDetails
@@ -80,16 +80,7 @@ class ArtworkMapper @Inject constructor() {
 
     // --- DATABASE (DBO) -> DOMAIN ---
 
-    fun mapToDomain(dbo: ArtworkWithFavoriteFlagDBO): Artwork {
-        val yearInt = dbo.artwork.yearInt
-        val dateString = dbo.artwork.date
-
-        val creationDate = when {
-            yearInt != null -> CreationDate.ExactYear(yearInt)
-            !dateString.isNullOrBlank() -> CreationDate.TextOnly(dateString)
-            else -> CreationDate.Unknown
-        }
-
+    fun mapToDomain(dbo: ArtworkFeedWithFavoriteFlagDBO): Artwork {
         val domainDimensions = dbo.artwork.imageDimensions?.let {
             ImageDimensions(width = it.width, height = it.height)
         }
@@ -100,18 +91,35 @@ class ArtworkMapper @Inject constructor() {
             artist = dbo.artwork.artist,
             imageUrl = dbo.artwork.imageUrl,
             imageDimensions = domainDimensions,
-            creationDate = creationDate,
+            creationDate = CreationDate.Unknown,
             isFavorite = dbo.isFavorite,
         )
     }
 
     fun mapDetailsToDomain(dbo: ArtworkDetailsWithFavoriteFlagDBO): ArtworkDetails {
-        val baseArtwork = mapToDomain(
-            ArtworkWithFavoriteFlagDBO(dbo.artworkWithDetails.artwork, dbo.isFavorite),
+        val yearInt = dbo.artworkWithDetails.artwork.yearInt
+        val dateString = dbo.artworkWithDetails.artwork.date
+        val creationDate = when {
+            yearInt != null -> CreationDate.ExactYear(yearInt)
+            !dateString.isNullOrBlank() -> CreationDate.TextOnly(dateString)
+            else -> CreationDate.Unknown
+        }
+
+        val domainDimensions = dbo.artworkWithDetails.artwork.imageDimensions?.let {
+            ImageDimensions(width = it.width, height = it.height)
+        }
+
+        val baseArtwork = Artwork(
+            id = dbo.artworkWithDetails.artwork.id,
+            title = dbo.artworkWithDetails.artwork.title,
+            artist = dbo.artworkWithDetails.artwork.artist,
+            imageUrl = dbo.artworkWithDetails.artwork.imageUrl,
+            imageDimensions = domainDimensions,
+            creationDate = creationDate,
+            isFavorite = dbo.isFavorite,
         )
 
-        // If the details aren't yet in the database (for example - user offline),
-        // return an "empty" object with the details
+        // If the details are not in the database, we return what is available (+ gallery from the first request)
         val details = dbo.artworkWithDetails.details ?: return ArtworkDetails(
             baseArtwork = baseArtwork,
             technique = dbo.artworkWithDetails.artwork.technique,

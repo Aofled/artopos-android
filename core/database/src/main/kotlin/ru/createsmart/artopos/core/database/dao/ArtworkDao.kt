@@ -8,7 +8,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import ru.createsmart.artopos.core.database.model.ArtworkDBO
-import ru.createsmart.artopos.core.database.model.ArtworkWithFavoriteFlagDBO
+import ru.createsmart.artopos.core.database.model.ArtworkFeedWithFavoriteFlagDBO
 
 @Dao
 interface ArtworkDao {
@@ -17,14 +17,14 @@ interface ArtworkDao {
     // Take only those pictures that relate to the CURRENT feed
     @Query(
         """
-        SELECT *, 
+        SELECT id, title, artist, image_url, image_dimensions_width, image_dimensions_height, 
                EXISTS(SELECT 1 FROM favorites WHERE favorites.id = artworks.id) AS isFavorite 
         FROM artworks 
         WHERE in_discover_feed = 1 
         ORDER BY sorting_index ASC
     """,
     )
-    fun getArtworksWithFavoriteFlags(): PagingSource<Int, ArtworkWithFavoriteFlagDBO>
+    fun getArtworksWithFavoriteFlags(): PagingSource<Int, ArtworkFeedWithFavoriteFlagDBO>
 
     @Query("SELECT * FROM artworks WHERE id = :id")
     suspend fun getArtworkSnapshot(id: Int): ArtworkDBO?

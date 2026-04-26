@@ -5,20 +5,22 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
-import ru.createsmart.artopos.core.database.model.ArtworkWithFavoriteFlagDBO
+import ru.createsmart.artopos.core.database.model.ArtworkFeedWithFavoriteFlagDBO
 import ru.createsmart.artopos.core.database.model.FavoriteDBO
 
 @Dao
 interface FavoriteDao {
     @Query(
         """
-        SELECT artworks.*, 1 AS isFavorite 
+        SELECT artworks.id, artworks.title, artworks.artist, artworks.image_url, 
+               artworks.image_dimensions_width, artworks.image_dimensions_height, 
+               1 AS isFavorite 
         FROM artworks 
         INNER JOIN favorites ON artworks.id = favorites.id 
         ORDER BY favorites.saved_at_timestamp DESC
     """,
     )
-    fun getFavorites(): Flow<List<ArtworkWithFavoriteFlagDBO>>
+    fun getFavorites(): Flow<List<ArtworkFeedWithFavoriteFlagDBO>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFavorite(favorite: FavoriteDBO)

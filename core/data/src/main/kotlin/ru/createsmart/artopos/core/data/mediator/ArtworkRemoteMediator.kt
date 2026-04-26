@@ -7,8 +7,8 @@ import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import ru.createsmart.artopos.core.data.mapper.ArtworkMapper
 import ru.createsmart.artopos.core.database.HarvardDatabase
+import ru.createsmart.artopos.core.database.model.ArtworkFeedWithFavoriteFlagDBO
 import ru.createsmart.artopos.core.database.model.ArtworkRemoteKeysEntity
-import ru.createsmart.artopos.core.database.model.ArtworkWithFavoriteFlagDBO
 import ru.createsmart.artopos.core.model.FilterParams
 import ru.createsmart.artopos.core.model.FilterSortOption
 import ru.createsmart.artopos.core.network.api.HarvardAPI
@@ -35,11 +35,11 @@ class ArtworkRemoteMediator(
     private val api: HarvardAPI,
     private val params: FilterParams,
     private val mapper: ArtworkMapper,
-) : RemoteMediator<Int, ArtworkWithFavoriteFlagDBO>() {
+) : RemoteMediator<Int, ArtworkFeedWithFavoriteFlagDBO>() {
     @Suppress("ReturnCount")
     override suspend fun load(
         loadType: LoadType,
-        state: PagingState<Int, ArtworkWithFavoriteFlagDBO>,
+        state: PagingState<Int, ArtworkFeedWithFavoriteFlagDBO>,
     ): MediatorResult {
         val effectiveOrder = resolveEffectiveOrder()
         val effectiveSort = resolveEffectiveSort()
@@ -128,7 +128,7 @@ class ArtworkRemoteMediator(
         loadType: LoadType,
         page: Int,
         validRecords: List<ArtworkDTO>,
-        state: PagingState<Int, ArtworkWithFavoriteFlagDBO>,
+        state: PagingState<Int, ArtworkFeedWithFavoriteFlagDBO>,
         endOfPaginationReached: Boolean,
     ) {
         database.withTransaction {
@@ -158,7 +158,7 @@ class ArtworkRemoteMediator(
     }
 
     private suspend fun getRemoteKeyClosestToCurrentPosition(
-        state: PagingState<Int, ArtworkWithFavoriteFlagDBO>,
+        state: PagingState<Int, ArtworkFeedWithFavoriteFlagDBO>,
     ): ArtworkRemoteKeysEntity? {
         return state.anchorPosition?.let { position ->
             state.closestItemToPosition(position)?.artwork?.id?.let { artworkId ->
@@ -168,7 +168,7 @@ class ArtworkRemoteMediator(
     }
 
     private suspend fun getRemoteKeyForFirstItem(
-        state: PagingState<Int, ArtworkWithFavoriteFlagDBO>,
+        state: PagingState<Int, ArtworkFeedWithFavoriteFlagDBO>,
     ): ArtworkRemoteKeysEntity? {
         return state.pages.firstOrNull { it.data.isNotEmpty() }?.data?.firstOrNull()
             ?.let { artwork ->
@@ -177,7 +177,7 @@ class ArtworkRemoteMediator(
     }
 
     private suspend fun getRemoteKeyForLastItem(
-        state: PagingState<Int, ArtworkWithFavoriteFlagDBO>,
+        state: PagingState<Int, ArtworkFeedWithFavoriteFlagDBO>,
     ): ArtworkRemoteKeysEntity? {
         return state.pages.lastOrNull { it.data.isNotEmpty() }?.data?.lastOrNull()
             ?.let { artwork ->
