@@ -22,8 +22,9 @@ import org.junit.runner.RunWith
 import ru.createsmart.artopos.core.data.mapper.ArtworkMapper
 import ru.createsmart.artopos.core.database.HarvardDatabase
 import ru.createsmart.artopos.core.database.model.ArtworkDBO
+import ru.createsmart.artopos.core.database.model.ArtworkFeedProjectionDBO
+import ru.createsmart.artopos.core.database.model.ArtworkFeedWithFavoriteFlagDBO
 import ru.createsmart.artopos.core.database.model.ArtworkRemoteKeysEntity
-import ru.createsmart.artopos.core.database.model.ArtworkWithFavoriteFlagDBO
 import ru.createsmart.artopos.core.database.model.FavoriteDBO
 import ru.createsmart.artopos.core.model.FilterParams
 import ru.createsmart.artopos.core.network.api.HarvardAPI
@@ -93,7 +94,7 @@ class ArtworkRemoteMediatorTest {
         } returns networkResponse
 
         // Mock the PagingState
-        val pagingState = PagingState<Int, ArtworkWithFavoriteFlagDBO>(
+        val pagingState = PagingState<Int, ArtworkFeedWithFavoriteFlagDBO>(
             pages = listOf(),
             anchorPosition = null,
             config = PagingConfig(pageSize = 20),
@@ -125,13 +126,15 @@ class ArtworkRemoteMediatorTest {
         // GIVEN
         val initialId = 1
 
-        val realDbo = ArtworkDBO(
-            id = initialId, sortingIndex = 0, title = "First Page", artist = "", imageUrl = "",
-            imageDimensions = null, date = null, yearInt = null, technique = null,
-            description = null, url = null, galleryImages = null, inDiscoverFeed = true,
+        val projectionDbo = ArtworkFeedProjectionDBO(
+            id = initialId,
+            title = "First Page",
+            artist = "",
+            imageUrl = "",
+            imageDimensions = null,
         )
 
-        val mockFlagDbo = ArtworkWithFavoriteFlagDBO(artwork = realDbo, isFavorite = false)
+        val mockFlagDbo = ArtworkFeedWithFavoriteFlagDBO(artwork = projectionDbo, isFavorite = false)
 
         // Pre-condition: Simulate that Page 1 is already loaded in the DB.
         // RemoteMediator needs to find the 'nextKey' from the database to know what to load next.
@@ -163,7 +166,7 @@ class ArtworkRemoteMediatorTest {
         )
 
         // Mock State: Tell Mediator that we have one page with one item
-        val pagingState = PagingState<Int, ArtworkWithFavoriteFlagDBO>(
+        val pagingState = PagingState<Int, ArtworkFeedWithFavoriteFlagDBO>(
             pages = listOf(
                 androidx.paging.PagingSource.LoadResult.Page(
                     data = listOf(mockFlagDbo),
@@ -205,7 +208,7 @@ class ArtworkRemoteMediatorTest {
             )
         } throws IOException("No internet")
 
-        val pagingState = PagingState<Int, ArtworkWithFavoriteFlagDBO>(
+        val pagingState = PagingState<Int, ArtworkFeedWithFavoriteFlagDBO>(
             pages = listOf(),
             anchorPosition = null,
             config = PagingConfig(20),
@@ -225,18 +228,20 @@ class ArtworkRemoteMediatorTest {
     fun `prepend load returns success with endOfPaginationReached when at the top of list`() = runTest {
         // GIVEN: The database already contains the first page, and it does not have a previous one (prevKey = null)
         val initialId = 1
-        val realDbo = ArtworkDBO(
-            id = initialId, sortingIndex = 0, title = "First Page", artist = "", imageUrl = "",
-            imageDimensions = null, date = null, yearInt = null, technique = null,
-            description = null, url = null, galleryImages = null, inDiscoverFeed = true,
+        val projectionDbo = ArtworkFeedProjectionDBO(
+            id = initialId,
+            title = "First Page",
+            artist = "",
+            imageUrl = "",
+            imageDimensions = null,
         )
-        val mockFlagDbo = ArtworkWithFavoriteFlagDBO(artwork = realDbo, isFavorite = false)
+        val mockFlagDbo = ArtworkFeedWithFavoriteFlagDBO(artwork = projectionDbo, isFavorite = false)
 
         database.artworkRemoteKeysDao().insertAll(
             listOf(ArtworkRemoteKeysEntity(initialId, prevKey = null, nextKey = 2)),
         )
 
-        val pagingState = PagingState<Int, ArtworkWithFavoriteFlagDBO>(
+        val pagingState = PagingState<Int, ArtworkFeedWithFavoriteFlagDBO>(
             pages = listOf(
                 // Simulate that the first page has already been loaded
                 androidx.paging.PagingSource.LoadResult.Page(data = listOf(mockFlagDbo), prevKey = null, nextKey = 2),
@@ -280,7 +285,7 @@ class ArtworkRemoteMediatorTest {
             )
         } returns networkResponse
 
-        val pagingState = PagingState<Int, ArtworkWithFavoriteFlagDBO>(
+        val pagingState = PagingState<Int, ArtworkFeedWithFavoriteFlagDBO>(
             pages = listOf(),
             anchorPosition = null,
             config = PagingConfig(pageSize = 20),
@@ -315,7 +320,7 @@ class ArtworkRemoteMediatorTest {
         )
 
         database.artworkDao().insertArtworks(listOf(oldFeedArtwork, favoriteArtwork))
-        database.favoriteDao().insertFavorite(FavoriteDBO(id = 20, savedAtTimestamp = 123L)) // ID 20 теперь в избранном
+        database.favoriteDao().insertFavorite(FavoriteDBO(id = 20, savedAtTimestamp = 123L))
 
         val newDto = ArtworkDTO(id = 30, title = "New Feed", images = listOf(ImageDTO(100, 100, "url")))
         coEvery {
@@ -325,7 +330,7 @@ class ArtworkRemoteMediatorTest {
             records = listOf(newDto),
         )
 
-        val pagingState = PagingState<Int, ArtworkWithFavoriteFlagDBO>(
+        val pagingState = PagingState<Int, ArtworkFeedWithFavoriteFlagDBO>(
             pages = listOf(),
             anchorPosition = null,
             config = PagingConfig(pageSize = 20),

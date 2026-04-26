@@ -23,6 +23,7 @@ import ru.createsmart.artopos.core.database.HarvardDatabase
 import ru.createsmart.artopos.core.database.converters.StoredImage
 import ru.createsmart.artopos.core.database.model.ArtworkDBO
 import ru.createsmart.artopos.core.database.model.ArtworkDetailsDBO
+import ru.createsmart.artopos.core.model.CreationDate
 import ru.createsmart.artopos.core.network.api.HarvardAPI
 import ru.createsmart.artopos.core.network.model.ArtworkDTO
 import java.io.IOException
@@ -61,7 +62,7 @@ class OfflineFirstArtworkRepositoryDetailsTest {
         // GIVEN
         val dbo = ArtworkDBO(
             id = 1, sortingIndex = 0, title = "Test Title", artist = "Artist",
-            imageUrl = "url", imageDimensions = null, date = null, yearInt = null,
+            imageUrl = "url", imageDimensions = null, date = "1890", yearInt = 1890,
             technique = null, description = null, url = null,
             galleryImages = listOf(StoredImage("url", 100, 100)),
             inDiscoverFeed = true,
@@ -69,12 +70,16 @@ class OfflineFirstArtworkRepositoryDetailsTest {
         database.artworkDao().insertArtworks(listOf(dbo))
 
         // WHEN
-        val result = repository.getArtwork(1).first()
+        val result = repository.getArtwork(1).first() // Это ArtworkDetails?
 
         // THEN
         assertNotNull(result)
-        assertNull("Description should be null as details are missing", result?.description)
+
+        assertEquals("Test Title", result?.baseArtwork?.title)
+        assertEquals(CreationDate.ExactYear(1890), result?.baseArtwork?.creationDate)
+        assertFalse(result?.baseArtwork?.isFavorite ?: true)
         assertEquals(1, result?.images?.size)
+        assertNull("Description should be null as details are missing", result?.description)
     }
 
     @Test

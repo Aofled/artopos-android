@@ -7,6 +7,8 @@ import ru.createsmart.artopos.core.database.converters.StoredImage
 import ru.createsmart.artopos.core.database.model.ArtworkDBO
 import ru.createsmart.artopos.core.database.model.ArtworkDetailsDBO
 import ru.createsmart.artopos.core.database.model.ArtworkDetailsWithFavoriteFlagDBO
+import ru.createsmart.artopos.core.database.model.ArtworkFeedProjectionDBO
+import ru.createsmart.artopos.core.database.model.ArtworkFeedWithFavoriteFlagDBO
 import ru.createsmart.artopos.core.database.model.ArtworkWithDetailsDBO
 import ru.createsmart.artopos.core.database.model.ImageDimensionsDBO
 import ru.createsmart.artopos.core.model.CreationDate
@@ -19,6 +21,40 @@ import ru.createsmart.artopos.core.network.model.PlaceDTO
 class ArtworkMappersTest {
 
     private val mapper = ArtworkMapper()
+
+    @Test
+    fun `map ArtworkFeedDBO to Artwork correctly`() {
+        // GIVEN
+        val imageDimensions = ImageDimensionsDBO(
+            width = 2550,
+            height = 1301,
+        )
+
+        val projection = ArtworkFeedProjectionDBO(
+            id = 357596,
+            title = "Blossoming Plum with Moon and Snow (right scroll)",
+            artist = "Owari",
+            imageUrl = "https://nrs.harvard.edu/urn-3:HUAM:765750",
+            imageDimensions = imageDimensions,
+        )
+
+        val wrapper = ArtworkFeedWithFavoriteFlagDBO(artwork = projection, isFavorite = true)
+
+        // WHEN
+        val domain = mapper.mapToDomain(wrapper)
+
+        // THEN
+        assertEquals(357596, domain.id)
+        assertEquals("Blossoming Plum with Moon and Snow (right scroll)", domain.title)
+        assertEquals("Owari", domain.artist)
+        assertEquals("https://nrs.harvard.edu/urn-3:HUAM:765750", domain.imageUrl)
+
+        val expectedDims = ImageDimensions(width = 2550, height = 1301)
+        assertEquals(expectedDims, domain.imageDimensions)
+
+        assertEquals(CreationDate.Unknown, domain.creationDate)
+        assertEquals(true, domain.isFavorite)
+    }
 
     @Test
     fun `map ArtworkDTO to ArtworkDBO correctly`() {
@@ -176,8 +212,10 @@ class ArtworkMappersTest {
         // GIVEN
         val baseDbo = ArtworkDBO(
             id = 1, sortingIndex = 0, title = "Mona Lisa", artist = "Da Vinci",
-            imageUrl = "url", imageDimensions = null, date = null, yearInt = null,
-            technique = null, description = "Basic Desc", url = null, galleryImages = null,
+            imageUrl = "url", imageDimensions = null,
+            date = "1503", yearInt = 1503, // ДАТА ЗДЕСЬ ЕСТЬ
+            technique = null, description = "Basic Desc", url = null,
+            galleryImages = listOf(StoredImage("url", 100, 100)),
             inDiscoverFeed = true,
         )
         // GIVEN
@@ -193,13 +231,20 @@ class ArtworkMappersTest {
         )
 
         // WHEN
-        val domain = mapper.mapDetailsToDomain(wrapper)
+        val domainDetails = mapper.mapDetailsToDomain(wrapper)
 
         // THEN
-        assertEquals("Mona Lisa", domain.baseArtwork.title)
-        assertEquals("Louvre", domain.provenance)
-        assertEquals("Room 711", domain.galleryLocation)
-        assertEquals(true, domain.baseArtwork.isFavorite)
+        assertEquals("Mona Lisa", domainDetails.baseArtwork.title)
+        assertEquals(CreationDate.ExactYear(1503), domainDetails.baseArtwork.creationDate)
+        assertEquals(true, domainDetails.baseArtwork.isFavorite)
+
+        // THEN
+        assertEquals("Louvre", domainDetails.provenance)
+        assertEquals("Room 711", domainDetails.galleryLocation)
+
+        // THEN
+        assertEquals(1, domainDetails.images.size)
+        assertEquals("url", domainDetails.images[0].url)
     }
 
     @Test
