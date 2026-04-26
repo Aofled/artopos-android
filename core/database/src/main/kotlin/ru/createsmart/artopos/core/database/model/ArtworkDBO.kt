@@ -5,7 +5,6 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import ru.createsmart.artopos.core.database.converters.StoredImage
-import ru.createsmart.artopos.core.model.ImageDimensions
 
 @Entity(tableName = "artworks")
 data class ArtworkDBO(
@@ -14,7 +13,7 @@ data class ArtworkDBO(
     @ColumnInfo(name = "title") val title: String,
     @ColumnInfo(name = "artist") val artist: String,
     @ColumnInfo(name = "image_url") val imageUrl: String,
-    @Embedded(prefix = "image_dimensions_") val imageDimensions: ImageDimensions?,
+    @Embedded(prefix = "image_dimensions_") val imageDimensions: ImageDimensionsDBO?,
     @ColumnInfo(name = "date") val date: String?,
     @ColumnInfo(name = "year_int") val yearInt: Int?,
     @ColumnInfo(name = "technique") val technique: String?,

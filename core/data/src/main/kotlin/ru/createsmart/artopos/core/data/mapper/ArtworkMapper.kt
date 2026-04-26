@@ -5,6 +5,7 @@ import ru.createsmart.artopos.core.database.model.ArtworkDBO
 import ru.createsmart.artopos.core.database.model.ArtworkDetailsDBO
 import ru.createsmart.artopos.core.database.model.ArtworkDetailsWithFavoriteFlagDBO
 import ru.createsmart.artopos.core.database.model.ArtworkWithFavoriteFlagDBO
+import ru.createsmart.artopos.core.database.model.ImageDimensionsDBO
 import ru.createsmart.artopos.core.model.Artwork
 import ru.createsmart.artopos.core.model.ArtworkDetails
 import ru.createsmart.artopos.core.model.ArtworkImage
@@ -34,7 +35,7 @@ class ArtworkMapper @Inject constructor() {
         val finalUrl = bestImage?.url ?: dto.imageUrl ?: ""
 
         val dimensions = if (bestImage != null && bestImage.width > 0 && bestImage.height > 0) {
-            ImageDimensions(width = bestImage.width, height = bestImage.height)
+            ImageDimensionsDBO(width = bestImage.width, height = bestImage.height)
         } else {
             null
         }
@@ -89,12 +90,16 @@ class ArtworkMapper @Inject constructor() {
             else -> CreationDate.Unknown
         }
 
+        val domainDimensions = dbo.artwork.imageDimensions?.let {
+            ImageDimensions(width = it.width, height = it.height)
+        }
+
         return Artwork(
             id = dbo.artwork.id,
             title = dbo.artwork.title,
             artist = dbo.artwork.artist,
             imageUrl = dbo.artwork.imageUrl,
-            imageDimensions = dbo.artwork.imageDimensions,
+            imageDimensions = domainDimensions,
             creationDate = creationDate,
             isFavorite = dbo.isFavorite,
         )
