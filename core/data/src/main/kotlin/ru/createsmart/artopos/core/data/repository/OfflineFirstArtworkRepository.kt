@@ -111,8 +111,8 @@ class OfflineFirstArtworkRepository @Inject constructor(
     override suspend fun clearDatabaseCache() {
         withContext(Dispatchers.IO) {
             try {
-                // val deletedCount = artworkDao.clearDetailsCacheFromSettings()
-                // Log.d("DatabaseCache", "Cleared $deletedCount cached artwork details.")
+                val deletedCount = artworkDao.clearDetailsCacheFromSettings()
+                Log.d("DatabaseCache", "Cleared $deletedCount cached artwork details.")
             } catch (e: SQLiteException) {
                 Log.e("DatabaseCache", "Failed to clear details cache", e)
             }
