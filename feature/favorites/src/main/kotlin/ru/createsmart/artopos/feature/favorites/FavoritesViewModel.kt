@@ -12,7 +12,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import ru.createsmart.artopos.core.artworkcard.mapper.ArtworkUiMapper
-import ru.createsmart.artopos.core.domain.interactor.FavoritesInteractor
+import ru.createsmart.artopos.core.domain.usecase.GetFavoriteArtworksUseCase
+import ru.createsmart.artopos.core.domain.usecase.ToggleFavoriteUseCase
 import ru.createsmart.artopos.core.uicomponents.manager.UiMessageManager
 import ru.createsmart.artopos.feature.favorites.model.FavoritesIntent
 import javax.inject.Inject
@@ -26,7 +27,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FavoritesViewModel @Inject constructor(
-    private val useCases: FavoritesInteractor,
+    private val getFavoritesUseCase: GetFavoriteArtworksUseCase,
+    private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
     private val messageManager: UiMessageManager,
     private val mapper: ArtworkUiMapper,
 ) : ViewModel() {
@@ -47,7 +49,7 @@ class FavoritesViewModel @Inject constructor(
         }
     }
 
-    val uiState: StateFlow<FavoritesUiState> = useCases.getFavoritesUseCase()
+    val uiState: StateFlow<FavoritesUiState> = getFavoritesUseCase()
         .map { list ->
             if (list.isEmpty()) {
                 FavoritesUiState.Empty
@@ -63,7 +65,7 @@ class FavoritesViewModel @Inject constructor(
 
     private fun handleToggleFavorite(id: Int) {
         viewModelScope.launch {
-            useCases.toggleFavoriteUseCase(id)
+            toggleFavoriteUseCase(id)
         }
     }
 

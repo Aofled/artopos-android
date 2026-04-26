@@ -16,7 +16,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import ru.createsmart.artopos.core.domain.interactor.DetailsInteractor
 import ru.createsmart.artopos.core.domain.repository.ImageDownloader
 import ru.createsmart.artopos.core.domain.usecase.GetArtworkDetailsUseCase
 import ru.createsmart.artopos.core.domain.usecase.GetUserSettingsUseCase
@@ -44,13 +43,6 @@ class DetailsViewModelTest {
     private val getUserSettings: GetUserSettingsUseCase = mockk()
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase = mockk(relaxed = true)
 
-    private val useCases = DetailsInteractor(
-        getArtworkDetails = getArtworkDetails,
-        getUserSettings = getUserSettings,
-        syncArtworkDetails = syncArtworkDetails,
-        toggleFavorite = toggleFavoriteUseCase,
-    )
-
     private val messageManager: UiMessageManager = mockk(relaxed = true)
     private val translationFacade: ArtworkTranslationFacade = mockk()
     private val imageDownloader: ImageDownloader = mockk(relaxed = true)
@@ -68,8 +60,11 @@ class DetailsViewModelTest {
         every { translationFacade.translateFast(mockArtwork, "ru") } returns mockFastArtwork
 
         viewModel = DetailsViewModel(
+            getArtworkDetails = getArtworkDetails,
+            syncArtworkDetails = syncArtworkDetails,
+            getUserSettings = getUserSettings,
+            toggleFavorite = toggleFavoriteUseCase,
             savedStateHandle = savedStateHandle,
-            useCases = useCases,
             messageManager = messageManager,
             translationFacade = translationFacade,
             imageDownloader = imageDownloader,

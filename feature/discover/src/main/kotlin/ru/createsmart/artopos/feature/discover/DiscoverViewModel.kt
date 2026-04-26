@@ -28,7 +28,12 @@ import ru.createsmart.artopos.core.artworkcard.mapper.ArtworkUiMapper
 import ru.createsmart.artopos.core.common.util.LocaleHelper
 import ru.createsmart.artopos.core.designsystem.components.toUiText
 import ru.createsmart.artopos.core.designsystem.util.FilterNameHelper
-import ru.createsmart.artopos.core.domain.interactor.DiscoverInteractor
+import ru.createsmart.artopos.core.domain.usecase.GetArtworksUseCase
+import ru.createsmart.artopos.core.domain.usecase.GetFiltersUseCase
+import ru.createsmart.artopos.core.domain.usecase.GetUserSettingsUseCase
+import ru.createsmart.artopos.core.domain.usecase.InitializeFiltersUseCase
+import ru.createsmart.artopos.core.domain.usecase.PreloadTranslationModelUseCase
+import ru.createsmart.artopos.core.domain.usecase.ToggleFavoriteUseCase
 import ru.createsmart.artopos.core.model.FilterItem
 import ru.createsmart.artopos.core.model.FilterParams
 import ru.createsmart.artopos.core.model.FilterSortOption
@@ -40,10 +45,15 @@ import ru.createsmart.artopos.feature.discover.model.FilterListItem
 import ru.createsmart.artopos.feature.discover.model.FiltersUiState
 import javax.inject.Inject
 
-@Suppress("TooManyFunctions")
+@Suppress("TooManyFunctions", "LongParameterList")
 @HiltViewModel
 class DiscoverViewModel @Inject constructor(
-    private val useCases: DiscoverInteractor,
+    private val getArtworks: GetArtworksUseCase,
+    private val getFilters: GetFiltersUseCase,
+    private val getUserSettings: GetUserSettingsUseCase,
+    private val toggleFavorite: ToggleFavoriteUseCase,
+    private val preloadTranslationModel: PreloadTranslationModelUseCase,
+    private val initializeFilters: InitializeFiltersUseCase,
     private val messageManager: UiMessageManager,
     private val mapper: ArtworkUiMapper,
     @ApplicationContext private val context: Context,
@@ -128,23 +138,23 @@ class DiscoverViewModel @Inject constructor(
     }
 
     private val isFiltersAvailableFlow = combine(
-        useCases.getFilters(FilterType.CLASSIFICATION),
-        useCases.getFilters(FilterType.CENTURY),
-        useCases.getFilters(FilterType.CULTURE),
+        getFilters(FilterType.CLASSIFICATION),
+        getFilters(FilterType.CENTURY),
+        getFilters(FilterType.CULTURE),
     ) { classDb, centDb, cultDb ->
         classDb.isNotEmpty() && centDb.isNotEmpty() && cultDb.isNotEmpty()
     }
 
     private val _classificationsFlow = combineAndFilterFlow(
-        useCases.getFilters(FilterType.CLASSIFICATION),
+        getFilters(FilterType.CLASSIFICATION),
     ) { it.classification }
 
     private val _centuriesFlow = combineAndFilterFlow(
-        useCases.getFilters(FilterType.CENTURY),
+        getFilters(FilterType.CENTURY),
     ) { it.century }
 
     private val _culturesFlow = combineAndFilterFlow(
-        useCases.getFilters(FilterType.CULTURE),
+        getFilters(FilterType.CULTURE),
     ) { it.culture }
 
     val filtersUiState: StateFlow<FiltersUiState> = combine(
@@ -170,20 +180,20 @@ class DiscoverViewModel @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     val artworksFlow = _activeFilterParams
         .flatMapLatest { params ->
-            useCases.getArtworks(params) // It depends on the filter
+            getArtworks(params) // It depends on the filter
         }
         .map { pagingData -> pagingData.map { mapper.mapToUi(it) } }
         .cachedIn(viewModelScope)
 
     init {
         viewModelScope.launch {
-            useCases.initializeFilters()
+            initializeFilters()
         }
 
         viewModelScope.launch {
-            useCases.getUserSettings().collectLatest { settings ->
+            getUserSettings().collectLatest { settings ->
                 _currentLanguage.value = settings.languageCode
-                useCases.preloadTranslationModel(settings.languageCode) // ML Kit Translation dictionary preloading
+                preloadTranslationModel(settings.languageCode) // ML Kit Translation dictionary preloading
             }
         }
     }
@@ -252,7 +262,7 @@ class DiscoverViewModel @Inject constructor(
 
     private fun onToggleFavorite(id: Int) {
         viewModelScope.launch {
-            useCases.toggleFavorite(id)
+            toggleFavorite(id)
         }
     }
 
@@ -262,7 +272,7 @@ class DiscoverViewModel @Inject constructor(
         if (!messageManager.checkInternetAndNotify()) return
 
         viewModelScope.launch {
-            val result = useCases.initializeFilters()
+            val result = initializeFilters()
 
             result.onFailure { error ->
                 messageManager.sendSideEffect(error.toUiText())
@@ -276,7 +286,7 @@ class DiscoverViewModel @Inject constructor(
     private fun onRetryAction() {
         if (messageManager.checkInternetAndNotify()) {
             viewModelScope.launch {
-                val result = useCases.initializeFilters()
+                val result = initializeFilters()
                 result.onFailure { error -> messageManager.sendSideEffect(error.toUiText()) }
             }
         }

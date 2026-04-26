@@ -14,7 +14,8 @@ import org.junit.Rule
 import org.junit.Test
 import ru.createsmart.artopos.core.artworkcard.mapper.ArtworkUiMapper
 import ru.createsmart.artopos.core.designsystem.components.UiText
-import ru.createsmart.artopos.core.domain.interactor.FavoritesInteractor
+import ru.createsmart.artopos.core.domain.usecase.GetFavoriteArtworksUseCase
+import ru.createsmart.artopos.core.domain.usecase.ToggleFavoriteUseCase
 import ru.createsmart.artopos.core.model.Artwork
 import ru.createsmart.artopos.core.model.CreationDate
 import ru.createsmart.artopos.core.model.ImageDimensions
@@ -28,16 +29,18 @@ class FavoritesViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
-    private val useCases: FavoritesInteractor = mockk(relaxed = true)
+    private val getFavoritesUseCase: GetFavoriteArtworksUseCase = mockk(relaxed = true)
+    private val toggleFavoriteUseCase: ToggleFavoriteUseCase = mockk(relaxed = true)
     private val messageManager: UiMessageManager = mockk(relaxed = true)
     private val mapper: ArtworkUiMapper = ArtworkUiMapper()
     private lateinit var viewModel: FavoritesViewModel
     private val favoritesFlow = MutableSharedFlow<List<Artwork>>()
 
     private fun setupViewModel() {
-        every { useCases.getFavoritesUseCase() } returns favoritesFlow
+        every { getFavoritesUseCase() } returns favoritesFlow
         viewModel = FavoritesViewModel(
-            useCases,
+            getFavoritesUseCase,
+            toggleFavoriteUseCase,
             messageManager,
             mapper,
         )
@@ -132,6 +135,6 @@ class FavoritesViewModelTest {
         viewModel.onIntent(FavoritesIntent.ToggleFavorite(artworkId))
 
         // THEN
-        coVerify(exactly = 1) { useCases.toggleFavoriteUseCase(artworkId) }
+        coVerify(exactly = 1) { toggleFavoriteUseCase(artworkId) }
     }
 }

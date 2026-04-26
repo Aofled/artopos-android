@@ -12,7 +12,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
@@ -22,7 +21,12 @@ import org.junit.Test
 import ru.createsmart.artopos.core.artworkcard.mapper.ArtworkUiMapper
 import ru.createsmart.artopos.core.common.util.LocaleHelper
 import ru.createsmart.artopos.core.designsystem.util.FilterNameHelper
-import ru.createsmart.artopos.core.domain.interactor.DiscoverInteractor
+import ru.createsmart.artopos.core.domain.usecase.GetArtworksUseCase
+import ru.createsmart.artopos.core.domain.usecase.GetFiltersUseCase
+import ru.createsmart.artopos.core.domain.usecase.GetUserSettingsUseCase
+import ru.createsmart.artopos.core.domain.usecase.InitializeFiltersUseCase
+import ru.createsmart.artopos.core.domain.usecase.PreloadTranslationModelUseCase
+import ru.createsmart.artopos.core.domain.usecase.ToggleFavoriteUseCase
 import ru.createsmart.artopos.core.model.FilterSortOption
 import ru.createsmart.artopos.core.model.FilterType
 import ru.createsmart.artopos.core.model.settings.ThemeConfig
@@ -35,7 +39,13 @@ class DiscoverViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
 
-    private val useCases: DiscoverInteractor = mockk()
+    private val getArtworks: GetArtworksUseCase = mockk()
+    private val getFilters: GetFiltersUseCase = mockk()
+    private val getUserSettings: GetUserSettingsUseCase = mockk()
+    private val toggleFavorite: ToggleFavoriteUseCase = mockk()
+    private val preloadTranslationModel: PreloadTranslationModelUseCase = mockk()
+    private val initializeFilters: InitializeFiltersUseCase = mockk()
+
     private val messageManager: UiMessageManager = mockk(relaxed = true)
     private val mapper: ArtworkUiMapper = ArtworkUiMapper()
     private val context: Context = mockk(relaxed = true)
@@ -51,14 +61,24 @@ class DiscoverViewModelTest {
 
         every { LocaleHelper.getLocalizedContext(any(), any()) } returns context
         every { FilterNameHelper.getLocalizedName(any(), any()) } answers { arg(1) as String }
-        coEvery { useCases.initializeFilters() } returns Result.success(Unit)
-        every { useCases.getFilters(any()) } returns flowOf(emptyList())
+        coEvery { initializeFilters() } returns Result.success(Unit)
+        every { getFilters(any()) } returns flowOf(emptyList())
 
         val defaultSettings = UserSettings(ThemeConfig.FOLLOW_SYSTEM, "en")
-        every { useCases.getUserSettings() } returns flowOf(defaultSettings)
-        coEvery { useCases.preloadTranslationModel(any()) } returns Unit
+        every { getUserSettings() } returns flowOf(defaultSettings)
+        coEvery { preloadTranslationModel(any()) } returns Unit
 
-        viewModel = DiscoverViewModel(useCases, messageManager, mapper, context)
+        viewModel = DiscoverViewModel(
+            getArtworks = getArtworks,
+            getFilters = getFilters,
+            getUserSettings = getUserSettings,
+            toggleFavorite = toggleFavorite,
+            preloadTranslationModel = preloadTranslationModel,
+            initializeFilters = initializeFilters,
+            messageManager = messageManager,
+            mapper = mapper,
+            context = context,
+        )
     }
 
     @After
@@ -123,14 +143,15 @@ class DiscoverViewModelTest {
 
     @Test
     fun `intent FilterReset clears draft params and search query`() = runTest {
-        viewModel.onIntent(DiscoverIntent.SearchQueryChanged("Picasso"))
-        viewModel.onIntent(DiscoverIntent.FilterSelected(FilterType.CLASSIFICATION, "Paintings"))
-
-        runCurrent()
-
         viewModel.filtersUiState.test {
+            val initialState = awaitItem()
+            assertEquals("", initialState.searchQuery)
+
             // GIVEN
-            val stateBeforeReset = awaitItem()
+            viewModel.onIntent(DiscoverIntent.SearchQueryChanged("Picasso"))
+            viewModel.onIntent(DiscoverIntent.FilterSelected(FilterType.CLASSIFICATION, "Paintings"))
+
+            val stateBeforeReset = expectMostRecentItem()
             assertEquals("Picasso", stateBeforeReset.searchQuery)
 
             // WHEN
@@ -146,13 +167,13 @@ class DiscoverViewModelTest {
     @Test
     fun `intent ToggleFavorite calls use case with correct id`() = runTest {
         // GIVEN
-        coEvery { useCases.toggleFavorite(any()) } returns Unit
+        coEvery { toggleFavorite(any()) } returns Unit
 
         // WHEN
         viewModel.onIntent(DiscoverIntent.ToggleFavorite(123))
 
         // THEN
-        coVerify(exactly = 1) { useCases.toggleFavorite(123) }
+        coVerify(exactly = 1) { toggleFavorite(123) }
     }
 
     @Test
@@ -167,7 +188,7 @@ class DiscoverViewModelTest {
         io.mockk.verify(exactly = 1) { messageManager.checkInternetAndNotify() }
 
         // THEN
-        coVerify(exactly = 2) { useCases.initializeFilters() }
+        coVerify(exactly = 2) { initializeFilters() }
 
         // THEN
         io.mockk.verify(exactly = 1) { messageManager.resetLastEmittedMessage() }

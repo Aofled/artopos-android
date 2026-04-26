@@ -20,8 +20,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.core.designsystem.components.toUiText
-import ru.createsmart.artopos.core.domain.interactor.DetailsInteractor
 import ru.createsmart.artopos.core.domain.repository.ImageDownloader
+import ru.createsmart.artopos.core.domain.usecase.GetArtworkDetailsUseCase
+import ru.createsmart.artopos.core.domain.usecase.GetUserSettingsUseCase
+import ru.createsmart.artopos.core.domain.usecase.SyncArtworkDetailsUseCase
+import ru.createsmart.artopos.core.domain.usecase.ToggleFavoriteUseCase
 import ru.createsmart.artopos.core.navigation.DetailsRoute
 import ru.createsmart.artopos.core.uicomponents.manager.UiMessageManager
 import ru.createsmart.artopos.feature.details.mapper.toDetailUi
@@ -36,10 +39,14 @@ import ru.createsmart.artopos.core.designsystem.R as DSR
 
 private const val TRANSLATION_TIMEOUT_MS = 300L
 
+@Suppress("LongParameterList")
 @HiltViewModel
 class DetailsViewModel @Inject constructor(
+    private val getArtworkDetails: GetArtworkDetailsUseCase,
+    private val getUserSettings: GetUserSettingsUseCase,
+    private val syncArtworkDetails: SyncArtworkDetailsUseCase,
+    private val toggleFavorite: ToggleFavoriteUseCase,
     savedStateHandle: SavedStateHandle,
-    private val useCases: DetailsInteractor,
     private val messageManager: UiMessageManager,
     private val translationFacade: ArtworkTranslationFacade,
     private val imageDownloader: ImageDownloader,
@@ -69,8 +76,8 @@ class DetailsViewModel @Inject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val uiState: StateFlow<ArtworkDetailUiState> = combine(
-        useCases.getArtworkDetails(artworkId),
-        useCases.getUserSettings(),
+        getArtworkDetails(artworkId),
+        getUserSettings(),
         _showTranslation,
     ) { artwork, settings, showTranslation ->
         Triple(artwork, settings.languageCode, showTranslation)
@@ -152,7 +159,7 @@ class DetailsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            useCases.syncArtworkDetails(artworkId)
+            syncArtworkDetails(artworkId)
         }
     }
 
@@ -161,7 +168,7 @@ class DetailsViewModel @Inject constructor(
         viewModelScope.launch {
             _isRefreshing.value = true
 
-            val result = useCases.syncArtworkDetails(artworkId)
+            val result = syncArtworkDetails(artworkId)
 
             result.onFailure { error ->
                 messageManager.sendSideEffect(error.toUiText())
@@ -179,7 +186,7 @@ class DetailsViewModel @Inject constructor(
 
     private fun toggleFavorite() {
         viewModelScope.launch {
-            useCases.toggleFavorite(artworkId)
+            toggleFavorite(artworkId)
         }
     }
 

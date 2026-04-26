@@ -11,7 +11,11 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import ru.createsmart.artopos.core.designsystem.components.UiText
-import ru.createsmart.artopos.core.domain.interactor.SettingsInteractor
+import ru.createsmart.artopos.core.domain.usecase.ClearAppCacheUseCase
+import ru.createsmart.artopos.core.domain.usecase.GetImageCacheSizeUseCase
+import ru.createsmart.artopos.core.domain.usecase.GetUserSettingsUseCase
+import ru.createsmart.artopos.core.domain.usecase.SetLanguageUseCase
+import ru.createsmart.artopos.core.domain.usecase.SetThemeConfigUseCase
 import ru.createsmart.artopos.core.model.settings.ThemeConfig
 import ru.createsmart.artopos.core.uicomponents.manager.UiMessageManager
 import ru.createsmart.artopos.feature.settings.model.SettingsIntent
@@ -21,11 +25,15 @@ private const val BYTES_IN_MEGABYTE = 1024L * 1024L
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val useCases: SettingsInteractor,
+    private val clearAppCacheUseCase: ClearAppCacheUseCase,
+    private val getImageCacheSizeUseCase: GetImageCacheSizeUseCase,
+    private val getUserSettings: GetUserSettingsUseCase,
+    private val setThemeConfig: SetThemeConfigUseCase,
+    private val setLanguage: SetLanguageUseCase,
     private val uiMessageManager: UiMessageManager,
 ) : ViewModel() {
 
-    val uiState: StateFlow<SettingsUiState> = useCases.getUserSettings()
+    val uiState: StateFlow<SettingsUiState> = getUserSettings()
         .map { settings ->
             SettingsUiState.Success(settings)
         }
@@ -50,19 +58,19 @@ class SettingsViewModel @Inject constructor(
 
     private fun updateTheme(themeConfig: ThemeConfig) {
         viewModelScope.launch {
-            useCases.setThemeConfig(themeConfig)
+            setThemeConfig(themeConfig)
         }
     }
 
     private fun updateLanguage(languageCode: String) {
         viewModelScope.launch {
-            useCases.setLanguage(languageCode)
+            setLanguage(languageCode)
         }
     }
 
     internal fun calculateCacheSize() {
         viewModelScope.launch {
-            val bytes = useCases.getImageCacheSizeUseCase()
+            val bytes = getImageCacheSizeUseCase()
             val megabytes = bytes / (BYTES_IN_MEGABYTE)
             _cacheSizeMb.value = megabytes
         }
@@ -74,7 +82,7 @@ class SettingsViewModel @Inject constructor(
                 UiText.StringResource(R.string.settings_msg_cache_clearing),
             )
 
-            val freedBytes = useCases.clearAppCacheUseCase()
+            val freedBytes = clearAppCacheUseCase()
             val freedMb = freedBytes / (BYTES_IN_MEGABYTE)
 
             val message = if (freedMb > 0) {
