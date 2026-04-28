@@ -59,16 +59,10 @@ class MLKitTranslationDataSource @Inject constructor() {
     suspend fun translate(text: String?, targetLanguage: String): String? {
         // Try to get the translator only if text not empty.
         if (text.isNullOrBlank()) return text
-
         val translator = getOrCreateTranslator(targetLanguage)
 
         return if (translator != null) {
             try {
-                // Critical: Ensure the language model (approx. 30MB) is downloaded before translating.
-                // If offline and model missing -> throws Exception.
-                // Language packs are downloaded via Wi-Fi and mobile internet (.requireWifi() <- only Wi-Fi)
-                val conditions = DownloadConditions.Builder().build()
-                translator.downloadModelIfNeeded(conditions).await()
                 translator.translate(text).await()
             } catch (e: MlKitException) {
                 Log.e("MLKitTranslator", "Failed to translate text. ML Kit Error Code: ${e.errorCode}", e)

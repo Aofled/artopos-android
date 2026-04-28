@@ -51,69 +51,69 @@ class ArtworkTranslationFacade @Inject constructor(
         languageCode: String,
     ): ArtworkDetails {
         return withContext(Dispatchers.IO) {
-            // ML_ONLY: ML Kit
-            val descriptionDef = async { translator.translate(originalArtwork.description, languageCode) }
-            val dimensionsDef = async { translator.translate(originalArtwork.dimensions, languageCode) }
-            val dateDef = async {
-                // Translate only if it is text (for example, "17th century")
-                when (val current = originalArtwork.baseArtwork.creationDate) {
-                    is CreationDate.TextOnly -> {
-                        val translatedText = translator.translate(current.text, languageCode)
-                        if (translatedText != null) {
-                            CreationDate.TextOnly(translatedText)
-                        } else {
-                            current // If the translation fails, we leave the original
-                        }
-                    }
-                    else -> current // Numbers (1890) or unknown dates are not translated
-                }
-            }
+            // 1. Availability of a language model
+            translator.preloadModel(languageCode)
+
+            // 2. Starting the translation
+            val descDef = async { translator.translate(originalArtwork.description, languageCode) }
+            val dimDef = async { translator.translate(originalArtwork.dimensions, languageCode) }
             val styleDef = async { translator.translate(originalArtwork.style, languageCode) }
-            val galleryLocationDef = async { translator.translate(originalArtwork.galleryLocation, languageCode) }
-            val creditLineDef = async { translator.translate(originalArtwork.creditLine, languageCode) }
-            val provenanceDef = async { translator.translate(originalArtwork.provenance, languageCode) }
+            val locDef = async { translator.translate(originalArtwork.galleryLocation, languageCode) }
+            val creditDef = async { translator.translate(originalArtwork.creditLine, languageCode) }
+            val provDef = async { translator.translate(originalArtwork.provenance, languageCode) }
 
-            // HYBRID: Look it up in a dictionary, if not -> ML Kit
-            val mediumDef = async {
-                if (fastArtwork.medium != originalArtwork.medium) {
-                    fastArtwork.medium
-                } else {
-                    translator.translate(originalArtwork.medium, languageCode)
-                }
-            }
+            // HYBRID & CUSTOM: Delegates
+            val dateDef = async { translateDate(originalArtwork.baseArtwork.creationDate, languageCode) }
+            val mediumDef = async { translateHybrid(originalArtwork.medium, fastArtwork.medium, languageCode) }
+            val techDef = async { translateHybrid(originalArtwork.technique, fastArtwork.technique, languageCode) }
+            val periodDef = async { translateHybrid(originalArtwork.period, fastArtwork.period, languageCode) }
 
-            val techniqueDef = async {
-                if (fastArtwork.technique != originalArtwork.technique) {
-                    fastArtwork.technique
-                } else {
-                    translator.translate(originalArtwork.technique, languageCode)
-                }
-            }
-
-            val periodDef = async {
-                if (fastArtwork.period != originalArtwork.period) {
-                    fastArtwork.period
-                } else {
-                    translator.translate(originalArtwork.period, languageCode)
-                }
-            }
-
+            // 3. Assemble the result
             val updatedBaseArtwork = fastArtwork.baseArtwork.copy(
                 creationDate = dateDef.await(),
             )
 
             fastArtwork.copy(
                 baseArtwork = updatedBaseArtwork,
-                description = descriptionDef.await(),
+                description = descDef.await(),
                 medium = mediumDef.await(),
-                technique = techniqueDef.await(),
+                technique = techDef.await(),
                 period = periodDef.await(),
-                dimensions = dimensionsDef.await(),
+                dimensions = dimDef.await(),
                 style = styleDef.await(),
-                galleryLocation = galleryLocationDef.await(),
-                creditLine = creditLineDef.await(),
-                provenance = provenanceDef.await(),
+                galleryLocation = locDef.await(),
+                creditLine = creditDef.await(),
+                provenance = provDef.await(),
             )
+        }
+    }
+
+    private suspend fun translateDate(
+        currentDate: CreationDate,
+        languageCode: String,
+    ): CreationDate {
+        return when (currentDate) {
+            is CreationDate.TextOnly -> {
+                val translatedText = translator.translate(currentDate.text, languageCode)
+                if (translatedText != null) {
+                    CreationDate.TextOnly(translatedText)
+                } else {
+                    currentDate // If the translation fails, we leave the original
+                }
+            }
+            else -> currentDate // Numbers (1890) or unknown dates are not translated
+        }
+    }
+
+    private suspend fun translateHybrid(
+        originalText: String?,
+        fastText: String?,
+        languageCode: String,
+    ): String? {
+        return if (fastText != originalText) {
+            fastText // Dictionary already translated it
+        } else {
+            translator.translate(originalText, languageCode) // ML Kit fallback
         }
     }
 

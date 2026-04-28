@@ -77,6 +77,8 @@ class ArtworkTranslationFacadeTest {
         // GIVEN
         val fast = createEmptyArtwork().copy(medium = "Масло на холсте")
 
+        coEvery { translator.preloadModel(any()) } returns Unit
+
         coEvery { translator.translate(any(), any()) } returns "ML_KIT_TRANSLATION"
 
         // WHEN
@@ -94,6 +96,8 @@ class ArtworkTranslationFacadeTest {
 
         // GIVEN
         val fast = createEmptyArtwork().copy(medium = "Unknown Medium")
+
+        coEvery { translator.preloadModel(any()) } returns Unit
 
         coEvery { translator.translate("Unknown Medium", "ru") } returns "Неизвестный материал"
         coEvery { translator.translate(null, any()) } returns null
