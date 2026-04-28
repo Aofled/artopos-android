@@ -1,8 +1,11 @@
 package ru.createsmart.artopos.feature.details.translation
 
+import android.app.ActivityManager
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import ru.createsmart.artopos.core.common.util.LocaleHelper
@@ -24,10 +27,28 @@ import javax.inject.Inject
  * - description, dimensions, date, galleryLocation, creditLine, provenance
  */
 
+private const val LOW_THREADS = 3
+private const val LARGE_THREADS = 8
+
 class ArtworkTranslationFacade @Inject constructor(
     @ApplicationContext private val baseContext: Context,
     private val translator: TextTranslator,
 ) {
+    /**
+     * Dynamic parallelism limit for ML Kit.
+     * On budget devices (low RAM), we strictly limit the number of
+     * simultaneously running heavy C++ threads to 3 to avoid OOMs.
+     * On standard/flagship devices, we set the limit to 8,
+     * to utilize all high-performance processor cores and translate text instantly.
+     */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val mlKitDispatcher: CoroutineDispatcher = run {
+        val activityManager = baseContext.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        val isLowRam = activityManager.isLowRamDevice
+
+        val threadLimit = if (isLowRam) LOW_THREADS else LARGE_THREADS
+        Dispatchers.IO.limitedParallelism(threadLimit)
+    }
 
     fun translateFast(artwork: ArtworkDetails, languageCode: String): ArtworkDetails {
         val localizedContext = LocaleHelper.getLocalizedContext(baseContext, languageCode)
@@ -50,7 +71,7 @@ class ArtworkTranslationFacade @Inject constructor(
         fastArtwork: ArtworkDetails,
         languageCode: String,
     ): ArtworkDetails {
-        return withContext(Dispatchers.IO) {
+        return withContext(mlKitDispatcher) {
             // 1. Availability of a language model
             translator.preloadModel(languageCode)
 

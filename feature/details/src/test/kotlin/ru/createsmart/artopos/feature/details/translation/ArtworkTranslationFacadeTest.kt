@@ -1,5 +1,6 @@
 package ru.createsmart.artopos.feature.details.translation
 
+import android.app.ActivityManager
 import android.content.Context
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -24,6 +25,7 @@ class ArtworkTranslationFacadeTest {
     private val mockContext: Context = mockk()
     private val mockLocalizedContext: Context = mockk()
     private val translator: TextTranslator = mockk()
+    private val mockActivityManager: ActivityManager = mockk()
 
     private lateinit var facade: ArtworkTranslationFacade
 
@@ -33,6 +35,10 @@ class ArtworkTranslationFacadeTest {
         mockkObject(FilterNameHelper)
 
         every { LocaleHelper.getLocalizedContext(any(), any()) } returns mockLocalizedContext
+
+        every { mockContext.getSystemService(Context.ACTIVITY_SERVICE) } returns mockActivityManager
+
+        every { mockActivityManager.isLowRamDevice } returns false
 
         facade = ArtworkTranslationFacade(mockContext, translator)
     }
