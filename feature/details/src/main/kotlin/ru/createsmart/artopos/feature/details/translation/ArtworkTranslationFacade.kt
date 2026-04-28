@@ -123,4 +123,8 @@ class ArtworkTranslationFacade @Inject constructor(
         val localized = FilterNameHelper.getLocalizedName(context, text)
         return localized
     }
+
+    suspend fun close() {
+        translator.close()
+    }
 }

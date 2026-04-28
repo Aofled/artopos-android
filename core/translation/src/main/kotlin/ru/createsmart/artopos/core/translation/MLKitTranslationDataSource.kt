@@ -14,9 +14,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
 class MLKitTranslationDataSource @Inject constructor() {
 
     private val mutex = Mutex()
@@ -64,7 +62,6 @@ class MLKitTranslationDataSource @Inject constructor() {
 
         val translator = getOrCreateTranslator(targetLanguage)
 
-        // 2. Второй (и последний) return: возвращаем результат всего блока if/else
         return if (translator != null) {
             try {
                 // Critical: Ensure the language model (approx. 30MB) is downloaded before translating.
@@ -111,5 +108,11 @@ class MLKitTranslationDataSource @Inject constructor() {
             Log.e("MLKitTranslator", "Failed to check if model is downloaded", e)
             false
         }
+    }
+
+    suspend fun close() = mutex.withLock {
+        currentTranslator?.close()
+        currentTranslator = null
+        activeLanguage = ""
     }
 }

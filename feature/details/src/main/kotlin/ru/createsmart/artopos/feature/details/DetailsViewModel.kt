@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -160,6 +162,17 @@ class DetailsViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             syncArtworkDetails(artworkId)
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        // Clean up heavy native C++ resources (ML Kit translator) from RAM.
+        // We use GlobalScope with NonCancellable because viewModelScope is already
+        // cancelled at this point, but we still need to execute the suspend close() function.
+        @OptIn(kotlinx.coroutines.DelicateCoroutinesApi::class)
+        GlobalScope.launch(NonCancellable) {
+            translationFacade.close()
         }
     }
 

@@ -19,4 +19,8 @@ class TextTranslatorImpl @Inject constructor(
     override suspend fun isModelDownloaded(targetLanguageCode: String): Boolean {
         return dataSource.isModelDownloaded(targetLanguageCode)
     }
+
+    override suspend fun close() {
+        dataSource.close()
+    }
 }

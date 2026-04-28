@@ -53,7 +53,6 @@ interface DataModule {
     ): SettingsRepository
 
     @Binds
-    @Singleton
     fun bindTextTranslator(
         impl: TextTranslatorImpl,
     ): TextTranslator
