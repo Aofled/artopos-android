@@ -1,6 +1,6 @@
 package ru.createsmart.artopos.core.data.repository
 
-import ru.createsmart.artopos.core.common.util.AndroidImageDownloader
+import ru.createsmart.artopos.core.imageloader.downloader.AndroidImageDownloader
 import ru.createsmart.artopos.core.domain.repository.ImageDownloader
 import javax.inject.Inject
 

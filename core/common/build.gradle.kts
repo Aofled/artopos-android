@@ -9,5 +9,4 @@ android {
 
 dependencies {
     implementation(libs.okhttp3)
-    implementation(libs.coil.base)
 }

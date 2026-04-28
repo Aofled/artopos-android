@@ -1,4 +1,4 @@
-package ru.createsmart.artopos.core.common.util
+package ru.createsmart.artopos.core.imageloader.downloader
 
 import android.content.ContentValues
 import android.content.Context
@@ -9,6 +9,7 @@ import android.provider.MediaStore
 import android.webkit.MimeTypeMap
 import androidx.core.graphics.drawable.toBitmap
 import coil.annotation.ExperimentalCoilApi
+import coil.disk.DiskCache
 import coil.imageLoader
 import coil.request.ImageRequest
 import coil.request.SuccessResult
@@ -112,7 +113,7 @@ class AndroidImageDownloader @Inject constructor(
 
     private fun writeImageToStream(
         result: SuccessResult,
-        diskCache: coil.disk.DiskCache?,
+        diskCache: DiskCache?,
         mimeType: String,
         outputStream: OutputStream,
     ) {
