@@ -1,6 +1,7 @@
 package ru.createsmart.artopos.core.imageloader
 
 import android.content.Context
+import android.util.Log
 import coil.annotation.ExperimentalCoilApi
 import coil.imageLoader
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -31,7 +32,8 @@ class ImageCacheManager @Inject constructor(
             try {
                 freedSpace += okHttpCache.size()
                 okHttpCache.evictAll()
-            } catch (ignored: IOException) {
+            } catch (e: IOException) {
+                Log.w("ImageCacheManager", "Failed to clear OkHttp cache", e)
             }
         }
 
