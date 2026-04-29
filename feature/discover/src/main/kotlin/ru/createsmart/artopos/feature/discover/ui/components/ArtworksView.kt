@@ -49,10 +49,10 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import ru.createsmart.artopos.core.artworkcard.model.ArtworkListItem
 import ru.createsmart.artopos.core.artworkcard.ui.components.ArtworkCard
+import ru.createsmart.artopos.core.common.util.DictionaryHelper
 import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposDimens
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
-import ru.createsmart.artopos.core.designsystem.util.FilterNameHelper
 import ru.createsmart.artopos.core.model.FilterParams
 import ru.createsmart.artopos.core.model.FilterType
 import ru.createsmart.artopos.core.uicomponents.components.CustomCircularProgressIndicator
@@ -323,7 +323,7 @@ private fun ActiveFilterChip(
     val context = LocalContext.current
 
     val localizedName = remember(rawName) {
-        FilterNameHelper.getLocalizedName(context, rawName)
+        DictionaryHelper.getLocalizedName(context, rawName)
     }
 
     CustomInputChip(

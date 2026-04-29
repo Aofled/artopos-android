@@ -8,8 +8,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
+import ru.createsmart.artopos.core.common.util.DictionaryHelper
 import ru.createsmart.artopos.core.common.util.LocaleHelper
-import ru.createsmart.artopos.core.designsystem.util.FilterNameHelper
 import ru.createsmart.artopos.core.domain.translation.TextTranslator
 import ru.createsmart.artopos.core.model.ArtworkDetails
 import ru.createsmart.artopos.core.model.CreationDate
@@ -141,7 +141,7 @@ class ArtworkTranslationFacade @Inject constructor(
     // Checks if string exists in local mapping
     private fun translateWithDictionary(text: String?, context: Context): String? {
         if (text == null) return null
-        val localized = FilterNameHelper.getLocalizedName(context, text)
+        val localized = DictionaryHelper.getLocalizedName(context, text)
         return localized
     }
 
