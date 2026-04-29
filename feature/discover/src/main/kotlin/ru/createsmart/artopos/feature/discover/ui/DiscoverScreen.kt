@@ -47,7 +47,6 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
 import ru.createsmart.artopos.core.artworkcard.model.ArtworkListItem
 import ru.createsmart.artopos.core.designsystem.components.UiText
-import ru.createsmart.artopos.core.designsystem.components.toUiText
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposDimens
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
 import ru.createsmart.artopos.core.model.FilterParams
@@ -134,6 +133,7 @@ private fun DiscoverScreen(
         effectFlow = effectFlow,
         pagingItems = pagingItems,
         onShowSnackbar = onShowSnackbar,
+        onIntent = onIntent,
     )
 
     val showFab = filtersState.isAvailable
@@ -233,6 +233,7 @@ private fun DiscoverScreenEffects(
     effectFlow: Flow<UiText>?,
     pagingItems: LazyPagingItems<ArtworkListItem>,
     onShowSnackbar: (UiText) -> Unit,
+    onIntent: (DiscoverIntent) -> Unit,
 ) {
     LaunchedEffect(effectFlow) {
         effectFlow?.collect { message -> onShowSnackbar(message) }
@@ -243,8 +244,8 @@ private fun DiscoverScreenEffects(
         val refreshError = (state.refresh as? LoadState.Error)?.error
         val appendError = (state.append as? LoadState.Error)?.error
 
-        refreshError?.let { onShowSnackbar(it.toUiText()) }
-        appendError?.let { onShowSnackbar(it.toUiText()) }
+        refreshError?.let { onIntent(DiscoverIntent.ErrorOccurred(it)) }
+        appendError?.let { onIntent(DiscoverIntent.ErrorOccurred(it)) }
     }
 }
 
