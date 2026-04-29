@@ -19,8 +19,8 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import ru.createsmart.artopos.core.artworkcard.mapper.ArtworkUiMapper
+import ru.createsmart.artopos.core.common.util.DictionaryHelper
 import ru.createsmart.artopos.core.common.util.LocaleHelper
-import ru.createsmart.artopos.core.designsystem.util.FilterNameHelper
 import ru.createsmart.artopos.core.domain.usecase.GetArtworksUseCase
 import ru.createsmart.artopos.core.domain.usecase.GetFiltersUseCase
 import ru.createsmart.artopos.core.domain.usecase.GetUserSettingsUseCase
@@ -57,10 +57,10 @@ class DiscoverViewModelTest {
         Dispatchers.setMain(testDispatcher)
 
         mockkObject(LocaleHelper)
-        mockkObject(FilterNameHelper)
+        mockkObject(DictionaryHelper)
 
         every { LocaleHelper.getLocalizedContext(any(), any()) } returns context
-        every { FilterNameHelper.getLocalizedName(any(), any()) } answers { arg(1) as String }
+        every { DictionaryHelper.getLocalizedName(any(), any()) } answers { arg(1) as String }
         coEvery { initializeFilters() } returns Result.success(Unit)
         every { getFilters(any()) } returns flowOf(emptyList())
 

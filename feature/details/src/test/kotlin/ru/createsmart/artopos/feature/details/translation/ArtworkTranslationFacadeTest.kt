@@ -13,8 +13,8 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
+import ru.createsmart.artopos.core.common.util.DictionaryHelper
 import ru.createsmart.artopos.core.common.util.LocaleHelper
-import ru.createsmart.artopos.core.designsystem.util.FilterNameHelper
 import ru.createsmart.artopos.core.domain.translation.TextTranslator
 import ru.createsmart.artopos.core.model.Artwork
 import ru.createsmart.artopos.core.model.ArtworkDetails
@@ -32,7 +32,7 @@ class ArtworkTranslationFacadeTest {
     @Before
     fun setup() {
         mockkObject(LocaleHelper)
-        mockkObject(FilterNameHelper)
+        mockkObject(DictionaryHelper)
 
         every { LocaleHelper.getLocalizedContext(any(), any()) } returns mockLocalizedContext
 
@@ -60,9 +60,9 @@ class ArtworkTranslationFacadeTest {
         )
 
         // GIVEN
-        every { FilterNameHelper.getLocalizedName(mockLocalizedContext, "Paintings") } returns "Живопись"
-        every { FilterNameHelper.getLocalizedName(mockLocalizedContext, "19th century") } returns "19 век"
-        every { FilterNameHelper.getLocalizedName(mockLocalizedContext, "French") } returns "Французская"
+        every { DictionaryHelper.getLocalizedName(any(), "Paintings") } returns "Живопись"
+        every { DictionaryHelper.getLocalizedName(any(), "19th century") } returns "19 век"
+        every { DictionaryHelper.getLocalizedName(any(), "French") } returns "Французская"
 
         // WHEN
         val result = facade.translateFast(original, "ru")
