@@ -1,6 +1,7 @@
-package ru.createsmart.artopos.core.designsystem.components
+package ru.createsmart.artopos.core.uicomponents.util
 
 import ru.createsmart.artopos.core.designsystem.R
+import ru.createsmart.artopos.core.designsystem.components.UiText
 import java.io.IOException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException

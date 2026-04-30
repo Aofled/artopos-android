@@ -27,7 +27,7 @@ import kotlinx.coroutines.withContext
 import ru.createsmart.artopos.core.artworkcard.mapper.ArtworkUiMapper
 import ru.createsmart.artopos.core.common.util.DictionaryHelper
 import ru.createsmart.artopos.core.common.util.LocaleHelper
-import ru.createsmart.artopos.core.designsystem.components.toUiText
+import ru.createsmart.artopos.core.uicomponents.util.toUiText
 import ru.createsmart.artopos.core.domain.usecase.GetArtworksUseCase
 import ru.createsmart.artopos.core.domain.usecase.GetFiltersUseCase
 import ru.createsmart.artopos.core.domain.usecase.GetUserSettingsUseCase
