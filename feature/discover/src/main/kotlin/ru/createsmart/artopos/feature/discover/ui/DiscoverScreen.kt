@@ -63,6 +63,9 @@ import ru.createsmart.artopos.feature.discover.ui.components.FilterBottomSheet
 import ru.createsmart.artopos.feature.discover.ui.components.LoadingView
 import ru.createsmart.artopos.feature.discover.ui.preview.DiscoverStateProvider
 
+private val FAB_HEIGHT_WITH_PADDING = 74.dp
+private val SNACKBAR_PADDING_BASE = 4.dp
+
 @Composable
 fun DiscoverRoute(
     viewModel: DiscoverViewModel = hiltViewModel(),
@@ -152,18 +155,12 @@ private fun DiscoverScreen(
     // Animate Snackbar padding to ensure it stacks correctly above the FAB and BottomBar.
     // Scaffold handles system bars (Status/Nav Bar) automatically via contentWindowInsets.
     val snackbarBottomPadding by animateDpAsState(
-        targetValue = if (showFab) {
-            if (isBottomBarVisible) {
-                ArtoposDimens.SnackbarPaddingFabWithMenu
-            } else {
-                ArtoposDimens.SnackbarPaddingFabWithoutMenu // If FAB exists, NAV is visible, else NAV not visible.
-            }
-        } else {
-            if (isBottomBarVisible) {
-                ArtoposDimens.SnackbarPaddingWithMenu
-            } else {
-                0.dp // If FAB does not exist, NAV is visible, else NAV not visible.
-            }
+        targetValue = when {
+            // If FAB exists, NAV is visible, else NAV not visible.
+            showFab && isBottomBarVisible -> FAB_HEIGHT_WITH_PADDING + ArtoposDimens.BottomBarHeight
+            showFab && !isBottomBarVisible -> FAB_HEIGHT_WITH_PADDING
+            !showFab && isBottomBarVisible -> ArtoposDimens.BottomBarHeight + SNACKBAR_PADDING_BASE
+            else -> SNACKBAR_PADDING_BASE // If FAB does not exist, NAV is visible, else NAV not visible.
         },
         animationSpec = tween(
             durationMillis = ArtoposDimens.BOTTOM_BAR_ANIMATION_DURATION,
@@ -214,7 +211,14 @@ private fun DiscoverScreen(
             FilterBottomSheet(
                 sheetState = sheetState,
                 filtersState = filtersState,
-                onFilterSelected = { type, value -> onIntent(DiscoverIntent.FilterSelected(type, value)) },
+                onFilterSelected = { type, value ->
+                    onIntent(
+                        DiscoverIntent.FilterSelected(
+                            type,
+                            value,
+                        ),
+                    )
+                },
                 onSearchQueryChanged = { query -> onIntent(DiscoverIntent.SearchQueryChanged(query)) },
                 onReset = { onIntent(DiscoverIntent.FilterReset) },
                 onToggleSort = { onIntent(DiscoverIntent.ToggleFilterSort) },

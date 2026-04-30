@@ -21,7 +21,6 @@ import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import ru.createsmart.artopos.core.designsystem.components.UiText
-import ru.createsmart.artopos.core.uicomponents.util.toUiText
 import ru.createsmart.artopos.core.domain.repository.ImageDownloader
 import ru.createsmart.artopos.core.domain.usecase.GetArtworkDetailsUseCase
 import ru.createsmart.artopos.core.domain.usecase.GetUserSettingsUseCase
@@ -29,6 +28,7 @@ import ru.createsmart.artopos.core.domain.usecase.SyncArtworkDetailsUseCase
 import ru.createsmart.artopos.core.domain.usecase.ToggleFavoriteUseCase
 import ru.createsmart.artopos.core.navigation.DetailsRoute
 import ru.createsmart.artopos.core.uicomponents.manager.UiMessageManager
+import ru.createsmart.artopos.core.uicomponents.util.toUiText
 import ru.createsmart.artopos.feature.details.mapper.toDetailUi
 import ru.createsmart.artopos.feature.details.model.DetailsIntent
 import ru.createsmart.artopos.feature.details.translation.ArtworkTranslationFacade

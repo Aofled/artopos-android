@@ -121,7 +121,7 @@ private fun SettingsScreen(
                 hostState = snackbarHostState,
                 modifier = Modifier
                     .windowInsetsPadding(WindowInsets.navigationBars)
-                    .padding(bottom = ArtoposDimens.SnackbarPaddingWithMenu),
+                    .padding(bottom = ArtoposDimens.BottomBarHeight + 4.dp),
             )
         },
         topBar = { SettingsTopAppBar() },

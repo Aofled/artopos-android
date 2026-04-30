@@ -91,7 +91,7 @@ private fun FavoritesScreen(
 
     val snackbarBottomPadding by animateDpAsState(
         targetValue = if (isBottomBarVisible) {
-            ArtoposDimens.SnackbarPaddingWithMenu
+            ArtoposDimens.BottomBarHeight + 4.dp
         } else {
             0.dp
         }, // NAV is visible, else NAV not visible.
