@@ -2,6 +2,7 @@ package ru.createsmart.artopos.core.artworkcard.mapper
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import ru.createsmart.artopos.core.artworkcard.model.ArtworkListItem
 import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.core.model.Artwork
 import ru.createsmart.artopos.core.model.CreationDate
@@ -31,12 +32,17 @@ class ArtworkUiMapperTest {
 
         val listItem = mapper.mapToUi(artwork)
 
-        assertEquals(340543, listItem.id)
-        assertEquals(UiText.DynamicString("Sparrows in Bamboo"), listItem.title)
-        assertEquals(UiText.DynamicString("Watanabe Seitei 渡辺省亭"), listItem.artist)
-        assertEquals("https://nrs.harvard.edu/urn-3:HUAM:766954", listItem.imageUrl)
-        assertEquals(0.40156862f, listItem.aspectRatio)
-        assertEquals("late 18th-early 19th century", listItem.year)
+        val expected = ArtworkListItem(
+            id = 340543,
+            title = UiText.DynamicString("Sparrows in Bamboo"),
+            artist = UiText.DynamicString("Watanabe Seitei 渡辺省亭"),
+            imageUrl = "https://nrs.harvard.edu/urn-3:HUAM:766954",
+            aspectRatio = 0.40156862f,
+            year = UiText.DynamicString("late 18th-early 19th century"),
+            isFavorite = false,
+        )
+
+        assertEquals(expected, listItem)
     }
 
     @Test
@@ -54,7 +60,7 @@ class ArtworkUiMapperTest {
         val listItem = mapper.mapToUi(artwork)
 
         assertEquals(0.75f, listItem.aspectRatio, 0.0f)
-        assertEquals("", listItem.year)
+        assertEquals(UiText.DynamicString(""), listItem.year)
     }
 
     @Test
@@ -89,43 +95,7 @@ class ArtworkUiMapperTest {
 
         val listItem = mapper.mapToUi(artwork)
 
-        // Убеждаемся, что маппер подставил нужные ресурсы из дизайн-системы
         assertEquals(UiText.StringResource(DSR.string.core_placeholder_title), listItem.title)
         assertEquals(UiText.StringResource(DSR.string.core_placeholder_artist), listItem.artist)
-    }
-
-    @Test
-    fun `mapToUi handles null dimensions with default ratio`() {
-        val artwork = Artwork(
-            id = 1,
-            title = "Test",
-            artist = "Artist",
-            imageUrl = "url",
-            imageDimensions = null,
-            creationDate = CreationDate.Unknown,
-            isFavorite = false,
-        )
-
-        val listItem = mapper.mapToUi(artwork)
-
-        assertEquals(0.75f, listItem.aspectRatio, 0.0f)
-        assertEquals("", listItem.year)
-    }
-
-    @Test
-    fun `mapToUi handles zero height with division by zero protection`() {
-        val artwork = Artwork(
-            id = 2,
-            title = "Test",
-            artist = "Artist",
-            imageUrl = "url",
-            imageDimensions = ImageDimensions(100, 0),
-            creationDate = CreationDate.ExactYear(2024),
-            isFavorite = false,
-        )
-
-        val listItem = mapper.mapToUi(artwork)
-
-        assertEquals(0.75f, listItem.aspectRatio, 0.0f)
     }
 }

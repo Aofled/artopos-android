@@ -157,7 +157,8 @@ private fun ArtworksGrid(
         }
     }
 
-    val gridPadding = PaddingValues( // Add System Bars padding + extra spacing for design
+    val gridPadding = PaddingValues(
+        // Add System Bars padding + extra spacing for design
         top = contentPadding.calculateTopPadding() + 8.dp,
         bottom = navBarsHeight + ArtoposDimens.BottomBarHeight + 16.dp,
         start = 16.dp,
@@ -173,7 +174,10 @@ private fun ArtworksGrid(
         modifier = Modifier.fillMaxSize(),
     ) {
         item(span = StaggeredGridItemSpan.FullLine) {
-            FavoritesHeader(filterParams = filterParams, onRemoveFilter = { onIntent(DiscoverIntent.RemoveFilter(it)) })
+            FavoritesHeader(
+                filterParams = filterParams,
+                onRemoveFilter = { onIntent(DiscoverIntent.RemoveFilter(it)) },
+            )
         }
 
         if (isEmptyResult) {
@@ -337,8 +341,24 @@ private fun ActiveFilterChip(
 @Composable
 private fun ArtworksViewPreview() {
     val mockData = listOf(
-        ArtworkListItem(1, UiText.DynamicString("Art 1"), UiText.DynamicString("Artist 1"), "", 1f, "2020", true),
-        ArtworkListItem(2, UiText.DynamicString("Art 2"), UiText.DynamicString("Artist 2"), "", 2f, "2021", false),
+        ArtworkListItem(
+            1,
+            UiText.DynamicString("Art 1"),
+            UiText.DynamicString("Artist 1"),
+            "",
+            1f,
+            UiText.DynamicString("2020"),
+            true,
+        ),
+        ArtworkListItem(
+            2,
+            UiText.DynamicString("Art 2"),
+            UiText.DynamicString("Artist 2"),
+            "",
+            2f,
+            UiText.DynamicString("2021"),
+            false,
+        ),
     )
 
     val artworks = flowOf(PagingData.from(mockData)).collectAsLazyPagingItems()

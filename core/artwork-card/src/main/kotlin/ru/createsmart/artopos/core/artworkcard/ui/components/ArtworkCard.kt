@@ -77,7 +77,7 @@ private fun ArtworkCardPreview() {
                 artist = UiText.DynamicString("Ueda Kōchū 上田耕冲"),
                 imageUrl = "https://nrs.harvard.edu/urn-3:HUAM:765896",
                 aspectRatio = 0.6043137f,
-                year = "1897",
+                year = UiText.DynamicString("1897"),
                 isFavorite = true,
             ),
             onClick = { },

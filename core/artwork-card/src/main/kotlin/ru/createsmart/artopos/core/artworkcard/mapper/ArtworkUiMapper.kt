@@ -32,9 +32,9 @@ class ArtworkUiMapper @Inject constructor() {
         }
 
         val displayYear = when (val date = artwork.creationDate) {
-            is CreationDate.ExactYear -> date.year.toString()
-            is CreationDate.TextOnly -> date.text
-            is CreationDate.Unknown -> "" // Или UiText.StringResource(R.string.unknown_date)
+            is CreationDate.ExactYear -> UiText.DynamicString(date.year.toString())
+            is CreationDate.TextOnly -> UiText.DynamicString(date.text)
+            is CreationDate.Unknown -> UiText.DynamicString("")
         }
 
         return ArtworkListItem(

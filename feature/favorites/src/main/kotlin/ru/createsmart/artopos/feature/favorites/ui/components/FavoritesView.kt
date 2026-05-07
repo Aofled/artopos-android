@@ -105,7 +105,8 @@ internal fun FavoritesView(
             state = listState,
             contentPadding = PaddingValues(
                 top = 8.dp,
-                bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + 48.dp,
+                bottom = WindowInsets.navigationBars.asPaddingValues()
+                    .calculateBottomPadding() + 48.dp,
                 start = 16.dp,
                 end = 16.dp,
             ),
@@ -150,8 +151,24 @@ private fun FavoritesHeader() {
 @Composable
 private fun FavoritesViewPreview() {
     val mockArtworks = persistentListOf(
-        ArtworkListItem(1, UiText.DynamicString("Art 1"), UiText.DynamicString("Artist 1"), "", 1f, "2020", true),
-        ArtworkListItem(2, UiText.DynamicString("Art 2"), UiText.DynamicString("Artist 2"), "", 2f, "2021", true),
+        ArtworkListItem(
+            1,
+            UiText.DynamicString("Art 1"),
+            UiText.DynamicString("Artist 1"),
+            "",
+            1f,
+            UiText.DynamicString("2020"),
+            true,
+        ),
+        ArtworkListItem(
+            2,
+            UiText.DynamicString("Art 2"),
+            UiText.DynamicString("Artist 2"),
+            "",
+            2f,
+            UiText.DynamicString("2021"),
+            true,
+        ),
     )
 
     ArtoposTheme {
