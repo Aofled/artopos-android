@@ -64,7 +64,7 @@ internal fun FavoritesView(
 
     var isRefreshing by remember { mutableStateOf(false) }
 
-    val isAtBottom by remember(artworks.size) {
+    val isAtBottom by remember {
         derivedStateOf {
             !listState.canScrollForward
         }
