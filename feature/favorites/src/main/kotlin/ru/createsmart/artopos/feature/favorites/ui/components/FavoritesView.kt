@@ -39,8 +39,11 @@ import ru.createsmart.artopos.core.artworkcard.model.ArtworkListItem
 import ru.createsmart.artopos.core.artworkcard.ui.components.ArtworkCard
 import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
+import ru.createsmart.artopos.core.navigation.FavoritesRoute
 import ru.createsmart.artopos.core.uicomponents.notifiers.BottomBarCommand
+import ru.createsmart.artopos.core.uicomponents.notifiers.GlobalUiEvent
 import ru.createsmart.artopos.core.uicomponents.notifiers.LocalBottomBarStateNotifier
+import ru.createsmart.artopos.core.uicomponents.notifiers.LocalGlobalUiEventBus
 import ru.createsmart.artopos.feature.favorites.model.FavoritesIntent
 import ru.createsmart.artopos.core.designsystem.R as DSR
 
@@ -58,6 +61,7 @@ internal fun FavoritesView(
     val pullState = rememberPullToRefreshState()
     val listState = rememberLazyStaggeredGridState()
     val bottomBarNotifier = LocalBottomBarStateNotifier.current
+    val globalEventBus = LocalGlobalUiEventBus.current
     val coroutineScope = rememberCoroutineScope()
 
     var isRefreshing by remember { mutableStateOf(false) }
@@ -65,6 +69,22 @@ internal fun FavoritesView(
     val isAtBottom by remember(artworks.size) {
         derivedStateOf {
             !listState.canScrollForward
+        }
+    }
+
+    // Return to the top of the list when clicking on the icon in the navigation
+    LaunchedEffect(globalEventBus) {
+        val targetRoute = FavoritesRoute::class.qualifiedName
+
+        globalEventBus.events.collect { event ->
+            when (event) {
+                is GlobalUiEvent.ScrollToTop -> {
+                    if (event.route == targetRoute) {
+                        bottomBarNotifier(BottomBarCommand.SHOW)
+                        listState.scrollToItem(0)
+                    }
+                }
+            }
         }
     }
 
@@ -77,6 +97,7 @@ internal fun FavoritesView(
         }
     }
 
+    // Return to the top of the list by pressing the back button
     val canScrollUp by remember {
         derivedStateOf { listState.firstVisibleItemIndex > 0 } // If below the first element
     }
