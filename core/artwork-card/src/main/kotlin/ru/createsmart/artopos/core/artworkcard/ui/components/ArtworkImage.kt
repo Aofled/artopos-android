@@ -2,7 +2,6 @@ package ru.createsmart.artopos.core.artworkcard.ui.components
 
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -79,7 +78,6 @@ internal fun ArtworkImage(
         contentDescription = stringResource(DSR.string.core_cd_image),
         contentScale = ContentScale.Crop,
         modifier = Modifier
-            .fillMaxWidth()
             .aspectRatio(artwork.aspectRatio)
             .clip(RoundedCornerShape(12.dp)),
         loading = { ShimmerBox(modifier = Modifier.fillMaxSize()) }, // Show animation while downloading

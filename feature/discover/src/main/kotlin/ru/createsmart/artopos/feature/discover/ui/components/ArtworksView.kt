@@ -267,6 +267,7 @@ private fun LazyStaggeredGridScope.artworkItems(
                 onClick = { onArtworkClick(artwork.id) },
                 onFavoriteClick = { onFavoriteClick(artwork.id) },
                 onShowMessage = onShowMessage,
+                modifier = Modifier.fillMaxWidth(),
             )
         }
     }

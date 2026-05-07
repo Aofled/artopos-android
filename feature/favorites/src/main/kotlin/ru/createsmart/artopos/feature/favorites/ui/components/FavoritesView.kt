@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
@@ -128,6 +129,7 @@ internal fun FavoritesView(
                     onClick = { onIntent(FavoritesIntent.ArtworkClick(artwork.id)) },
                     onFavoriteClick = { onIntent(FavoritesIntent.ToggleFavorite(artwork.id)) },
                     onShowMessage = onShowMessage,
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
         }
