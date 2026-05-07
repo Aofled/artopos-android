@@ -55,10 +55,13 @@ import ru.createsmart.artopos.core.designsystem.theme.ArtoposDimens
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
 import ru.createsmart.artopos.core.model.FilterParams
 import ru.createsmart.artopos.core.model.FilterType
+import ru.createsmart.artopos.core.navigation.DiscoverRoute
 import ru.createsmart.artopos.core.uicomponents.components.CustomCircularProgressIndicator
 import ru.createsmart.artopos.core.uicomponents.components.CustomInputChip
 import ru.createsmart.artopos.core.uicomponents.notifiers.BottomBarCommand
+import ru.createsmart.artopos.core.uicomponents.notifiers.GlobalUiEvent
 import ru.createsmart.artopos.core.uicomponents.notifiers.LocalBottomBarStateNotifier
+import ru.createsmart.artopos.core.uicomponents.notifiers.LocalGlobalUiEventBus
 import ru.createsmart.artopos.feature.discover.model.DiscoverEvent
 import ru.createsmart.artopos.feature.discover.model.DiscoverIntent
 import ru.createsmart.artopos.core.designsystem.R as DSR
@@ -116,6 +119,7 @@ private fun ArtworksGrid(
 ) {
     val listState = rememberLazyStaggeredGridState()
     val bottomBarNotifier = LocalBottomBarStateNotifier.current
+    val globalEventBus = LocalGlobalUiEventBus.current
     val coroutineScope = rememberCoroutineScope()
 
     val isEmptyResult = artworks.itemCount == 0 && artworks.loadState.refresh !is LoadState.Loading
@@ -124,6 +128,22 @@ private fun ArtworksGrid(
 
     val isAtBottom by remember {
         derivedStateOf { !listState.canScrollForward }
+    }
+
+    // Return to the top of the list when clicking on the icon in the navigation
+    LaunchedEffect(globalEventBus) {
+        val targetRoute = DiscoverRoute::class.qualifiedName
+
+        globalEventBus.events.collect { event ->
+            when (event) {
+                is GlobalUiEvent.ScrollToTop -> {
+                    if (event.route == targetRoute) {
+                        bottomBarNotifier(BottomBarCommand.SHOW)
+                        listState.scrollToItem(0)
+                    }
+                }
+            }
+        }
     }
 
     // We don't hide the navigation if the list has reached the end or the screen is not scrollable.
@@ -146,6 +166,7 @@ private fun ArtworksGrid(
         }
     }
 
+    // Return to the top of the list by pressing the back button
     val canScrollUp by remember {
         derivedStateOf { listState.firstVisibleItemIndex > 0 } // If below the first element
     }

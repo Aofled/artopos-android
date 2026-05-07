@@ -42,8 +42,11 @@ import ru.createsmart.artopos.core.designsystem.theme.ArtoposDimens
 import ru.createsmart.artopos.core.navigation.DiscoverRoute
 import ru.createsmart.artopos.core.navigation.FavoritesRoute
 import ru.createsmart.artopos.core.uicomponents.notifiers.BottomBarCommand
+import ru.createsmart.artopos.core.uicomponents.notifiers.GlobalUiEvent
+import ru.createsmart.artopos.core.uicomponents.notifiers.GlobalUiEventBus
 import ru.createsmart.artopos.core.uicomponents.notifiers.LocalBottomBarStateNotifier
 import ru.createsmart.artopos.core.uicomponents.notifiers.LocalBottomBarVisibility
+import ru.createsmart.artopos.core.uicomponents.notifiers.LocalGlobalUiEventBus
 import ru.createsmart.artopos.navigation.AppNavGraph
 import ru.createsmart.artopos.navigation.ArtoposAppState
 import ru.createsmart.artopos.navigation.rememberArtoposAppState
@@ -58,6 +61,9 @@ fun ArtoposApp(
 ) {
     var isBottomBarVisible by remember { mutableStateOf(true) }
     var isLockedAtBottom by remember { mutableStateOf(false) }
+
+    // To move to the top of the list by clicking on the navigation icon
+    val globalUiEventBus = remember { GlobalUiEventBus() }
 
     // When you go back (PopBackStack) or switch to a new tab the menu will always be in place
     val currentDestination = appState.currentDestination
@@ -101,10 +107,12 @@ fun ArtoposApp(
             BottomBarCommand.SHOW -> {
                 isBottomBarVisible = true
             }
+
             BottomBarCommand.LOCK_AT_BOTTOM -> {
                 isLockedAtBottom = true
                 isBottomBarVisible = true
             }
+
             BottomBarCommand.UNLOCK -> {
                 isLockedAtBottom = false
             }
@@ -123,19 +131,26 @@ fun ArtoposApp(
             AnimatedVisibility(
                 visible = showBar,
                 enter = slideInVertically(
-                    animationSpec = tween(durationMillis = BOTTOM_BAR_ANIMATION, easing = FastOutSlowInEasing),
+                    animationSpec = tween(
+                        durationMillis = BOTTOM_BAR_ANIMATION,
+                        easing = FastOutSlowInEasing,
+                    ),
                 ) { it },
                 exit = slideOutVertically(
-                    animationSpec = tween(durationMillis = BOTTOM_BAR_ANIMATION, easing = FastOutSlowInEasing),
+                    animationSpec = tween(
+                        durationMillis = BOTTOM_BAR_ANIMATION,
+                        easing = FastOutSlowInEasing,
+                    ),
                 ) { it },
             ) {
-                ArtoposBottomBar(appState = appState)
+                ArtoposBottomBar(appState = appState, eventBus = globalUiEventBus)
             }
         },
     ) { _ -> // contentPadding for lists we will pass later via CompositionLocal
         CompositionLocalProvider(
             LocalBottomBarStateNotifier provides bottomBarNotifier,
             LocalBottomBarVisibility provides isBottomBarVisible,
+            LocalGlobalUiEventBus provides globalUiEventBus,
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
                 AppNavGraph(appState = appState)
@@ -145,7 +160,10 @@ fun ArtoposApp(
 }
 
 @Composable
-private fun ArtoposBottomBar(appState: ArtoposAppState) {
+private fun ArtoposBottomBar(
+    appState: ArtoposAppState,
+    eventBus: GlobalUiEventBus,
+) {
     val glassColor = MaterialTheme.colorScheme.surface.copy(alpha = BOTTOM_BAR_ALPHA)
 
     Box(
@@ -165,13 +183,23 @@ private fun ArtoposBottomBar(appState: ArtoposAppState) {
             val currentDestination = appState.currentDestination
 
             appState.topLevelDestinations.forEach { destination ->
+                val routeString = destination.route::class.qualifiedName ?: ""
                 val selected = currentDestination?.hasRoute(destination.route::class) == true
 
                 IconButton(
-                    onClick = { appState.navigateToTopLevelDestination(destination) },
+                    onClick = {
+                        if (selected) {
+                            // If the tab is ALREADY selected, send a "Scroll up" event for this screen
+                            eventBus.sendEvent(GlobalUiEvent.ScrollToTop(routeString))
+                        } else {
+                            // If not selected, just go to it
+                            appState.navigateToTopLevelDestination(destination)
+                        }
+                    },
                     modifier = Modifier.size(ArtoposDimens.BottomBarHeight),
                 ) {
-                    val iconRes = if (selected) destination.iconSelected else destination.iconUnselected
+                    val iconRes =
+                        if (selected) destination.iconSelected else destination.iconUnselected
 
                     val tint = if (selected) {
                         MaterialTheme.colorScheme.primary
