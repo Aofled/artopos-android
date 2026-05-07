@@ -213,7 +213,7 @@ class ArtworkMappersTest {
         val baseDbo = ArtworkDBO(
             id = 1, sortingIndex = 0, title = "Mona Lisa", artist = "Da Vinci",
             imageUrl = "url", imageDimensions = null,
-            date = "1503", yearInt = 1503, // ДАТА ЗДЕСЬ ЕСТЬ
+            date = "1503", yearInt = 1503,
             technique = null, description = "Basic Desc", url = null,
             galleryImages = listOf(StoredImage("url", 100, 100)),
             inDiscoverFeed = true,
@@ -276,7 +276,7 @@ class ArtworkMappersTest {
         // GIVEN
         val artists = listOf(
             PersonDTO(name = "Donor Name", role = "Donor"),
-            PersonDTO(name = "Da Vinci", role = "artist"), // Маленькая буква!
+            PersonDTO(name = "Da Vinci", role = "artist"),
             PersonDTO(name = "Michelangelo", role = "Artist"),
         )
         val dto = ArtworkDTO(id = 1, artists = artists)

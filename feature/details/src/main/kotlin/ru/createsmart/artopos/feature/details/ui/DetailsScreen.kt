@@ -63,7 +63,7 @@ fun DetailsScreen(
     contentVersion: Int,
     effectFlow: Flow<UiText>?,
     isRefreshing: Boolean,
-    onIntent: (DetailsIntent) -> Unit, // Заменили 5 лямбд на одну
+    onIntent: (DetailsIntent) -> Unit,
     onBackClick: () -> Unit,
 ) {
     val context = LocalContext.current

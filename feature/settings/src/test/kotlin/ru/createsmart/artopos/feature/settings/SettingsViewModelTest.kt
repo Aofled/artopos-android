@@ -111,7 +111,6 @@ class SettingsViewModelTest {
         viewModel.cacheSizeMb.test {
             val firstItem = awaitItem()
             if (firstItem == null) {
-                // Ждем следующее значение (5L)
                 assertEquals(5L, awaitItem())
             } else {
                 assertEquals(5L, firstItem)

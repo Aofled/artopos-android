@@ -340,7 +340,7 @@ class ArtworkRemoteMediatorTest {
         // WHEN: Refresh (e.g., user changes culture from America to Japan)
         mediator.load(LoadType.REFRESH, pagingState)
 
-        // THEN: Проверяем, что кэш отработал правильно
+        // THEN
         val cache = database.artworkDao().getAllArtworksForTest()
 
         // There should be 2 pictures left (Selected old + New from the feed)
