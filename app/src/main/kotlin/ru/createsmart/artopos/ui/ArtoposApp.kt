@@ -34,6 +34,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -53,7 +54,7 @@ import ru.createsmart.artopos.navigation.rememberArtoposAppState
 
 private const val BOTTOM_BAR_ALPHA = 0.85f
 private const val BOTTOM_BAR_ANIMATION = 400
-private const val SCROLL_THRESHOLD = 10f
+private val SCROLL_THRESHOLD_DP = 10.dp
 
 @Composable
 fun ArtoposApp(
@@ -74,6 +75,12 @@ fun ArtoposApp(
     val canHideBottomBar = currentDestination?.hasRoute(DiscoverRoute::class) == true ||
         currentDestination?.hasRoute(FavoritesRoute::class) == true
 
+    // Convert 10.dp to physical pixels for the current screen (Float)
+    val density = LocalDensity.current
+    val scrollThresholdPx = remember(density) {
+        with(density) { SCROLL_THRESHOLD_DP.toPx() }
+    }
+
     // To listen to swipes
     val nestedScrollConnection = remember(canHideBottomBar, isLockedAtBottom) {
         object : NestedScrollConnection {
@@ -81,11 +88,11 @@ fun ArtoposApp(
             override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
                 if (!canHideBottomBar) return Offset.Zero
                 // If we swipe UP (the content moves down, dy > 0) -> Show the menu
-                if (available.y > SCROLL_THRESHOLD) {
+                if (available.y > scrollThresholdPx) {
                     isBottomBarVisible = true
                 }
                 // If we swipe DOWN (content moves up, dy < 0) -> Hide the menu
-                else if (available.y < -SCROLL_THRESHOLD) {
+                else if (available.y < -scrollThresholdPx) {
                     // Hide the menu ONLY if we are not blocked at the end of the list
                     if (!isLockedAtBottom) {
                         isBottomBarVisible = false
