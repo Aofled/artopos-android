@@ -18,9 +18,11 @@ import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
 import ru.createsmart.artopos.feature.favorites.R
 
 @Composable
-internal fun EmptyFavoritesView() {
+internal fun EmptyFavoritesView(
+    modifier: Modifier = Modifier,
+) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,

@@ -18,7 +18,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -58,7 +57,6 @@ internal fun FavoritesView(
     onShowMessage: (UiText) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val pullState = rememberPullToRefreshState()
     val listState = rememberLazyStaggeredGridState()
     val bottomBarNotifier = LocalBottomBarStateNotifier.current
     val globalEventBus = LocalGlobalUiEventBus.current
@@ -119,7 +117,6 @@ internal fun FavoritesView(
                 isRefreshing = false
             }
         },
-        state = pullState,
         modifier = modifier,
     ) {
         LazyVerticalStaggeredGrid(
@@ -158,11 +155,14 @@ internal fun FavoritesView(
 }
 
 @Composable
-private fun FavoritesHeader() {
+private fun FavoritesHeader(
+    modifier: Modifier = Modifier,
+) {
     Text(
         text = stringResource(DSR.string.core_title_favorites),
         style = MaterialTheme.typography.displaySmall,
         color = MaterialTheme.colorScheme.onBackground,
+        modifier = modifier,
     )
 }
 

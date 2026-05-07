@@ -38,9 +38,6 @@ class FavoritesViewModel @Inject constructor(
 
     val uiEffect = messageManager.uiEffect
 
-    private val _isRefreshing = MutableStateFlow(false)
-    val isRefreshing = _isRefreshing.asStateFlow()
-
     internal fun onIntent(intent: FavoritesIntent) {
         when (intent) {
             is FavoritesIntent.Refresh -> handleRefresh()
