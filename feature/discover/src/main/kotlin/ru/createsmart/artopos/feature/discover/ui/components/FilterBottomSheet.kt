@@ -47,7 +47,11 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
@@ -62,6 +66,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.delay
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
 import ru.createsmart.artopos.core.model.FilterSortOption
 import ru.createsmart.artopos.core.model.FilterType
@@ -76,6 +81,7 @@ private val FILTER_SECTION_HEADER_HEIGHT = 50.dp
 private val FILTER_HEADER_HEIGHT = 120.dp // 60
 private const val TIGHT_SCREEN_THRESHOLD_RATIO = 0.75f
 private const val FILTER_GRID_ROWS = 3
+private const val BEFORE_UPDATE_FILTER = 300L
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -263,6 +269,15 @@ private fun FilterSearchBar(
     query: String,
     onQueryChanged: (String) -> Unit,
 ) {
+    var localQuery by remember(query) { mutableStateOf(query) }
+
+    LaunchedEffect(localQuery) {
+        if (localQuery != query) {
+            delay(BEFORE_UPDATE_FILTER) // Wait 300ms, in case the user is still typing
+            onQueryChanged(localQuery)
+        }
+    }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -285,8 +300,10 @@ private fun FilterSearchBar(
         Spacer(modifier = Modifier.width(8.dp))
 
         SearchInputField(
-            query = query,
-            onQueryChanged = onQueryChanged,
+            query = localQuery,
+            onQueryChanged = { newText ->
+                localQuery = newText
+            },
             modifier = Modifier.weight(1f),
         )
     }
