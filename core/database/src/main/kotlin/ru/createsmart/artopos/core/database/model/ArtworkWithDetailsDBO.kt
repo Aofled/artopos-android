@@ -10,7 +10,7 @@ data class ArtworkWithDetailsDBO(
     @Embedded val artwork: ArtworkDBO,
 
     @Relation(
-        parentColumn = "id", // Field 'id' in table 'favorites'
+        parentColumn = "id", // Field 'id' in table 'artwork'
         entityColumn = "id", // Field 'id' in table 'artwork_details'
     )
     val details: ArtworkDetailsDBO?, // Be null if there are no details

@@ -1,5 +1,6 @@
 package ru.createsmart.artopos.core.database
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
@@ -23,8 +24,11 @@ import ru.createsmart.artopos.core.database.model.FilterItemDBO
         FilterItemDBO::class,
         FavoriteDBO::class,
     ],
-    version = 7,
+    version = 8,
     exportSchema = true, // Connects to Gradle config 'schemaDirectory' for Auto-Migrations
+    autoMigrations = [
+        AutoMigration(from = 7, to = 8),
+    ],
 )
 @TypeConverters(ImagesConverter::class)
 abstract class HarvardDatabase : RoomDatabase() {

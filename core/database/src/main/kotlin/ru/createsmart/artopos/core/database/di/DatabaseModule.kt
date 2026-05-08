@@ -29,8 +29,7 @@ object DatabaseModule {
             "harvard-database",
         )
             // DANGER: Wipes data on version change. Use only in Dev!
-            // TODO(Release): Remove before Release and implement Migration strategies
-            .fallbackToDestructiveMigration(true)
+            // .fallbackToDestructiveMigration(true)
             .build()
     }
 
