@@ -1,12 +1,10 @@
 package ru.createsmart.artopos.feature.discover
 
-import android.content.Context
 import app.cash.turbine.test
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.mockkObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -19,8 +17,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import ru.createsmart.artopos.core.artworkcard.mapper.ArtworkUiMapper
-import ru.createsmart.artopos.core.common.util.DictionaryHelper
-import ru.createsmart.artopos.core.common.util.LocaleHelper
+import ru.createsmart.artopos.core.common.translation.FilterTranslator
 import ru.createsmart.artopos.core.domain.usecase.GetArtworksUseCase
 import ru.createsmart.artopos.core.domain.usecase.GetFiltersUseCase
 import ru.createsmart.artopos.core.domain.usecase.GetUserSettingsUseCase
@@ -48,7 +45,7 @@ class DiscoverViewModelTest {
 
     private val messageManager: UiMessageManager = mockk(relaxed = true)
     private val mapper: ArtworkUiMapper = ArtworkUiMapper()
-    private val context: Context = mockk(relaxed = true)
+    private val filterTranslator: FilterTranslator = mockk()
 
     private lateinit var viewModel: DiscoverViewModel
 
@@ -56,11 +53,7 @@ class DiscoverViewModelTest {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
 
-        mockkObject(LocaleHelper)
-        mockkObject(DictionaryHelper)
-
-        every { LocaleHelper.getLocalizedContext(any(), any()) } returns context
-        every { DictionaryHelper.getLocalizedName(any(), any()) } answers { arg(1) as String }
+        every { filterTranslator.translate(any(), any()) } answers { arg(0) as String }
         coEvery { initializeFilters() } returns Result.success(Unit)
         every { getFilters(any()) } returns flowOf(emptyList())
 
@@ -77,7 +70,7 @@ class DiscoverViewModelTest {
             initializeFilters = initializeFilters,
             messageManager = messageManager,
             mapper = mapper,
-            context = context,
+            filterTranslator = filterTranslator,
         )
     }
 

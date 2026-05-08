@@ -1,12 +1,10 @@
 package ru.createsmart.artopos.feature.discover
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import androidx.paging.map
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -25,8 +23,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.createsmart.artopos.core.artworkcard.mapper.ArtworkUiMapper
-import ru.createsmart.artopos.core.common.util.DictionaryHelper
-import ru.createsmart.artopos.core.common.util.LocaleHelper
+import ru.createsmart.artopos.core.common.translation.FilterTranslator
 import ru.createsmart.artopos.core.domain.usecase.GetArtworksUseCase
 import ru.createsmart.artopos.core.domain.usecase.GetFiltersUseCase
 import ru.createsmart.artopos.core.domain.usecase.GetUserSettingsUseCase
@@ -56,7 +53,7 @@ class DiscoverViewModel @Inject constructor(
     private val initializeFilters: InitializeFiltersUseCase,
     private val messageManager: UiMessageManager,
     private val mapper: ArtworkUiMapper,
-    @ApplicationContext private val context: Context,
+    private val filterTranslator: FilterTranslator,
 ) : ViewModel() {
 
     private val _contentVersion = MutableStateFlow(0)
@@ -109,10 +106,8 @@ class DiscoverViewModel @Inject constructor(
             val selectedValue = extractSelectedValue(params)
 
             withContext(Dispatchers.Default) {
-                val locContext = LocaleHelper.getLocalizedContext(context, languageCode)
-
                 list.map { item ->
-                    val locName = DictionaryHelper.getLocalizedName(locContext, item.name)
+                    val locName = filterTranslator.translate(item.name, languageCode)
                     FilterListItem(
                         // Unique ID for Compose/Room to prevent collisions between different FilterTypes
                         id = "${item.type.name}_${item.id}",
