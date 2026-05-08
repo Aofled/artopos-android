@@ -5,7 +5,6 @@ import ru.createsmart.artopos.core.model.FilterType
 sealed interface DiscoverIntent {
     data object Refresh : DiscoverIntent
     data object Retry : DiscoverIntent
-    data class ArtworkClicked(val id: Int) : DiscoverIntent
     data class ErrorOccurred(val error: Throwable) : DiscoverIntent
 
     data class FilterSelected(val type: FilterType, val value: String?) : DiscoverIntent

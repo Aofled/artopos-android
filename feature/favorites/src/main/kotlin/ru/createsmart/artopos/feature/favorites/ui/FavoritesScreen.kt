@@ -56,12 +56,8 @@ fun FavoritesRoute(
         state = state,
         contentVersion = contentVersion,
         effectFlow = viewModel.uiEffect,
-        onIntent = { intent ->
-            when (intent) {
-                is FavoritesIntent.ArtworkClick -> onArtworkClick(intent.id)
-                else -> viewModel.onIntent(intent)
-            }
-        },
+        onArtworkClick = onArtworkClick,
+        onIntent = viewModel::onIntent,
     )
 }
 
@@ -70,6 +66,7 @@ private fun FavoritesScreen(
     state: FavoritesUiState,
     contentVersion: Int,
     effectFlow: Flow<UiText>?,
+    onArtworkClick: (Int) -> Unit,
     onIntent: (FavoritesIntent) -> Unit,
 ) {
     val context = LocalContext.current
@@ -122,6 +119,7 @@ private fun FavoritesScreen(
             contentVersion = contentVersion,
             innerPadding = innerPadding,
             onIntent = onIntent,
+            onArtworkClick = onArtworkClick,
             onShowMessage = { onShowSnackbar(it) },
         )
     }
@@ -133,6 +131,7 @@ private fun FavoritesScreenContent(
     state: FavoritesUiState,
     contentVersion: Int,
     innerPadding: PaddingValues,
+    onArtworkClick: (Int) -> Unit,
     onIntent: (FavoritesIntent) -> Unit,
     onShowMessage: (UiText) -> Unit,
 ) {
@@ -160,6 +159,7 @@ private fun FavoritesScreenContent(
                     artworks = state.artworks,
                     contentVersion = contentVersion,
                     onIntent = onIntent,
+                    onArtworkClick = onArtworkClick,
                     onShowMessage = onShowMessage,
                 )
             }
@@ -177,6 +177,7 @@ private fun FavoritesScreenPreview(
             state = state,
             contentVersion = 1,
             effectFlow = null,
+            onArtworkClick = { },
             onIntent = { intent -> println("Intent triggered: $intent") },
         )
     }

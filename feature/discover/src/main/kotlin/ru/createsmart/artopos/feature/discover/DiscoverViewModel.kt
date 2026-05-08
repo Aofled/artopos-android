@@ -87,7 +87,6 @@ class DiscoverViewModel @Inject constructor(
             is DiscoverIntent.ToggleFilterSort -> onToggleFilterSort()
             is DiscoverIntent.ToggleFavorite -> onToggleFavorite(intent.id)
             is DiscoverIntent.SearchQueryChanged -> onSearchQueryChanged(intent.query)
-            is DiscoverIntent.ArtworkClicked -> Unit
         }
     }
 

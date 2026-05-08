@@ -87,10 +87,9 @@ fun DiscoverRoute(
         effectFlow = viewModel.uiEffect,
         filterParams = activeParams,
         scrollUp = viewModel.actions,
+        onArtworkClick = onArtworkClick,
         onIntent = { intent ->
             when (intent) {
-                is DiscoverIntent.ArtworkClicked -> onArtworkClick(intent.id)
-
                 is DiscoverIntent.Refresh -> {
                     pagingItems.refresh()
                     viewModel.onIntent(intent)
@@ -115,6 +114,7 @@ private fun DiscoverScreen(
     effectFlow: Flow<UiText>? = null,
     filterParams: FilterParams,
     scrollUp: Flow<DiscoverEvent>,
+    onArtworkClick: (Int) -> Unit,
     onIntent: (DiscoverIntent) -> Unit,
 ) {
     val context = LocalContext.current
@@ -195,6 +195,7 @@ private fun DiscoverScreen(
                 onShowMessage = { onShowSnackbar(it) },
                 filterParams = filterParams,
                 scrollUp = scrollUp,
+                onArtworkClick = onArtworkClick,
                 onIntent = onIntent,
             )
         }
@@ -277,6 +278,7 @@ private fun DiscoverScreenContent(
     onShowMessage: (UiText) -> Unit,
     filterParams: FilterParams,
     scrollUp: Flow<DiscoverEvent>,
+    onArtworkClick: (Int) -> Unit,
     onIntent: (DiscoverIntent) -> Unit,
 ) {
     val refreshState = pagingItems.loadState.refresh
@@ -296,6 +298,7 @@ private fun DiscoverScreenContent(
                 onShowMessage = onShowMessage,
                 filterParams = filterParams,
                 scrollUp = scrollUp,
+                onArtworkClick = onArtworkClick,
                 onIntent = onIntent,
             )
         }
@@ -315,6 +318,7 @@ private fun DiscoverScreenContent(
                 onShowMessage = onShowMessage,
                 filterParams = filterParams,
                 scrollUp = scrollUp,
+                onArtworkClick = onArtworkClick,
                 onIntent = onIntent,
             )
         }
@@ -333,7 +337,6 @@ private fun DiscoverScreenPreview(
     @PreviewParameter(DiscoverStateProvider::class) pagingFlow: Flow<PagingData<ArtworkListItem>>,
 ) {
     val pagingItems = pagingFlow.collectAsLazyPagingItems()
-// .toImmutableList(),
     ArtoposTheme {
         DiscoverScreen(
             pagingItems = pagingItems,
@@ -347,6 +350,7 @@ private fun DiscoverScreenPreview(
                 isAvailable = false,
             ),
             filterParams = FilterParams(),
+            onArtworkClick = { },
             onIntent = { intent -> println("Preview Intent: $intent") },
             scrollUp = emptyFlow(),
         )

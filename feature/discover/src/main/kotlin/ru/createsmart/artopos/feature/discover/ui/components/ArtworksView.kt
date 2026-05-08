@@ -75,6 +75,7 @@ internal fun ArtworksView(
     onShowMessage: (UiText) -> Unit,
     filterParams: FilterParams,
     scrollUp: Flow<DiscoverEvent>,
+    onArtworkClick: (Int) -> Unit,
     onIntent: (DiscoverIntent) -> Unit,
 ) {
     val pullToRefreshState = rememberPullToRefreshState()
@@ -102,6 +103,7 @@ internal fun ArtworksView(
             onShowMessage = onShowMessage,
             filterParams = filterParams,
             scrollUp = scrollUp,
+            onArtworkClick = onArtworkClick,
             onIntent = onIntent,
         )
     }
@@ -115,6 +117,7 @@ private fun ArtworksGrid(
     onShowMessage: (UiText) -> Unit,
     filterParams: FilterParams,
     scrollUp: Flow<DiscoverEvent>,
+    onArtworkClick: (Int) -> Unit,
     onIntent: (DiscoverIntent) -> Unit,
 ) {
     val listState = rememberLazyStaggeredGridState()
@@ -207,7 +210,7 @@ private fun ArtworksGrid(
             artworkItems(
                 artworks = artworks,
                 contentVersion = contentVersion,
-                onArtworkClick = { onIntent(DiscoverIntent.ArtworkClicked(it)) },
+                onArtworkClick = onArtworkClick,
                 onFavoriteClick = { onIntent(DiscoverIntent.ToggleFavorite(it)) },
                 onShowMessage = onShowMessage,
             )
@@ -394,6 +397,7 @@ private fun ArtworksViewPreview() {
             onShowMessage = { },
             filterParams = FilterParams(),
             onIntent = { },
+            onArtworkClick = { },
             scrollUp = emptyFlow(),
         )
     }

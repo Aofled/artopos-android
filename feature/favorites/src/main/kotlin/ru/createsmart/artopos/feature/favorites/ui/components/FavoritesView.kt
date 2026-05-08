@@ -53,6 +53,7 @@ private const val REFRESH_DELAY_MS = 300L
 internal fun FavoritesView(
     artworks: ImmutableList<ArtworkListItem>,
     contentVersion: Int,
+    onArtworkClick: (Int) -> Unit,
     onIntent: (FavoritesIntent) -> Unit,
     onShowMessage: (UiText) -> Unit,
     modifier: Modifier = Modifier,
@@ -144,7 +145,7 @@ internal fun FavoritesView(
                 ArtworkCard(
                     artwork = artwork,
                     contentVersion = contentVersion,
-                    onClick = { onIntent(FavoritesIntent.ArtworkClick(artwork.id)) },
+                    onClick = { onArtworkClick(artwork.id) },
                     onFavoriteClick = { onIntent(FavoritesIntent.ToggleFavorite(artwork.id)) },
                     onShowMessage = onShowMessage,
                     modifier = Modifier.fillMaxWidth(),
@@ -199,6 +200,7 @@ private fun FavoritesViewPreview() {
             artworks = mockArtworks,
             contentVersion = 0,
             onShowMessage = { },
+            onArtworkClick = { },
             onIntent = { },
         )
     }

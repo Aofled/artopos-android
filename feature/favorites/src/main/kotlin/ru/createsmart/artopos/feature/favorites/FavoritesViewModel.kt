@@ -42,7 +42,6 @@ class FavoritesViewModel @Inject constructor(
         when (intent) {
             is FavoritesIntent.Refresh -> handleRefresh()
             is FavoritesIntent.ToggleFavorite -> handleToggleFavorite(intent.id)
-            is FavoritesIntent.ArtworkClick -> Unit
         }
     }
 
