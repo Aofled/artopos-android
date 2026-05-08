@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
 import ru.createsmart.artopos.core.common.result.suspendRunCatching
 import ru.createsmart.artopos.core.data.mapper.ArtworkMapper
 import ru.createsmart.artopos.core.data.mediator.ArtworkRemoteMediator
@@ -77,15 +76,13 @@ class OfflineFirstArtworkRepository @Inject constructor(
 
     override suspend fun syncArtworkDetails(id: Int): Result<Unit> {
         return suspendRunCatching {
-            withContext(Dispatchers.IO) {
-                // 1. Download fresh JSON with full details
-                val dto = api.getArtworkDetails(id)
+            // 1. Download fresh JSON with full details
+            val dto = api.getArtworkDetails(id)
 
-                // 2. Save the "heavy" part of the data in a separate table (artwork_details).
-                // Thanks to @Relation, the getArtwork() method will immediately see this new data.
-                val detailsEntity = mapper.mapDtoToDetailsDbo(dto)
-                artworkDetailDao.insertDetails(detailsEntity)
-            }
+            // 2. Save the "heavy" part of the data in a separate table (artwork_details).
+            // Thanks to @Relation, the getArtwork() method will immediately see this new data.
+            val detailsEntity = mapper.mapDtoToDetailsDbo(dto)
+            artworkDetailDao.insertDetails(detailsEntity)
         }
     }
 
@@ -96,26 +93,22 @@ class OfflineFirstArtworkRepository @Inject constructor(
     }
 
     override suspend fun toggleFavorite(artworkId: Int) {
-        withContext(Dispatchers.IO) {
-            val isFavorite = favoriteDao.isFavorite(artworkId)
+        val isFavorite = favoriteDao.isFavorite(artworkId)
 
-            if (isFavorite) {
-                favoriteDao.removeFavorite(artworkId)
-            } else {
-                favoriteDao.insertFavorite(FavoriteDBO(id = artworkId))
-            }
+        if (isFavorite) {
+            favoriteDao.removeFavorite(artworkId)
+        } else {
+            favoriteDao.insertFavorite(FavoriteDBO(id = artworkId))
         }
     }
 
     // To clear unused fields from the detail_table
     override suspend fun clearDatabaseCache() {
-        withContext(Dispatchers.IO) {
-            try {
-                val deletedCount = artworkDao.clearDetailsCacheFromSettings()
-                Log.d("DatabaseCache", "Cleared $deletedCount cached artwork details.")
-            } catch (e: SQLiteException) {
-                Log.e("DatabaseCache", "Failed to clear details cache", e)
-            }
+        try {
+            val deletedCount = artworkDao.clearDetailsCacheFromSettings()
+            Log.d("DatabaseCache", "Cleared $deletedCount cached artwork details.")
+        } catch (e: SQLiteException) {
+            Log.e("DatabaseCache", "Failed to clear details cache", e)
         }
     }
 }
