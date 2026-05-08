@@ -14,7 +14,7 @@ material = "1.13.0"
 kotlinxImmutable = "0.4.0"
 
 # Compose
-composeBom = "2026.03.00"
+composeBom = "2026.03.01"
 activityCompose = "1.13.0"
 lifecycleRuntimeCompose = "2.10.0"
 navigationCompose = "2.9.7"
@@ -37,7 +37,7 @@ paging = "3.4.2"
 # Network & Serialization
 retrofit = "3.0.0"
 okhttp = "5.3.2"
-kotlinx-serialization = "1.10.0"
+kotlinx-serialization = "1.11.0"
 
 # ML Kit
 mlkitTranslate = "17.0.3"
