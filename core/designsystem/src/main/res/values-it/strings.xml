@@ -20,6 +20,7 @@
     <string name="core_error_generic">Qualcosa è andato storto</string>
     <string name="core_error_not_found">Immagine non trovata (404)</string>
     <string name="core_error_no_internet">Nessuna connessione internet</string>
+    <string name="core_error_server_not_found">Server non trovato</string>
     <string name="core_error_failed_connect">Impossibile connettersi al server</string>
     <string name="core_error_timed_out">Timeout del download</string>
     <string name="core_error_network">Errore di rete. Controlla la tua connessione.</string>

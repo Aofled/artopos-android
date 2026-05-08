@@ -20,6 +20,7 @@
     <string name="core_error_generic">出错了</string>
     <string name="core_error_not_found">未找到图片 (404)</string>
     <string name="core_error_no_internet">无网络连接</string>
+    <string name="core_error_server_not_found">未找到服务器</string>
     <string name="core_error_failed_connect">无法连接到服务器</string>
     <string name="core_error_timed_out">下载超时</string>
     <string name="core_error_network">网络错误。请检查您的连接。</string>

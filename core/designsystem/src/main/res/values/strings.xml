@@ -20,6 +20,7 @@
     <string name="core_error_generic">Something went wrong</string>
     <string name="core_error_not_found">Image not found (404)</string>
     <string name="core_error_no_internet">No internet connection</string>
+    <string name="core_error_server_not_found">Server not found</string>
     <string name="core_error_failed_connect">Failed to connect to the server</string>
     <string name="core_error_timed_out">Download timed out</string>
     <string name="core_error_network">Network error. Check your connection.</string>

@@ -19,6 +19,8 @@ dependencies {
 
     implementation(libs.paging.runtime)
     implementation(libs.room.ktx)
+    implementation(libs.retrofit.core)
+    implementation(libs.kotlinx.serialization.json)
 
     testImplementation(libs.bundles.test.unit.full)
 }

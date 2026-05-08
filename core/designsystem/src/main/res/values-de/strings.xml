@@ -20,6 +20,7 @@
     <string name="core_error_generic">Etwas ist schiefgelaufen</string>
     <string name="core_error_not_found">Bild nicht gefunden (404)</string>
     <string name="core_error_no_internet">Keine Internetverbindung</string>
+    <string name="core_error_server_not_found">Server nicht gefunden</string>
     <string name="core_error_failed_connect">Verbindung zum Server fehlgeschlagen</string>
     <string name="core_error_timed_out">Zeitüberschreitung beim Herunterladen</string>
     <string name="core_error_network">Netzwerkfehler. Überprüfen Sie Ihre Verbindung.</string>

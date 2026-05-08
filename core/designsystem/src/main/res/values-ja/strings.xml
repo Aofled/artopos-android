@@ -20,6 +20,7 @@
     <string name="core_error_generic">エラーが発生しました</string>
     <string name="core_error_not_found">画像が見つかりません (404)</string>
     <string name="core_error_no_internet">インターネット接続がありません</string>
+    <string name="core_error_server_not_found">サーバーが見つかりません</string>
     <string name="core_error_failed_connect">サーバーへの接続に失敗しました</string>
     <string name="core_error_timed_out">ダウンロードがタイムアウトしました</string>
     <string name="core_error_network">ネットワークエラー。接続を確認してください。</string>

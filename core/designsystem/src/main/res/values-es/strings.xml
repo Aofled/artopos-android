@@ -20,6 +20,7 @@
     <string name="core_error_generic">Algo salió mal</string>
     <string name="core_error_not_found">Imagen no encontrada (404)</string>
     <string name="core_error_no_internet">Sin conexión a internet</string>
+    <string name="core_error_server_not_found">Servidor no encontrado</string>
     <string name="core_error_failed_connect">Error al conectar con el servidor</string>
     <string name="core_error_timed_out">Tiempo de descarga agotado</string>
     <string name="core_error_network">Error de red. Comprueba tu conexión.</string>

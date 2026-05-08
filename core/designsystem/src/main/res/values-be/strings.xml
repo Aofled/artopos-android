@@ -20,6 +20,7 @@
     <string name="core_error_generic">Нешта пайшло не так</string>
     <string name="core_error_not_found">Выява не знойдзена (404)</string>
     <string name="core_error_no_internet">Няма інтэрнэт-злучэння</string>
+    <string name="core_error_server_not_found">Сервер не знойдзены</string>
     <string name="core_error_failed_connect">Не ўдалося падключыцца да сервера</string>
     <string name="core_error_timed_out">Час чакання спампоўвання сышоў</string>
     <string name="core_error_network">Памылка сеткі. Праверце злучэнне.</string>

@@ -5,12 +5,15 @@ import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
+import kotlinx.serialization.SerializationException
+import retrofit2.HttpException
 import ru.createsmart.artopos.core.data.mapper.ArtworkMapper
 import ru.createsmart.artopos.core.database.HarvardDatabase
 import ru.createsmart.artopos.core.database.model.ArtworkFeedWithFavoriteFlagDBO
 import ru.createsmart.artopos.core.database.model.ArtworkRemoteKeysEntity
 import ru.createsmart.artopos.core.model.FilterParams
 import ru.createsmart.artopos.core.model.FilterSortOption
+import ru.createsmart.artopos.core.model.error.AppError
 import ru.createsmart.artopos.core.network.api.HarvardAPI
 import ru.createsmart.artopos.core.network.model.ArtworkDTO
 import java.io.IOException
@@ -94,6 +97,14 @@ class ArtworkRemoteMediator(
             MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)
         } catch (exception: IOException) {
             MediatorResult.Error(exception)
+        } catch (exception: HttpException) {
+            MediatorResult.Error(
+                AppError.ExternalSystem(code = exception.code(), message = exception.message()),
+            )
+        } catch (exception: SerializationException) {
+            MediatorResult.Error(
+                AppError.DataFormat(message = exception.message),
+            )
         }
     }
 
