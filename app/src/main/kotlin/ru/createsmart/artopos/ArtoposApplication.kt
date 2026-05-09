@@ -6,7 +6,6 @@ import coil.ImageLoaderFactory
 import dagger.hilt.android.HiltAndroidApp
 import okhttp3.OkHttpClient
 import ru.createsmart.artopos.core.imageloader.di.ImageClient
-import ru.createsmart.artopos.core.network.BuildConfig
 import ru.createsmart.artopos.extensions.createCoilImageLoader
 import javax.inject.Inject
 
@@ -19,6 +18,7 @@ class ArtoposApplication : Application(), ImageLoaderFactory {
 
     // Coil Configuration: Set Global ImageLoader with our custom Client
     override fun newImageLoader(): ImageLoader {
-        return createCoilImageLoader(imageOkHttpClient, BuildConfig.DEBUG)
+        val isDebug = (applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0
+        return createCoilImageLoader(imageOkHttpClient, isDebug)
     }
 }

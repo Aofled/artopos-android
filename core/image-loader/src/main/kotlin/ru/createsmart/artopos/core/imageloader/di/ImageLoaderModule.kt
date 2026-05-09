@@ -10,7 +10,6 @@ import okhttp3.Cache
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import ru.createsmart.artopos.core.imageloader.interceptor.CacheControlInterceptor
-import ru.createsmart.artopos.core.network.BuildConfig
 import java.io.File
 import javax.inject.Qualifier
 import javax.inject.Singleton
@@ -46,10 +45,11 @@ object ImageLoaderModule {
         // Force cache headers even if server says "no-cache"
         builder.addNetworkInterceptor(CacheControlInterceptor())
 
-        if (BuildConfig.DEBUG) {
+        val isDebug = (context.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0
+        if (isDebug) {
             // Security: Log body only in Debug. NEVER in Release (Performance + Privacy)
             val loggingInterceptor = HttpLoggingInterceptor().apply {
-                level = HttpLoggingInterceptor.Level.NONE
+                level = HttpLoggingInterceptor.Level.BASIC
             }
             builder.addInterceptor(loggingInterceptor)
         }
