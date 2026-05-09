@@ -178,11 +178,8 @@ class OfflineFirstArtworkRepositoryDetailsTest {
 
         // THEN
         assertEquals("Keep", repository.getArtwork(10).first()?.provenance)
-        /**
-         * Works only when you need to check the number of deleted rows
-         * from the database in OfflineFirstArtworkRepository:clearDatabaseCache()
-         */
-        // assertNull(repository.getArtwork(20).first()?.provenance) //
+
+        assertNull(repository.getArtwork(20).first()?.provenance)
     }
 
     private fun createArtwork(id: Int, title: String = "Title", inFeed: Boolean = true) = ArtworkDBO(
