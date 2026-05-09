@@ -16,6 +16,17 @@ internal fun Project.configureKotlinAndroid(
     commonExtension: CommonExtension,
 ) {
     commonExtension.apply {
+        val moduleName = project.path.split(":")
+            .drop(1)
+            .joinToString(".")
+            .replace("-", "")
+
+        namespace = if (moduleName.isNotEmpty() && moduleName != "app") {
+            "ru.createsmart.artopos.$moduleName"
+        } else {
+            "ru.createsmart.artopos"
+        }
+
         compileSdk = libs.findVersion("android-sdk-compile").get().toString().toInt()
 
         if (this is ApplicationExtension) {

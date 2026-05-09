@@ -4,10 +4,6 @@ plugins {
     id("artopos.di.hilt")
 }
 
-android {
-    namespace = "ru.createsmart.artopos.feature.favorites"
-}
-
 dependencies {
     implementation(projects.core.domain)
     implementation(projects.core.model)

@@ -3,10 +3,6 @@ plugins {
     id("artopos.android.library.compose")
 }
 
-android {
-    namespace = "ru.createsmart.artopos.core.designsystem"
-}
-
 dependencies {
     implementation(libs.androidx.ui.text.google.fonts)
     implementation(projects.core.model)

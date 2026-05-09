@@ -3,7 +3,6 @@ plugins {
 }
 
 android {
-    namespace = "ru.createsmart.artopos.benchmark"
     targetProjectPath = ":app"
 }
 

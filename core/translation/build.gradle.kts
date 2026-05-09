@@ -3,10 +3,6 @@ plugins {
     id("artopos.di.hilt")
 }
 
-android {
-    namespace = "ru.createsmart.artopos.core.translation"
-}
-
 dependencies {
     implementation(libs.google.mlkit.translate)
 

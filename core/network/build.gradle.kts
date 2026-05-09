@@ -7,8 +7,6 @@ plugins {
 }
 
 android {
-    namespace = "ru.createsmart.artopos.core.network"
-
     defaultConfig {
         val properties = Properties()
         val localPropertiesFile = project.rootProject.file("local.properties")

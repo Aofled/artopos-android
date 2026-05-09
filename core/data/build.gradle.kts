@@ -3,10 +3,6 @@ plugins {
     id("artopos.di.hilt")
 }
 
-android {
-    namespace = "ru.createsmart.artopos.core.data"
-}
-
 dependencies {
     implementation(projects.core.common)
     implementation(projects.core.database)

@@ -5,8 +5,6 @@ plugins {
 }
 
 android {
-    namespace = "ru.createsmart.artopos"
-
     defaultConfig {
         applicationId = "ru.createsmart.artopos"
     }

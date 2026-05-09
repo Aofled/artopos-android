@@ -5,10 +5,6 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
-android {
-    namespace = "ru.createsmart.artopos.core.database"
-}
-
 dependencies {
     implementation(libs.kotlinx.serialization.json)
 }
