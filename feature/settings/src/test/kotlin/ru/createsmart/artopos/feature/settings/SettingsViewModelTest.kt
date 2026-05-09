@@ -157,6 +157,6 @@ class SettingsViewModelTest {
             )
         }
 
-        coVerify(exactly = 1) { getImageCacheSize() }
+        coVerify(exactly = 2) { getImageCacheSize() }
     }
 }
