@@ -2,19 +2,19 @@ package ru.createsmart.artopos.core.designsystem.theme
 
 import androidx.compose.ui.graphics.Color
 
-val NavyDark = Color(0xFF0F172A)
-val NavyLight = Color(0xFF1E293B)
+internal val NavyDark = Color(0xFF0F172A)
+internal val NavyLight = Color(0xFF1E293B)
 
-val GoldAccent = Color(0xFFC5A059)
-val GoldLight = Color(0xFFE5C585)
+internal val GoldAccent = Color(0xFFC5A059)
+internal val GoldLight = Color(0xFFE5C585)
 
-val PaperWhite = Color(0xFFFFFFFF)
-val BackgroundWhite = Color(0xFFF8F9FA)
+internal val PaperWhite = Color(0xFFFFFFFF)
+internal val BackgroundWhite = Color(0xFFF8F9FA)
 
-val MapLand = Color(0xFF2C2C2C)
-val MapWater = Color(0xFF000000)
+internal val MapLand = Color(0xFF2C2C2C)
+internal val MapWater = Color(0xFF000000)
 
-val ErrorRed = Color(0xFFBA1A1A)
+internal val ErrorRed = Color(0xFFBA1A1A)
 
-val DarkGlass = Color(0xFF121212)
-val LightGlass = Color(0xFFFFFFFF)
+internal val DarkGlass = Color(0xFF121212)
+internal val LightGlass = Color(0xFFFFFFFF)
