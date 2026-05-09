@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ArtworkDTO(
     @SerialName("id") val id: Int,
-    @SerialName("title") val title: String = "Untitled", // Fallback: Use "Untitled" if title is missing/null
+    @SerialName("title") val title: String? = null,
     @SerialName("dated") val date: String? = null, // "1889", "17th century"
     @SerialName("technique") val technique: String? = null, // "Oil on canvas"
     @SerialName("primaryimageurl") val imageUrl: String? = null,

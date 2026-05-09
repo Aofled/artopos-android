@@ -1,5 +1,6 @@
 package ru.createsmart.artopos.core.network.model
 
+import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -8,7 +9,7 @@ import ru.createsmart.artopos.core.network.di.NetworkJson
 class ArtworkEdgeCasesTest {
 
     @Test
-    fun `when title is missing then default to Untitled`() {
+    fun `when title is missing then parse as null`() {
         val jsonString = """
             {
                 "id": 12345
@@ -20,11 +21,9 @@ class ArtworkEdgeCasesTest {
         // The identifier must be parsed.
         assertEquals(12345, artwork.id)
 
-        // If the title field is missing, the default 'Untitled' should be used.
-        assertEquals("Untitled", artwork.title)
+        Assert.assertNull(artwork.title)
 
-        // The artists list must be empty
-        assertTrue(artwork.artists.isEmpty())
+        Assert.assertTrue(artwork.artists.isEmpty())
     }
 
     @Test

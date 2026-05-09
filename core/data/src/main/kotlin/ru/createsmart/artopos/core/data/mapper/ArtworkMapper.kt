@@ -48,7 +48,7 @@ class ArtworkMapper @Inject constructor() {
 
         return ArtworkDBO(
             id = dto.id,
-            title = dto.title.ifBlank { "" },
+            title = dto.title.orEmpty(),
             artist = artistName,
             imageUrl = finalUrl,
             imageDimensions = dimensions,
