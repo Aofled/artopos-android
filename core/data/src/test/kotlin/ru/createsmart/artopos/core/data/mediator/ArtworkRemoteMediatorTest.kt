@@ -351,10 +351,10 @@ class ArtworkRemoteMediatorTest {
 
         // 2. The old Featured Painting (ID 20) SHOULD REMAIN, but its ribbon flag should be reset to false
         val savedFavorite = cache.find { it.id == 20 }!!
-        assertEquals(false, savedFavorite.inDiscoverFeed)
+        assertFalse(savedFavorite.inDiscoverFeed)
 
         // 3. New painting (ID 30) MUST BE ADDED with ribbon flag = true
         val newFeedItem = cache.find { it.id == 30 }!!
-        assertEquals(true, newFeedItem.inDiscoverFeed)
+        assertTrue(newFeedItem.inDiscoverFeed)
     }
 }

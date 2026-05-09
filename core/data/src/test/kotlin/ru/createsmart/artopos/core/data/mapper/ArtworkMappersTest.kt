@@ -2,6 +2,7 @@ package ru.createsmart.artopos.core.data.mapper
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import ru.createsmart.artopos.core.database.converters.StoredImage
 import ru.createsmart.artopos.core.database.model.ArtworkDBO
@@ -53,7 +54,7 @@ class ArtworkMappersTest {
         assertEquals(expectedDims, domain.imageDimensions)
 
         assertEquals(CreationDate.Unknown, domain.creationDate)
-        assertEquals(true, domain.isFavorite)
+        assertTrue("Artwork should be marked as favorite", domain.isFavorite)
     }
 
     @Test
@@ -204,7 +205,7 @@ class ArtworkMappersTest {
         assertEquals(3, domain.images.size)
         assertEquals("https://nrs.harvard.edu/urn-3:HUAM:765757", domain.images[0].url)
         assertEquals(1165, domain.images[0].width)
-        assertEquals(true, domain.baseArtwork.isFavorite)
+        assertTrue(domain.baseArtwork.isFavorite)
     }
 
     @Test
@@ -236,7 +237,7 @@ class ArtworkMappersTest {
         // THEN
         assertEquals("Mona Lisa", domainDetails.baseArtwork.title)
         assertEquals(CreationDate.ExactYear(1503), domainDetails.baseArtwork.creationDate)
-        assertEquals(true, domainDetails.baseArtwork.isFavorite)
+        assertTrue(domainDetails.baseArtwork.isFavorite)
 
         // THEN
         assertEquals("Louvre", domainDetails.provenance)
