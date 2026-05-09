@@ -4,5 +4,8 @@ import ru.createsmart.artopos.core.model.settings.UserSettings
 
 sealed interface SettingsUiState {
     data object Loading : SettingsUiState
-    data class Success(val settings: UserSettings) : SettingsUiState
+    data class Success(
+        val settings: UserSettings,
+        val cacheSizeMb: Long? = null,
+    ) : SettingsUiState
 }

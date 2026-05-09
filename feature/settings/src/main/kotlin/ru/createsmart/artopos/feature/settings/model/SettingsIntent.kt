@@ -6,4 +6,5 @@ sealed interface SettingsIntent {
     data class UpdateTheme(val themeConfig: ThemeConfig) : SettingsIntent
     data class UpdateLanguage(val languageCode: String) : SettingsIntent
     data object ClearCache : SettingsIntent
+    data object RecalculateCache : SettingsIntent
 }

@@ -97,24 +97,37 @@ class SettingsViewModelTest {
     }
 
     @Test
-    fun `calculateCacheSize updates cacheSizeMb state correctly`() = runTest {
+    fun `onIntent RecalculateCache updates cacheSizeMb in uiState`() = runTest {
         // GIVEN
-        every { getUserSettings() } returns MutableSharedFlow()
-        coEvery { getImageCacheSize() } returns (5L * 1024 * 1024) // 5 MB
+        val settingsFlow = MutableSharedFlow<UserSettings>()
+        every { getUserSettings() } returns settingsFlow
+
+        // returnsMany returns values in sequence:
+        // The first call (from init{}) will return 5 MB
+        // The second call (from onIntent) will return 12 MB
+        coEvery { getImageCacheSize() } returnsMany listOf(
+            5L * 1024 * 1024,
+            12L * 1024 * 1024,
+        )
 
         setupViewModel()
 
-        // WHEN
-        viewModel.calculateCacheSize()
+        viewModel.uiState.test {
+            assertEquals(SettingsUiState.Loading, awaitItem())
 
-        // THEN
-        viewModel.cacheSizeMb.test {
-            val firstItem = awaitItem()
-            if (firstItem == null) {
-                assertEquals(5L, awaitItem())
-            } else {
-                assertEquals(5L, firstItem)
-            }
+            settingsFlow.emit(UserSettings(ThemeConfig.DARK, "ru"))
+
+            val initialSuccess = awaitItem() as SettingsUiState.Success
+            assertEquals(5L, initialSuccess.cacheSizeMb)
+
+            // WHEN
+            viewModel.onIntent(SettingsIntent.RecalculateCache)
+
+            // THEN
+            val finalSuccess = awaitItem() as SettingsUiState.Success
+            assertEquals(12L, finalSuccess.cacheSizeMb)
+
+            cancelAndIgnoreRemainingEvents()
         }
     }
 

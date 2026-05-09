@@ -6,8 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import ru.createsmart.artopos.core.designsystem.components.UiText
@@ -33,26 +32,32 @@ class SettingsViewModel @Inject constructor(
     private val uiMessageManager: UiMessageManager,
 ) : ViewModel() {
 
-    val uiState: StateFlow<SettingsUiState> = getUserSettings()
-        .map { settings ->
-            SettingsUiState.Success(settings)
-        }
+    val uiEffect = uiMessageManager.uiEffect
+
+    private val _cacheSizeMb = MutableStateFlow<Long?>(null)
+
+    val uiState: StateFlow<SettingsUiState> = combine(
+        getUserSettings(),
+        _cacheSizeMb,
+    ) { settings, cacheSize ->
+        SettingsUiState.Success(settings = settings, cacheSizeMb = cacheSize)
+    }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = SettingsUiState.Loading,
         )
 
-    val uiEffect = uiMessageManager.uiEffect
-
-    private val _cacheSizeMb = MutableStateFlow<Long?>(null)
-    val cacheSizeMb = _cacheSizeMb.asStateFlow()
+    init {
+        calculateCacheSize()
+    }
 
     internal fun onIntent(intent: SettingsIntent) {
         when (intent) {
             is SettingsIntent.UpdateTheme -> updateTheme(intent.themeConfig)
             is SettingsIntent.UpdateLanguage -> updateLanguage(intent.languageCode)
             is SettingsIntent.ClearCache -> clearAppCache()
+            is SettingsIntent.RecalculateCache -> calculateCacheSize()
         }
     }
 
@@ -68,7 +73,7 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    internal fun calculateCacheSize() {
+    private fun calculateCacheSize() {
         viewModelScope.launch {
             val bytes = getImageCacheSizeUseCase()
             val megabytes = bytes / (BYTES_IN_MEGABYTE)

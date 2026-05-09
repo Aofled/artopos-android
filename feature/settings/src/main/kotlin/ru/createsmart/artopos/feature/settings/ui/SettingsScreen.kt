@@ -70,14 +70,16 @@ fun SettingsRoute(
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val cacheSizeMb by viewModel.cacheSizeMb.collectAsStateWithLifecycle()
-    val currentLanguageTag = (uiState as? SettingsUiState.Success)?.settings?.languageCode.orEmpty()
+
+    val successState = uiState as? SettingsUiState.Success
+    val currentLanguageTag = successState?.settings?.languageCode.orEmpty()
+    val cacheSizeMb = successState?.cacheSizeMb
 
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) { // Recalculate the occupied cache
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
-                viewModel.calculateCacheSize()
+                viewModel.onIntent(SettingsIntent.RecalculateCache)
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
