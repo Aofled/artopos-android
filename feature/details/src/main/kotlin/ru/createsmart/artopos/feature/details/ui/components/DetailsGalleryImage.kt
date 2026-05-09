@@ -4,12 +4,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.layout.ContentScale
@@ -57,12 +57,13 @@ fun DetailsGalleryImage(
         onErrorMessage = { if (localRetry > 0) onShowMessage(it) },
     )
 
-    LaunchedEffect(zoomState) {
-        snapshotFlow { zoomState.scale }.collect { currentScale ->
-            // The image is zoomed if the scale is greater than 1.25
-            val isZoomed = currentScale > ZOOM_ACTIVATION_THRESHOLD
-            onZoomStateChanged(isZoomed)
-        }
+    val isZoomed by remember {
+        derivedStateOf { zoomState.scale > ZOOM_ACTIVATION_THRESHOLD }
+    }
+
+    LaunchedEffect(isZoomed) {
+        // The image is zoomed if the scale is greater than 1.25
+        onZoomStateChanged(isZoomed)
     }
 
     Box(
