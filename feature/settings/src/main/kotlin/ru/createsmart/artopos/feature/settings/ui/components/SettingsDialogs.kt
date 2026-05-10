@@ -195,7 +195,7 @@ private fun LanguageOptionRow(
     Row(
         Modifier
             .fillMaxWidth()
-            .height(56.dp)
+            .height(48.dp)
             .selectable(
                 selected = isSelected,
                 onClick = onClick,
