@@ -61,3 +61,9 @@
 -keep class **.R$* {
     <fields>;
 }
+
+# Number of compiler cycles
+-optimizationpasses 5
+
+# logs
+# -printconfiguration build/outputs/mapping/release/full_config.txt
