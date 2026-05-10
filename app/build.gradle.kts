@@ -7,6 +7,15 @@ plugins {
 android {
     defaultConfig {
         applicationId = "ru.createsmart.artopos"
+
+        ndk {
+            abiFilters += setOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+        }
+    }
+
+    @Suppress("UnstableApiUsage")
+    androidResources {
+        localeFilters += listOf("en", "ru", "fr", "be", "ja", "zh", "de", "it", "es")
     }
 
     buildTypes {
@@ -23,6 +32,16 @@ android {
             signingConfig = signingConfigs.getByName("debug")
             matchingFallbacks += listOf("release")
             isDebuggable = false
+        }
+    }
+
+    packaging {
+        resources {
+            excludes += "/kotlin/**"
+            excludes += "/META-INF/androidx.*.version"
+            excludes += "/META-INF/kotlinx_*"
+            excludes += "/META-INF/com.google.*.version"
+            excludes += "/DebugProbesKt.bin"
         }
     }
 }
