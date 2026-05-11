@@ -6,6 +6,7 @@ import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -141,8 +142,15 @@ class SettingsViewModelTest {
 
         setupViewModel()
 
+        runCurrent()
+
+        // Clear the memory of the mock call from init{}, but leave the configured answers (answers = false)
+        io.mockk.clearMocks(getImageCacheSize, answers = false)
+
         // WHEN
         viewModel.onIntent(SettingsIntent.ClearCache)
+
+        runCurrent()
 
         // THEN
         // "Clearing..."
