@@ -17,6 +17,7 @@
     <string name="details_label_original_text">Оригинал</string>
     <string name="details_btn_show_original">Оригинальный текст</string>
 
+    <string name="details_msg_permission_denied">Для сохранения изображения требуется доступ к файлам</string>
     <string name="details_msg_save_success">Сохранено в %1$s</string>
 
     <string name="details_error_save_failed">Не удалось сохранить: Проверьте подключение или память</string>

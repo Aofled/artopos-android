@@ -17,6 +17,7 @@
     <string name="details_label_original_text">Ver original</string>
     <string name="details_btn_show_original">Texto original</string>
 
+    <string name="details_msg_permission_denied">Se requiere acceso a los archivos para guardar la imagen</string>
     <string name="details_msg_save_success">Guardado en %1$s</string>
 
     <string name="details_error_save_failed">Error al guardar: Comprueba tu conexión o almacenamiento</string>

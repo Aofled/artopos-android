@@ -17,6 +17,7 @@
     <string name="details_label_original_text">查看原文</string>
     <string name="details_btn_show_original">原文</string>
 
+    <string name="details_msg_permission_denied">保存图片需要文件访问权限</string>
     <string name="details_msg_save_success">已保存至 %1$s</string>
 
     <string name="details_error_save_failed">保存失败：请检查您的连接或存储空间</string>

@@ -16,6 +16,7 @@
     <string name="details_label_original_text">Voir l\'original</string>
     <string name="details_btn_show_original">Texte original</string>
 
+    <string name="details_msg_permission_denied">L\'accès aux fichiers est requis pour enregistrer l\'image</string>
     <string name="details_msg_save_success">Enregistré dans %1$s</string>
 
     <string name="details_error_save_failed">Échec de l\'enregistrement : vérifiez votre connexion ou votre stockage</string>

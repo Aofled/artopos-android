@@ -17,6 +17,7 @@
     <string name="details_label_original_text">Арыгінал</string>
     <string name="details_btn_show_original">Арыгінальны тэкст</string>
 
+    <string name="details_msg_permission_denied">Для захавання выявы патрабуецца доступ да файлаў</string>
     <string name="details_msg_save_success">Захавана ў %1$s</string>
 
     <string name="details_error_save_failed">Не ўдалося захаваць: праверце злучэнне або сховішча</string>

@@ -17,6 +17,7 @@
     <string name="details_label_original_text">Vedi originale</string>
     <string name="details_btn_show_original">Testo originale</string>
 
+    <string name="details_msg_permission_denied">È necessario l\'accesso ai file per salvare l\'immagine</string>
     <string name="details_msg_save_success">Salvato in %1$s</string>
 
     <string name="details_error_save_failed">Impossibile salvare: controlla la connessione o lo spazio di archiviazione</string>

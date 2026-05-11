@@ -17,6 +17,7 @@
     <string name="details_label_original_text">原文を見る</string>
     <string name="details_btn_show_original">原文</string>
 
+    <string name="details_msg_permission_denied">画像を保存するには、ファイルへのアクセス権限が必要です</string>
     <string name="details_msg_save_success">%1$s に保存しました</string>
 
     <string name="details_error_save_failed">保存に失敗しました：接続またはストレージを確認してください</string>

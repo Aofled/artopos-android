@@ -17,6 +17,7 @@
     <string name="details_label_original_text">Original</string>
     <string name="details_btn_show_original">Originaltext</string>
 
+    <string name="details_msg_permission_denied">Um das Bild zu speichern, ist der Zugriff auf Dateien erforderlich.</string>
     <string name="details_msg_save_success">In %1$s gespeichert</string>
 
     <string name="details_error_save_failed">Speichern fehlgeschlagen: Überprüfen Sie Ihre Verbindung oder Ihren Speicher</string>
