@@ -1,6 +1,6 @@
 package ru.createsmart.artopos.core.model
 
-enum class FilterSortOption {
+public enum class FilterSortOption {
     RANK,
     TOTAL_PAGE_VIEWS,
     ACCESSION_YEAR,

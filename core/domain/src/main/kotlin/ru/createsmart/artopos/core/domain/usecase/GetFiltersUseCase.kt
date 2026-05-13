@@ -6,10 +6,10 @@ import ru.createsmart.artopos.core.model.FilterItem
 import ru.createsmart.artopos.core.model.FilterType
 import javax.inject.Inject
 
-class GetFiltersUseCase @Inject constructor(
+public class GetFiltersUseCase @Inject constructor(
     private val repository: FilterRepository,
 ) {
-    operator fun invoke(type: FilterType): Flow<List<FilterItem>> {
+    public operator fun invoke(type: FilterType): Flow<List<FilterItem>> {
         return repository.getFilters(type)
     }
 }

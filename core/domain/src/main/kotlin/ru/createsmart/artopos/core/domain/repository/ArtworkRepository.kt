@@ -6,14 +6,14 @@ import ru.createsmart.artopos.core.model.Artwork
 import ru.createsmart.artopos.core.model.ArtworkDetails
 import ru.createsmart.artopos.core.model.FilterParams
 
-interface ArtworkRepository {
-    fun getPagedArtworks(
+public interface ArtworkRepository {
+    public fun getPagedArtworks(
         params: FilterParams,
     ): Flow<PagingData<Artwork>>
 
-    fun getArtwork(id: Int): Flow<ArtworkDetails?>
-    suspend fun syncArtworkDetails(id: Int): Result<Unit>
-    fun getFavoriteArtworks(): Flow<List<Artwork>>
-    suspend fun toggleFavorite(artworkId: Int)
-    suspend fun clearDatabaseCache()
+    public fun getArtwork(id: Int): Flow<ArtworkDetails?>
+    public suspend fun syncArtworkDetails(id: Int): Result<Unit>
+    public fun getFavoriteArtworks(): Flow<List<Artwork>>
+    public suspend fun toggleFavorite(artworkId: Int)
+    public suspend fun clearDatabaseCache()
 }

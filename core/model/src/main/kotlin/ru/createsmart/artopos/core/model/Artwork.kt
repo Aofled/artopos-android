@@ -4,7 +4,7 @@ package ru.createsmart.artopos.core.model
  * Lightweight model for feeds (Discover / Favorites).
  * Contains ONLY the data necessary to render an artwork card.
  */
-data class Artwork(
+public data class Artwork(
     val id: Int,
     val title: String,
     val artist: String,
@@ -18,7 +18,7 @@ data class Artwork(
  * Heavyweight model for the Details screen.
  * Contains the base [Artwork] plus all deep metadata and gallery images.
  */
-data class ArtworkDetails(
+public data class ArtworkDetails(
     val baseArtwork: Artwork,
     val technique: String?,
     val description: String?,
@@ -37,12 +37,12 @@ data class ArtworkDetails(
     val galleryLocation: String?,
 )
 
-data class ImageDimensions(
+public data class ImageDimensions(
     val width: Int,
     val height: Int,
 )
 
-data class ArtworkImage(
+public data class ArtworkImage(
     val url: String,
     val width: Int,
     val height: Int,

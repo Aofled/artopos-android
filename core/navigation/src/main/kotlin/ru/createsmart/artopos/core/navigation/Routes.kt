@@ -3,15 +3,15 @@ package ru.createsmart.artopos.core.navigation
 import kotlinx.serialization.Serializable
 
 @Serializable
-object DiscoverRoute
+public object DiscoverRoute
 
 @Serializable
-object FavoritesRoute
+public object FavoritesRoute
 
 @Serializable
-object SettingsRoute
+public object SettingsRoute
 
 @Serializable
-data class DetailsRoute(
+public data class DetailsRoute(
     val artworkId: Int,
 )

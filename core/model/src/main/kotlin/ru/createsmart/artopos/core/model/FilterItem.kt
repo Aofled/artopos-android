@@ -1,6 +1,6 @@
 package ru.createsmart.artopos.core.model
 
-data class FilterItem(
+public data class FilterItem(
     val id: Long,
     val type: FilterType,
     val name: String,
@@ -8,7 +8,7 @@ data class FilterItem(
     val order: Int? = null,
 )
 
-enum class FilterType {
+public enum class FilterType {
     CLASSIFICATION,
     CENTURY,
     CULTURE,

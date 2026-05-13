@@ -4,14 +4,14 @@ import ru.createsmart.artopos.core.domain.repository.ArtworkRepository
 import ru.createsmart.artopos.core.domain.repository.ImageCacheRepository
 import javax.inject.Inject
 
-class ClearAppCacheUseCase @Inject constructor(
+public class ClearAppCacheUseCase @Inject constructor(
     private val imageCacheRepository: ImageCacheRepository,
     private val artworkRepository: ArtworkRepository,
 ) {
     /**
      * @return Number of freed megabytes (from images only).
      */
-    suspend operator fun invoke(): Long {
+    public suspend operator fun invoke(): Long {
         // 1. Clearing the file cache (images)
         val freedBytes = imageCacheRepository.clearCache()
 

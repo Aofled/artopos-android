@@ -5,10 +5,10 @@ import ru.createsmart.artopos.core.domain.repository.ArtworkRepository
 import ru.createsmart.artopos.core.model.ArtworkDetails
 import javax.inject.Inject
 
-class GetArtworkDetailsUseCase @Inject constructor(
+public class GetArtworkDetailsUseCase @Inject constructor(
     private val repository: ArtworkRepository,
 ) {
-    operator fun invoke(id: Int): Flow<ArtworkDetails?> {
+    public operator fun invoke(id: Int): Flow<ArtworkDetails?> {
         return repository.getArtwork(id)
     }
 }

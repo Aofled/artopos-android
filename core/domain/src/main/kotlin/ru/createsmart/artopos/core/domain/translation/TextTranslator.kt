@@ -1,8 +1,8 @@
 package ru.createsmart.artopos.core.domain.translation
 
-interface TextTranslator {
-    suspend fun preloadModel(targetLanguage: String) // Starts downloading the model
-    suspend fun translate(text: String?, targetLanguage: String): String?
-    suspend fun isModelDownloaded(targetLanguageCode: String): Boolean
-    suspend fun close()
+public interface TextTranslator {
+    public suspend fun preloadModel(targetLanguage: String) // Starts downloading the model
+    public suspend fun translate(text: String?, targetLanguage: String): String?
+    public suspend fun isModelDownloaded(targetLanguageCode: String): Boolean
+    public suspend fun close()
 }

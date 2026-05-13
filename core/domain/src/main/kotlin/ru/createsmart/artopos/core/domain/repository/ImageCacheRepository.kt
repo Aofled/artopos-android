@@ -1,6 +1,6 @@
 package ru.createsmart.artopos.core.domain.repository
 
-interface ImageCacheRepository {
-    suspend fun clearCache(): Long
-    suspend fun getCacheSize(): Long
+public interface ImageCacheRepository {
+    public suspend fun clearCache(): Long
+    public suspend fun getCacheSize(): Long
 }

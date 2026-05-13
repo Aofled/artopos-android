@@ -4,7 +4,9 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.kotlin.dsl.configure
+import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 /**
@@ -23,6 +25,10 @@ class JvmLibraryConventionPlugin : Plugin<Project> {
             extensions.configure<JavaPluginExtension> {
                 sourceCompatibility = org.gradle.api.JavaVersion.VERSION_17
                 targetCompatibility = org.gradle.api.JavaVersion.VERSION_17
+            }
+
+            extensions.configure<KotlinProjectExtension> {
+                explicitApi = ExplicitApiMode.Strict
             }
 
             tasks.withType(KotlinJvmCompile::class.java).configureEach {
