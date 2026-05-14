@@ -120,7 +120,7 @@ class ArtworkRemoteMediator(
                 FilterSortOption.RANDOM -> FILTER_RANDOM
             }
         } else {
-            FILTER_ACCESSION_YEAR // For the main page, always "accessionyear"
+            FILTER_RANDOM // For the main page, always "random"
         }
     }
 
