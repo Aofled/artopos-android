@@ -81,3 +81,6 @@ local.properties
 *.iml
 .navigation/
 captures/
+
+#Files generated for publication
+app/release/
