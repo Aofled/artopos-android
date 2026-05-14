@@ -1,12 +1,16 @@
 package ru.createsmart.artopos.feature.settings.ui
 
+import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.os.Build
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
@@ -250,44 +254,62 @@ private fun SettingsContent(
     currentLanguageTag: String,
     onLanguageClick: () -> Unit,
 ) {
-    LazyColumn(modifier = modifier.fillMaxSize()) {
-        item { SettingsSectionTitle(stringResource(R.string.settings_section_appearance)) }
+    Column(modifier = modifier.fillMaxSize()) {
+        LazyColumn(modifier = Modifier.weight(1f)) {
+            item { SettingsSectionTitle(stringResource(R.string.settings_section_appearance)) }
 
-        item {
-            SettingsItem(
-                painter = painterResource(DSR.drawable.ic_color_lens),
-                title = stringResource(R.string.settings_label_theme),
-                subtitle = getThemeDisplayName(settings.themeConfig),
-                onClick = onThemeClick,
-            )
-        }
-
-        item {
-            SettingsItem(
-                painter = painterResource(id = DSR.drawable.ic_language),
-                title = stringResource(R.string.settings_label_language),
-                subtitle = getLanguageDisplayName(currentLanguageTag),
-                onClick = onLanguageClick,
-            )
-        }
-
-        item {
-            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-            SettingsSectionTitle(stringResource(R.string.settings_section_storage))
-        }
-
-        item {
-            val cacheSubtitle = if (cacheSizeMb == null) {
-                stringResource(R.string.settings_cache_status_calculating)
-            } else {
-                stringResource(R.string.settings_cache_status_size_used, cacheSizeMb)
+            item {
+                SettingsItem(
+                    painter = painterResource(DSR.drawable.ic_color_lens),
+                    title = stringResource(R.string.settings_label_theme),
+                    subtitle = getThemeDisplayName(settings.themeConfig),
+                    onClick = onThemeClick,
+                )
             }
 
-            SettingsItem(
-                painter = painterResource(DSR.drawable.ic_delete),
-                title = stringResource(R.string.settings_label_cache),
-                subtitle = cacheSubtitle,
-                onClick = onClearCacheClick,
+            item {
+                SettingsItem(
+                    painter = painterResource(id = DSR.drawable.ic_language),
+                    title = stringResource(R.string.settings_label_language),
+                    subtitle = getLanguageDisplayName(currentLanguageTag),
+                    onClick = onLanguageClick,
+                )
+            }
+
+            item {
+                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                SettingsSectionTitle(stringResource(R.string.settings_section_storage))
+            }
+
+            item {
+                val cacheSubtitle = if (cacheSizeMb == null) {
+                    stringResource(R.string.settings_cache_status_calculating)
+                } else {
+                    stringResource(R.string.settings_cache_status_size_used, cacheSizeMb)
+                }
+
+                SettingsItem(
+                    painter = painterResource(DSR.drawable.ic_delete),
+                    title = stringResource(R.string.settings_label_cache),
+                    subtitle = cacheSubtitle,
+                    onClick = onClearCacheClick,
+                )
+            }
+        }
+
+        val versionName = getAppVersionName()
+        if (versionName.isNotEmpty()) {
+            val navBarsHeight = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+
+            val bottomSafePadding = 16.dp + ArtoposDimens.BottomBarHeight + navBarsHeight
+
+            Text(
+                text = "v$versionName",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .padding(bottom = bottomSafePadding, end = 24.dp),
             )
         }
     }
@@ -343,6 +365,27 @@ private fun SettingsItem(
                     maxLines = 1,
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun getAppVersionName(): String {
+    val context = LocalContext.current
+    return remember(context) {
+        try {
+            val packageManager = context.packageManager
+            val packageName = context.packageName
+            val packageInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                packageManager.getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(0))
+            } else {
+                @Suppress("DEPRECATION")
+                packageManager.getPackageInfo(packageName, 0)
+            }
+            packageInfo.versionName ?: ""
+        } catch (e: PackageManager.NameNotFoundException) {
+            Log.e("SettingsScreen", "Failed to get app version", e)
+            ""
         }
     }
 }
