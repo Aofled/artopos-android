@@ -14,6 +14,13 @@ android {
     }
 
     @Suppress("UnstableApiUsage")
+    bundle {
+        language {
+            enableSplit = false
+        }
+    }
+
+    @Suppress("UnstableApiUsage")
     androidResources {
         localeFilters += listOf("en", "ru", "fr", "be", "ja", "zh", "de", "it", "es")
     }
