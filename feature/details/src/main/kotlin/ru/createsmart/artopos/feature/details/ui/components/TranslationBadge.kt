@@ -22,6 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import ru.createsmart.artopos.feature.details.R
 import ru.createsmart.artopos.core.designsystem.R as DSR
@@ -40,7 +41,12 @@ fun TranslationBadge(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             if (isTranslationPending) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(16.dp),
@@ -64,6 +70,8 @@ fun TranslationBadge(
                 },
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
         }
 
@@ -85,6 +93,7 @@ fun TranslationBadge(
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold,
+                    maxLines = 1,
                 )
             }
         }
