@@ -3,7 +3,6 @@ package ru.createsmart.artopos.core.uicomponents.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -22,7 +21,6 @@ fun BackButton(
     IconButton(
         onClick = onBackClick,
         modifier = Modifier
-            .statusBarsPadding()
             .padding(16.dp)
             .size(40.dp)
             .background(Color.Black.copy(alpha = 0.3f), CircleShape),
