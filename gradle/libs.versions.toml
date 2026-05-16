@@ -6,15 +6,15 @@ android-sdk-compile = "36"
 agp = "9.2.1"
 
 # Core & Kotlin
-kotlin = "2.3.20"
-kotlinxCoroutines = "1.10.2"
+kotlin = "2.3.21"
+kotlinxCoroutines = "1.11.0"
 coreKtx = "1.18.0"
 appcompat = "1.7.1"
-material = "1.13.0"
+material = "1.14.0"
 kotlinxImmutable = "0.4.0"
 
 # Compose
-composeBom = "2026.04.01"
+composeBom = "2026.05.00"
 activityCompose = "1.13.0"
 lifecycleRuntimeCompose = "2.10.0"
 navigationCompose = "2.9.8"
@@ -32,7 +32,7 @@ room = "2.8.4"
 datastore = "1.2.1"
 
 # Paging
-paging = "3.4.2"
+paging = "3.5.0"
 
 # Network & Serialization
 retrofit = "3.0.0"
