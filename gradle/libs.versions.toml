@@ -57,6 +57,11 @@ mockk = "1.14.9"
 turbine = "1.2.1"
 robolectric = "4.16.1"
 
+# Google services
+googleServices = "4.4.4"
+firebaseCrashlyticsPlugin = "3.0.7"
+firebaseBom = "34.13.0"
+
 [libraries]
 # Gradle Plugins
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
@@ -141,6 +146,11 @@ test-turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "tu
 test-robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 androidx-profileinstaller = { group = "androidx.profileinstaller", name = "profileinstaller", version.ref = "profileinstaller" }
 
+# Google services
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
+firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
+firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
+
 [plugins]
 # Android & Kotlin
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -152,6 +162,10 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+
+# Google services
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlyticsPlugin" }
 
 [bundles]
 compose = [

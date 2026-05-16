@@ -2,6 +2,8 @@ plugins {
     id("artopos.android.application")
     id("artopos.android.application.compose")
     id("artopos.di.hilt")
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics)
 }
 
 android {
@@ -77,4 +79,8 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
 
     implementation(libs.androidx.profileinstaller)
+
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.analytics)
 }
