@@ -57,7 +57,31 @@ jobs:
           DEBUG_API_KEY: ${{ secrets.DEBUG_API_KEY }}
         run: |
           echo "HARVARD_API_KEY=${DEBUG_API_KEY}" > ./local.properties
+
+          #1: Check if GitHub sees the variable at all
+          if [ -z "$GOOGLE_SERVICES_BASE64" ]; then
+            echo "❌ ERROR: GitHub sent an EMPTY secret GOOGLE_SERVICES_JSON_BASE64!"
+            exit 1
+          else
+            echo "✅ We've received the secret, we're decoding..."
+          fi
+
+          # 2. Decoding
           echo "${GOOGLE_SERVICES_BASE64}" | base64 --decode > app/google-services.json
+
+          # 3. Let's check the output
+          if [ -f "app/google-services.json" ]; then
+            FILE_SIZE=$(wc -c < app/google-services.json)
+            echo "✅ The app/google-services.json file has been created."
+            echo "File size: $FILE_SIZE bytes."
+            if [ "$FILE_SIZE" -eq 0 ]; then
+              echo "❌ ERROR: File is empty! Most likely, the Base64 string was invalid."
+              exit 1
+            fi
+          else
+            echo "❌ ERROR: The file was not created at all!"
+            exit 1
+          fi
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
