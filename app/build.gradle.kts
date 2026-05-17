@@ -47,6 +47,11 @@ android {
             )
 
             signingConfig = signingConfigs.getByName("release")
+
+            // Disable packing of heavy C++ symbols (Native Debug Symbols) into AAB
+            ndk {
+                debugSymbolLevel = "NONE"
+            }
         }
         create("benchmark") {
             initWith(buildTypes.getByName("release"))
