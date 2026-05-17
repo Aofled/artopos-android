@@ -56,9 +56,26 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: ./gradlew bundleRelease -PARTOPOS_VERSION_CODE=${{ env.VERSION_CODE }} -PARTOPOS_VERSION_NAME=${{ env.VERSION_NAME }}
 
-      - name: Upload Release AAB
-        uses: actions/upload-artifact@v4
-        with:
-          name: Artopos-Release-${{ env.VERSION_NAME }}
-          path: app/build/outputs/bundle/release/*.aab
-          retention-days: 1 # Delete after 1 days
+      - name: Send AAB to Telegram
+        env:
+          BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          # 1. Find the generated AAB file in the releases folder
+          AAB_FILE=$(find app/build/outputs/bundle/release -name "*.aab" | head -n 1)
+
+          # Check if the file was found
+          if [ -z "$AAB_FILE" ]; then
+            echo "AAB file not found!"
+            exit 1
+          fi
+
+          # 2. Generate a signature with a version
+          CAPTION="🚀 *Artopos Release is Ready!* %0A%0A*Version Name:* ${{ env.VERSION_NAME }}%0A*Version Code:* ${{ env.VERSION_CODE }}"
+
+          #3. Send a file via the Telegram Bot API
+          curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendDocument" \
+            -F chat_id="${CHAT_ID}" \
+            -F document=@"$AAB_FILE" \
+            -F caption="${CAPTION}" \
+            -F parse_mode="Markdown"
