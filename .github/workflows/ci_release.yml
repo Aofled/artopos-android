@@ -79,3 +79,13 @@ jobs:
             -F document=@"$AAB_FILE" \
             -F caption="${CAPTION}" \
             -F parse_mode="Markdown"
+
+      - name: Zip AAB with password
+        run: zip -P ${{ secrets.ARCHIVE_PASSWORD }} -j Artopos-Release.zip app/build/outputs/bundle/release/*.aab
+
+      - name: Upload Secure AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: Artopos-Secure-Release-${{ env.VERSION_NAME }}
+          path: Artopos-Release.zip
+          retention-days: 1
