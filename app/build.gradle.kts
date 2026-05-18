@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("artopos.android.application")
     id("artopos.android.application.compose")
@@ -17,11 +19,20 @@ android {
 
     signingConfigs {
         create("release") {
-            val path = System.getenv("KEYSTORE_PATH") ?: "keystore.jks"
+            // Read local settings (if any)
+            val localProps = Properties()
+            val localPropsFile = rootProject.file("local.properties")
+            if (localPropsFile.exists()) {
+                localProps.load(localPropsFile.inputStream())
+            }
+
+            // CI/CD (env) takes priority. If it doesn't, look in local.properties.
+            val path = System.getenv("KEYSTORE_PATH") ?: localProps.getProperty("KEYSTORE_PATH") ?: "keystore.jks"
             storeFile = file(path)
-            storePassword = System.getenv("KEYSTORE_PASSWORD") ?: ""
-            keyAlias = System.getenv("KEY_ALIAS") ?: ""
-            keyPassword = System.getenv("KEY_PASSWORD") ?: ""
+
+            storePassword = System.getenv("KEYSTORE_PASSWORD") ?: localProps.getProperty("KEYSTORE_PASSWORD") ?: ""
+            keyAlias = System.getenv("KEY_ALIAS") ?: localProps.getProperty("KEY_ALIAS") ?: ""
+            keyPassword = System.getenv("KEY_PASSWORD") ?: localProps.getProperty("KEY_PASSWORD") ?: ""
         }
     }
 
