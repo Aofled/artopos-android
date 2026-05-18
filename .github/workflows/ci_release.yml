@@ -69,39 +69,39 @@ jobs:
           echo "❌ AAB file not found!"
           exit 1
           fi
-          
+
           # 2. Generate a signature with a version
           CAPTION="🚀 <b>Artopos Release is Ready!</b>
-          
-          #3. Send a file via the Telegram Bot API
+
           <b>Version Name:</b> ${{ env.VERSION_NAME }}
           <b>Version Code:</b> ${{ env.VERSION_CODE }}"
 
+          # 3. Send a file via the Telegram Bot API
           curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendDocument" \
           -F chat_id="${CHAT_ID}" \
           -F document=@"$AAB_FILE" \
           -F caption="${CAPTION}" \
           -F parse_mode="HTML"
 
-          - name: Create Secure Zip
-            if: always()
-            env:
-              ZIP_PASS: ${{ secrets.ARCHIVE_PASSWORD }}
-            run: |
-              AAB_FILE=$(find app/build/outputs/bundle/release -name "*.aab" | head -n 1)
+      - name: Create Secure Zip
+        if: always()
+        env:
+          ZIP_PASS: ${{ secrets.ARCHIVE_PASSWORD }}
+        run: |
+          AAB_FILE=$(find app/build/outputs/bundle/release -name "*.aab" | head -n 1)
 
-              if [ -z "$ZIP_PASS" ]; then
-                echo "❌ Secret ARCHIVE_PASSWORD is empty in GitHub Settings!"
-                exit 1
-              fi
+          if [ -z "$ZIP_PASS" ]; then
+          echo "❌ Secret ARCHIVE_PASSWORD is empty in GitHub Settings!"
+          exit 1
+          fi
 
-              # Pack the AAB into an archive with a password
-              zip -P "$ZIP_PASS" -j Artopos-Release.zip "$AAB_FILE"
+          # Pack the AAB into an archive with a password
+          zip -P "$ZIP_PASS" -j Artopos-Release.zip "$AAB_FILE"
 
-          - name: Upload Secure AAB to GitHub
-            if: always()
-            uses: actions/upload-artifact@v4
-            with:
-              name: Artopos-Secure-Release-${{ env.VERSION_NAME }}
-              path: Artopos-Release.zip
-              retention-days: 1
+      - name: Upload Secure AAB to GitHub
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Artopos-Secure-Release-${{ env.VERSION_NAME }}
+          path: Artopos-Release.zip
+          retention-days: 1
