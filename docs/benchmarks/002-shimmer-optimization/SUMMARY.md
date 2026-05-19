@@ -22,7 +22,7 @@ I compared two implementations of the loading placeholder (Shimmer) to optimize 
 *Shimmer is active for several seconds while data loads.*
 
 | Metric | Baseline (Composition) | Optimized (Draw Phase) | Delta |
-| :--- | :--- | :--- | :--- | :--- |
+| :--- | :--- | :--- | :--- |
 | **P50 (Median)** | 5.60 ms | **5.26 ms** | **Optimized is ~6.1% Faster** |
 | **P90** | 8.67 ms | **7.86 ms** | **Optimized is ~10.3% Faster** |
 | **P95** | 9.87 ms | **8.96 ms** | **Optimized is ~8.5% Faster** |
@@ -51,7 +51,7 @@ I compared two implementations of the loading placeholder (Shimmer) to optimize 
 *Shimmer is active for several seconds while data loads. (Baseline metrics taken from Experiment 001)*
 
 | Metric | Baseline (Composition) | Optimized (Draw Phase) | Delta |
-| :--- | :--- | :--- | :--- | :--- |
+| :--- | :--- | :--- | :--- |
 | **P50 (Median)** | 9.10 ms | **8.80 ms** | **Optimized is ~3.4% Faster** |
 | **P90** | 14.00 ms | **12.88 ms** | **Optimized is ~8.0% Faster** |
 | **P95** | 17.50 ms | **15.45 ms** | **Optimized is ~13.3% Faster** |
@@ -64,7 +64,7 @@ I compared two implementations of the loading placeholder (Shimmer) to optimize 
 *Shimmer appears for < 50ms. (Baseline metrics taken from Experiment 001)*
 
 | Metric | Baseline (Composition) | Optimized (Draw Phase) | Delta |
-| :--- | :--- | :--- | :--- | :--- |
+| :--- | :--- | :--- | :--- |
 | **P50 (Median)** | **7.90 ms** | 8.00 ms | Baseline is ~1.3% Faster |
 | **P90** | **10.30 ms** | 11.07 ms | Baseline is ~7.5% Faster |
 | **P95** | **12.20 ms** | 13.30 ms | Baseline is ~9.0% Faster |
