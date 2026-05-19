@@ -3,8 +3,9 @@
 # Artopos 🎨
 
 [![Android CI](https://github.com/Aofled/artopos-android/actions/workflows/ci_debug.yml/badge.svg)](https://github.com/Aofled/artopos-android/actions/workflows/ci_debug.yml)
+[![Android CI](https://github.com/Aofled/artopos-android/actions/workflows/ci_release.yml/badge.svg)](https://github.com/Aofled/artopos-android/actions/workflows/ci_release.yml)
 [![Kotlin 2.0](https://img.shields.io/badge/Kotlin-2.0%2B-blue.svg)](https://kotlinlang.org)
-[![Min API 28](https://img.shields.io/badge/Min%20API-28-green.svg)](https://android-arsenal.com/api?level=28)
+[![Min API 28](https://img.shields.io/badge/Min%20API-28-green.svg)](https://apilevels.com/)
 
 **Artopos** is a modern, offline-first Android application for exploring the world's finest masterpieces using the public [Harvard Art Museums API](https://github.com/harvardartmuseums/api-docs).
 
