@@ -11,10 +11,12 @@
 Built as a showcase of modern Android development, this app demonstrates strict architecture, advanced UI performance optimizations, and on-device Machine Learning integration.
 
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/96cfee94-bf13-4a2b-8cb3-23d2ef47c0db" width="22%" />
-  <img src="https://github.com/user-attachments/assets/4fa16b1b-3f6d-470f-ab02-503c7d393959" width="22%" />
-  <img src="https://github.com/user-attachments/assets/a58cfabc-01d2-4005-b386-0168e9ea044e" width="22%" />
-  <img src="https://github.com/user-attachments/assets/be2e6cbe-a340-4178-909b-6cd1c088efda" width="22%" />
+  <img src="https://github.com/user-attachments/assets/be2e6cbe-a340-4178-909b-6cd1c088efda" width="19%" />
+  <img src="https://github.com/user-attachments/assets/a58cfabc-01d2-4005-b386-0168e9ea044e" width="19%" />
+  <img src="https://github.com/user-attachments/assets/4fa16b1b-3f6d-470f-ab02-503c7d393959" width="19%" />
+  <img src="https://github.com/user-attachments/assets/3153abd0-cd5a-4941-b4f3-6be1143ca015" width="19%" />
+  <img src="https://github.com/user-attachments/assets/2e06899d-9980-4f22-8ade-222e3376b54d" width="19%" />
+  
 </div>
 
 <br/>
@@ -27,13 +29,51 @@ Built as a showcase of modern Android development, this app demonstrates strict 
 
 ---
 
-## 🛠 TL;DR Tech Stack
+## 🛠 Tech Stack
+
+**TL;DR:**
 * **Architecture:** Clean Architecture, Modular Monolith (15+ modules), Strict MVI.
 * **UI:** Jetpack Compose (Material 3, Edge-to-Edge), Navigation Compose (Type-Safe).
-* **Data:** Room, Paging 3 (RemoteMediator), DataStore.
-* **Network:** Retrofit, OkHttp, Kotlinx Serialization, Coil.
-* **Advanced:** Google ML Kit (On-device translation), Baseline Profiles, Macrobenchmark.
-* **DevSecOps:** GitHub Actions (Detekt, Telegram Bot Delivery, Secure ZIPs), Gradle Convention Plugins.
+* **Data & Network:** Room, Paging 3, Retrofit, Kotlinx Serialization, Coil.
+* **Advanced:** Google ML Kit, Baseline Profiles, Macrobenchmark, GitHub Actions.
+
+<details>
+<summary><b>View Detailed Tech Stack & Libraries</b></summary>
+<br/>
+
+### Architecture & Design Patterns
+*   **Clean Architecture** (Strict separation of Data / Domain / Presentation layers).
+*   **Modular Monolith** (Feature-based + Layer-based modules to optimize build times and enforce encapsulation).
+*   **Offline-First** (Database as a Single Source of Truth).
+*   **MVI** (Unidirectional Data Flow with `Sealed Interfaces` for Intents and UI States).
+*   **Dependency Injection** (Hilt / Dagger).
+
+### Modern Android & Compose
+*   **Kotlin 2.0+** (K2 Compiler).
+*   **Jetpack Compose** (Material 3, Edge-to-Edge, Immutable Collections).
+*   **Type-Safe Navigation** (Jetpack Navigation Compose 2.8+ with Kotlin Serialization for compile-time route safety).
+*   **Coroutines & Flow** (Heavy usage of `combine`, `stateIn`, `flatMapLatest`).
+*   **Paging 3** (RemoteMediator, Room Integration).
+*   **DataStore Preferences** (Async reactive user settings storage).
+
+### Network, Data & ML
+*   **Retrofit 2** + **Kotlin Serialization** (JSON parsing).
+*   **OkHttp** (Custom Interceptors for aggressive caching).
+*   **Room Database** (Local storage, Embedded entities, `@Relation`, Transactions).
+*   **Coil** (Advanced image loading).
+*   **Google ML Kit** (On-Device Translation for dynamic content).
+*   **Zoomable** (`net.engawapg.lib:zoomable` for flawless image pan & zoom gestures).
+
+### Build System & Quality
+*   **Gradle Kotlin DSL** (KTS).
+*   **Version Catalog** (`libs.versions.toml`).
+*   **Convention Plugins** (Custom `build-logic` automating dependency management, Namespace generation, and ProGuard rules across 15+ modules).
+*   **Detekt** (Static code analysis with auto-formatting).
+*   **R8/ProGuard** (Optimized release builds with consumer-rules aggregation).
+*   **Baseline Profiles & Macrobenchmark** (AOT compilation and UI performance metrics).
+*   **Unit Testing** (JUnit 4, Mockk, Coroutines Test, Turbine).
+*   **GitHub Actions CI** (Automated pipeline for static analysis, unit testing, and secure APK building).
+</details>
 
 ---
 
@@ -121,7 +161,6 @@ root
     └── settings        # App preferences (Theme, Language, Cache clearing)
 ```
 </details>
----
 
 ## 🚀 How to Run
 ### 1. Obtain an API Key (Required)
