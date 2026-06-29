@@ -13,6 +13,7 @@ import com.google.mlkit.nl.translate.TranslatorOptions
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.tasks.await
+import java.util.concurrent.ExecutionException
 import javax.inject.Inject
 
 class MLKitTranslationDataSource @Inject constructor() {
@@ -65,7 +66,10 @@ class MLKitTranslationDataSource @Inject constructor() {
             try {
                 translator.translate(text).await()
             } catch (e: MlKitException) {
-                Log.e("MLKitTranslator", "Failed to translate text. ML Kit Error Code: ${e.errorCode}", e)
+                Log.e("MLKitTranslator", "Failed to translate text (MlKitException).", e)
+                text
+            } catch (e: ExecutionException) {
+                Log.e("MLKitTranslator", "Failed to translate text (ExecutionException).", e)
                 text
             }
         } else {
@@ -81,7 +85,9 @@ class MLKitTranslationDataSource @Inject constructor() {
             val conditions = DownloadConditions.Builder().build()
             translator.downloadModelIfNeeded(conditions).await()
         } catch (e: MlKitException) {
-            Log.e("MLKitTranslator", "Failed to preload ML model. ML Kit Error Code: ${e.errorCode}", e)
+            Log.e("MLKitTranslator", "Failed to preload ML model (MlKitException).", e)
+        } catch (e: ExecutionException) {
+            Log.e("MLKitTranslator", "Failed to preload ML model (ExecutionException).", e)
         }
     }
 
