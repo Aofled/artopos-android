@@ -51,7 +51,7 @@ captures/
 .externalNativeBuild/
 
 # Google Services (Firebase etc)
-google-services.json
+app/google-services.json
 
 # Local configuration file (sdk path, etc)
 local.properties
