@@ -36,7 +36,7 @@ paging = "3.5.0"
 
 # Network & Serialization
 retrofit = "3.0.0"
-okhttp = "5.3.2"
+okhttp = "5.4.0"
 kotlinx-serialization = "1.11.0"
 
 # ML Kit
