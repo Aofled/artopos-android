@@ -29,30 +29,34 @@ internal fun Project.configureKotlinAndroid(
 
         compileSdk = libs.findVersion("android-sdk-compile").get().toString().toInt()
 
-        if (this is ApplicationExtension) {
-            compileOptions {
-                sourceCompatibility = JavaVersion.VERSION_17
-                targetCompatibility = JavaVersion.VERSION_17
+        // Gradle Kotlin DSL quirks: requires casting to specific extensions
+        // to access defaultConfig and compileOptions blocks in some AGP versions.
+        when (this) {
+            is ApplicationExtension -> {
+                compileOptions {
+                    sourceCompatibility = JavaVersion.VERSION_17
+                    targetCompatibility = JavaVersion.VERSION_17
+                }
+                defaultConfig {
+                    minSdk = libs.findVersion("android-sdk-min").get().toString().toInt()
+                }
             }
-            defaultConfig {
-                minSdk = libs.findVersion("android-sdk-min").get().toString().toInt()
-            }
-        }
 
-        if (this is LibraryExtension) {
-            compileOptions {
-                sourceCompatibility = JavaVersion.VERSION_17
-                targetCompatibility = JavaVersion.VERSION_17
+            is LibraryExtension -> {
+                compileOptions {
+                    sourceCompatibility = JavaVersion.VERSION_17
+                    targetCompatibility = JavaVersion.VERSION_17
+                }
+                defaultConfig {
+                    minSdk = libs.findVersion("android-sdk-min").get().toString().toInt()
+                }
             }
-            defaultConfig {
-                minSdk = libs.findVersion("android-sdk-min").get().toString().toInt()
-            }
-        }
 
-        if (this is TestExtension) {
-            compileOptions {
-                sourceCompatibility = JavaVersion.VERSION_17
-                targetCompatibility = JavaVersion.VERSION_17
+            is TestExtension -> {
+                compileOptions {
+                    sourceCompatibility = JavaVersion.VERSION_17
+                    targetCompatibility = JavaVersion.VERSION_17
+                }
             }
         }
     }
