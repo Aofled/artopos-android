@@ -48,7 +48,7 @@ detekt = "1.23.8"
 
 # Testing
 junit = "4.13.2"
-junitVersion = "1.3.0"
+androidx-junit = "1.3.0"
 espressoCore = "3.7.0"
 benchmarkMacro = "1.4.1"
 profileinstaller = "1.4.1"
@@ -136,7 +136,7 @@ detekt-formatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-form
 
 # Testing (Unit, UI, Benchmark)
 junit = { group = "junit", name = "junit", version.ref = "junit" }
-androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-junit" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-benchmark-macro-junit4 = { group = "androidx.benchmark", name = "benchmark-macro-junit4", version.ref = "benchmarkMacro" }
 androidx-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "uiautomator" }
