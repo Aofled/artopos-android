@@ -147,7 +147,9 @@ jobs:
           SAFE_BODY=$(escape_html "$COMMIT_BODY")
 
           # 3. Form a commit block
-          COMMIT_BLOCK="<b>Commit:</b> <a href=\"https://github.com/${{ github.repository }}/commit/${{ github.sha }}\">$SAFE_TITLE</a>"
+          COMMIT_LINK="<a href=\"https://github.com/${{ github.repository }}/commit/${{ github.sha }}\">View on GitHub</a>"
+          
+          COMMIT_BLOCK="<b>Message:</b> $SAFE_TITLE"
           if [ -n "$SAFE_BODY" ]; then
             COMMIT_BLOCK="$COMMIT_BLOCK
           <i>$SAFE_BODY</i>"
@@ -157,6 +159,8 @@ jobs:
           MESSAGE="${HEADER}
           
           <b>Branch:</b> ${{ github.ref_name }}
+          <b>Commit:</b> ${COMMIT_LINK}
+          
           ${COMMIT_BLOCK}
 
           <b>Results:</b>
