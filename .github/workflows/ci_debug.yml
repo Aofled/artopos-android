@@ -149,7 +149,7 @@ jobs:
           # 3. Form a commit block
           COMMIT_LINK="<a href=\"https://github.com/${{ github.repository }}/commit/${{ github.sha }}\">View on GitHub</a>"
           
-          COMMIT_BLOCK="<b>Message:</b> $SAFE_TITLE"
+          COMMIT_BLOCK="$SAFE_TITLE"
           if [ -n "$SAFE_BODY" ]; then
             COMMIT_BLOCK="$COMMIT_BLOCK
           <i>$SAFE_BODY</i>"
