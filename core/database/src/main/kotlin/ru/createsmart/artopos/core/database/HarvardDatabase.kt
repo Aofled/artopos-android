@@ -12,14 +12,14 @@ import ru.createsmart.artopos.core.database.dao.FavoriteDao
 import ru.createsmart.artopos.core.database.dao.FilterItemDao
 import ru.createsmart.artopos.core.database.model.ArtworkDBO
 import ru.createsmart.artopos.core.database.model.ArtworkDetailsDBO
-import ru.createsmart.artopos.core.database.model.ArtworkRemoteKeysEntity
+import ru.createsmart.artopos.core.database.model.ArtworkRemoteKeysDBO
 import ru.createsmart.artopos.core.database.model.FavoriteDBO
 import ru.createsmart.artopos.core.database.model.FilterItemDBO
 
 @Database(
     entities = [
         ArtworkDBO::class,
-        ArtworkRemoteKeysEntity::class,
+        ArtworkRemoteKeysDBO::class,
         ArtworkDetailsDBO::class,
         FilterItemDBO::class,
         FavoriteDBO::class,

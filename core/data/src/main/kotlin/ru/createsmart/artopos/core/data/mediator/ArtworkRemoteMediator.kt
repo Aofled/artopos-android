@@ -10,7 +10,7 @@ import retrofit2.HttpException
 import ru.createsmart.artopos.core.data.mapper.ArtworkMapper
 import ru.createsmart.artopos.core.database.HarvardDatabase
 import ru.createsmart.artopos.core.database.model.ArtworkFeedWithFavoriteFlagDBO
-import ru.createsmart.artopos.core.database.model.ArtworkRemoteKeysEntity
+import ru.createsmart.artopos.core.database.model.ArtworkRemoteKeysDBO
 import ru.createsmart.artopos.core.model.FilterParams
 import ru.createsmart.artopos.core.model.FilterSortOption
 import ru.createsmart.artopos.core.model.error.AppError
@@ -153,7 +153,7 @@ class ArtworkRemoteMediator(
             val nextKey = if (endOfPaginationReached) null else page + 1
 
             val keys = validRecords.map { dto ->
-                ArtworkRemoteKeysEntity(artworkId = dto.id, prevKey = prevKey, nextKey = nextKey)
+                ArtworkRemoteKeysDBO(artworkId = dto.id, prevKey = prevKey, nextKey = nextKey)
             }
 
             val artworks = validRecords.mapIndexed { index, dto ->
@@ -170,7 +170,7 @@ class ArtworkRemoteMediator(
 
     private suspend fun getRemoteKeyClosestToCurrentPosition(
         state: PagingState<Int, ArtworkFeedWithFavoriteFlagDBO>,
-    ): ArtworkRemoteKeysEntity? {
+    ): ArtworkRemoteKeysDBO? {
         return state.anchorPosition?.let { position ->
             state.closestItemToPosition(position)?.artwork?.id?.let { artworkId ->
                 database.artworkRemoteKeysDao().remoteKeyArtworkId(artworkId)
@@ -180,7 +180,7 @@ class ArtworkRemoteMediator(
 
     private suspend fun getRemoteKeyForFirstItem(
         state: PagingState<Int, ArtworkFeedWithFavoriteFlagDBO>,
-    ): ArtworkRemoteKeysEntity? {
+    ): ArtworkRemoteKeysDBO? {
         return state.pages.firstOrNull { it.data.isNotEmpty() }?.data?.firstOrNull()
             ?.let { artwork ->
                 database.artworkRemoteKeysDao().remoteKeyArtworkId(artwork.artwork.id)
@@ -189,7 +189,7 @@ class ArtworkRemoteMediator(
 
     private suspend fun getRemoteKeyForLastItem(
         state: PagingState<Int, ArtworkFeedWithFavoriteFlagDBO>,
-    ): ArtworkRemoteKeysEntity? {
+    ): ArtworkRemoteKeysDBO? {
         return state.pages.lastOrNull { it.data.isNotEmpty() }?.data?.lastOrNull()
             ?.let { artwork ->
                 database.artworkRemoteKeysDao().remoteKeyArtworkId(artwork.artwork.id)

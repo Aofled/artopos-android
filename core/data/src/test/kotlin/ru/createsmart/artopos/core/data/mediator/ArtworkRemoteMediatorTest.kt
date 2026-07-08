@@ -24,7 +24,7 @@ import ru.createsmart.artopos.core.database.HarvardDatabase
 import ru.createsmart.artopos.core.database.model.ArtworkDBO
 import ru.createsmart.artopos.core.database.model.ArtworkFeedProjectionDBO
 import ru.createsmart.artopos.core.database.model.ArtworkFeedWithFavoriteFlagDBO
-import ru.createsmart.artopos.core.database.model.ArtworkRemoteKeysEntity
+import ru.createsmart.artopos.core.database.model.ArtworkRemoteKeysDBO
 import ru.createsmart.artopos.core.database.model.FavoriteDBO
 import ru.createsmart.artopos.core.model.FilterParams
 import ru.createsmart.artopos.core.network.api.HarvardAPI
@@ -139,7 +139,7 @@ class ArtworkRemoteMediatorTest {
         // Pre-condition: Simulate that Page 1 is already loaded in the DB.
         // RemoteMediator needs to find the 'nextKey' from the database to know what to load next.
         database.artworkRemoteKeysDao().insertAll(
-            listOf(ArtworkRemoteKeysEntity(initialId, prevKey = null, nextKey = 2)),
+            listOf(ArtworkRemoteKeysDBO(initialId, prevKey = null, nextKey = 2)),
         )
 
         val nextDto = ArtworkDTO(
@@ -238,7 +238,7 @@ class ArtworkRemoteMediatorTest {
         val mockFlagDbo = ArtworkFeedWithFavoriteFlagDBO(artwork = projectionDbo, isFavorite = false)
 
         database.artworkRemoteKeysDao().insertAll(
-            listOf(ArtworkRemoteKeysEntity(initialId, prevKey = null, nextKey = 2)),
+            listOf(ArtworkRemoteKeysDBO(initialId, prevKey = null, nextKey = 2)),
         )
 
         val pagingState = PagingState<Int, ArtworkFeedWithFavoriteFlagDBO>(
