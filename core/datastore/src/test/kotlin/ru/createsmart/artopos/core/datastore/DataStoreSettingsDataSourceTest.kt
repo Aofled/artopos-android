@@ -85,7 +85,7 @@ class DataStoreSettingsDataSourceTest {
     fun `handles corrupted or invalid enum string gracefully`() = testScope.runTest {
         dataStore.edit { preferences ->
             val themeConfigKey = androidx.datastore.preferences.core.stringPreferencesKey(
-                DataStoreSettingsDataSource.THEME_CONFIG.toString(),
+                DataStoreSettingsDataSource.KEY_THEME_CONFIG,
             )
             preferences[themeConfigKey] = "SOME_INVALID_THEME_STRING"
         }
