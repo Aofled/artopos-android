@@ -24,6 +24,7 @@ import ru.createsmart.artopos.core.domain.usecase.GetUserSettingsUseCase
 import ru.createsmart.artopos.core.domain.usecase.InitializeFiltersUseCase
 import ru.createsmart.artopos.core.domain.usecase.PreloadTranslationModelUseCase
 import ru.createsmart.artopos.core.domain.usecase.ToggleFavoriteUseCase
+import ru.createsmart.artopos.core.model.FilterParamItem
 import ru.createsmart.artopos.core.model.FilterSortOption
 import ru.createsmart.artopos.core.model.FilterType
 import ru.createsmart.artopos.core.model.settings.ThemeConfig
@@ -120,7 +121,8 @@ class DiscoverViewModelTest {
                 assertEquals(null, initialParams.culture)
 
                 // WHEN
-                viewModel.onIntent(DiscoverIntent.FilterSelected(FilterType.CULTURE, "French"))
+                val frenchFilter = FilterParamItem(id = 37527426L, rawName = "French")
+                viewModel.onIntent(DiscoverIntent.FilterSelected(FilterType.CULTURE, frenchFilter))
 
                 // THEN
                 expectNoEvents()
@@ -130,7 +132,7 @@ class DiscoverViewModelTest {
 
                 // THEN
                 val appliedParams = awaitItem()
-                assertEquals("French", appliedParams.culture)
+                assertEquals(frenchFilter, appliedParams.culture)
             }
         }
 
@@ -142,7 +144,8 @@ class DiscoverViewModelTest {
 
             // GIVEN
             viewModel.onIntent(DiscoverIntent.SearchQueryChanged("Picasso"))
-            viewModel.onIntent(DiscoverIntent.FilterSelected(FilterType.CLASSIFICATION, "Paintings"))
+            val paintingsFilter = FilterParamItem(id = 26L, rawName = "Paintings")
+            viewModel.onIntent(DiscoverIntent.FilterSelected(FilterType.CLASSIFICATION, paintingsFilter))
 
             val stateBeforeReset = expectMostRecentItem()
             assertEquals("Picasso", stateBeforeReset.searchQuery)

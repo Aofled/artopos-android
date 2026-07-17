@@ -68,6 +68,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
+import ru.createsmart.artopos.core.model.FilterParamItem
 import ru.createsmart.artopos.core.model.FilterSortOption
 import ru.createsmart.artopos.core.model.FilterType
 import ru.createsmart.artopos.feature.discover.R
@@ -88,7 +89,7 @@ private const val BEFORE_UPDATE_FILTER = 300L
 internal fun FilterBottomSheet(
     sheetState: SheetState,
     filtersState: FiltersUiState,
-    onFilterSelected: (FilterType, String?) -> Unit,
+    onFilterSelected: (FilterType, FilterParamItem?) -> Unit,
     onSearchQueryChanged: (String) -> Unit,
     onReset: () -> Unit,
     onToggleSort: () -> Unit,
@@ -123,7 +124,7 @@ internal fun FilterBottomSheet(
 @Composable
 private fun FilterSheetContent(
     filtersState: FiltersUiState,
-    onFilterSelected: (FilterType, String?) -> Unit,
+    onFilterSelected: (FilterType, FilterParamItem?) -> Unit,
     onSearchQueryChanged: (String) -> Unit,
     onReset: () -> Unit,
     onToggleSort: () -> Unit,
@@ -366,7 +367,7 @@ private fun FilterSection(
     title: String,
     items: ImmutableList<FilterListItem>,
     type: FilterType,
-    onSelect: (FilterType, String?) -> Unit,
+    onSelect: (FilterType, FilterParamItem?) -> Unit,
 ) {
     val selectedItem = remember(items) { items.find { it.isSelected } }
     val localizedHeaderName = selectedItem?.localizedName
@@ -398,7 +399,11 @@ private fun FilterSection(
                 FilterChip(
                     selected = item.isSelected,
                     onClick = {
-                        val newValue = if (item.isSelected) null else item.name
+                        val newValue = if (item.isSelected) {
+                            null
+                        } else {
+                            FilterParamItem(item.backendId, item.name)
+                        }
                         onSelect(type, newValue)
                     },
                     label = { Text(text = item.localizedName) },

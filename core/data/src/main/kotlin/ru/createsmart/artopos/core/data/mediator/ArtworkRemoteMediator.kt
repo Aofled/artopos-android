@@ -82,9 +82,9 @@ class ArtworkRemoteMediator(
             val apiResponse = api.getArtworks(
                 page = page,
                 size = state.config.pageSize,
-                classification = params.classification,
-                century = params.century,
-                culture = params.culture,
+                classification = params.classification?.id?.toString(),
+                century = params.century?.id?.toString(),
+                culture = params.culture?.id?.toString(),
                 sort = effectiveOrder,
                 sortOrder = effectiveSort,
             )

@@ -243,7 +243,7 @@ private fun FavoritesHeader(
             if (filterParams.classification != null) {
                 item {
                     ActiveFilterChip(
-                        rawName = filterParams.classification!!,
+                        rawName = filterParams.classification!!.rawName,
                         onRemove = { onRemoveFilter(FilterType.CLASSIFICATION) },
                     )
                 }
@@ -252,7 +252,7 @@ private fun FavoritesHeader(
             if (filterParams.century != null) {
                 item {
                     ActiveFilterChip(
-                        rawName = filterParams.century!!,
+                        rawName = filterParams.century!!.rawName,
                         onRemove = { onRemoveFilter(FilterType.CENTURY) },
                     )
                 }
@@ -261,7 +261,7 @@ private fun FavoritesHeader(
             if (filterParams.culture != null) {
                 item {
                     ActiveFilterChip(
-                        rawName = filterParams.culture!!,
+                        rawName = filterParams.culture!!.rawName,
                         onRemove = { onRemoveFilter(FilterType.CULTURE) },
                     )
                 }

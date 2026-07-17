@@ -6,6 +6,7 @@ import ru.createsmart.artopos.core.model.FilterType
 @Immutable
 data class FilterListItem(
     val id: String,
+    val backendId: Long,
     val type: FilterType,
     val name: String, // "19th century"
     val localizedName: String, // Translated "name"

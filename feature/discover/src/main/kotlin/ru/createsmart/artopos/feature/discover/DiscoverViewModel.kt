@@ -31,6 +31,7 @@ import ru.createsmart.artopos.core.domain.usecase.InitializeFiltersUseCase
 import ru.createsmart.artopos.core.domain.usecase.PreloadTranslationModelUseCase
 import ru.createsmart.artopos.core.domain.usecase.ToggleFavoriteUseCase
 import ru.createsmart.artopos.core.model.FilterItem
+import ru.createsmart.artopos.core.model.FilterParamItem
 import ru.createsmart.artopos.core.model.FilterParams
 import ru.createsmart.artopos.core.model.FilterSortOption
 import ru.createsmart.artopos.core.model.FilterType
@@ -94,7 +95,7 @@ class DiscoverViewModel @Inject constructor(
 
     private fun combineAndFilterFlow(
         filtersFlow: Flow<List<FilterItem>>,
-        extractSelectedValue: (FilterParams) -> String?,
+        extractSelectedValue: (FilterParams) -> FilterParamItem?,
     ): Flow<List<FilterListItem>> {
         return combine(
             filtersFlow,
@@ -110,11 +111,12 @@ class DiscoverViewModel @Inject constructor(
                     FilterListItem(
                         // Unique ID for Compose/Room to prevent collisions between different FilterTypes
                         id = "${item.type.name}_${item.id}",
+                        backendId = item.id,
                         type = item.type,
                         name = item.name,
                         localizedName = locName,
                         count = item.count,
-                        isSelected = item.name == selectedValue,
+                        isSelected = item.id == selectedValue?.id,
                     )
                 }.filter { uiItem ->
                     // 1. If the search is empty, we return all list
@@ -194,7 +196,7 @@ class DiscoverViewModel @Inject constructor(
 
     // --- ACTIONS ---
 
-    private fun onFilterSelect(type: FilterType, value: String?) {
+    private fun onFilterSelect(type: FilterType, value: FilterParamItem?) {
         val currentDraft = _draftFilterParams.value
         _draftFilterParams.value = when (type) {
             FilterType.CLASSIFICATION -> currentDraft.copy(classification = value)
