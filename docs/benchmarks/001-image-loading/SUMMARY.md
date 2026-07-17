@@ -33,7 +33,7 @@ We used **Jetpack Macrobenchmark** to measure `FrameTimingMetric` during an aggr
 **Low-end Device (SM-T595):**
 
 | Metric | SubcomposeAsyncImage | AsyncImage + Box | Delta |
-| :--- | :--- | :--- | :--- | :--- |
+| :--- | :--- | :--- | :--- |
 | **P50 (Median)** | **7.9 ms** | 9.1 ms | AsyncImage is **~15% slower** |
 | **P90** | **10.3 ms** | 12.7 ms | AsyncImage is **~23% slower** |
 | **P95** | **12.2 ms** | 13.8 ms | AsyncImage is **~13% slower** |
@@ -43,7 +43,7 @@ We used **Jetpack Macrobenchmark** to measure `FrameTimingMetric` during an aggr
 **High-end Device (S10+):**
 
 | Metric | SubcomposeAsyncImage | AsyncImage + Box | Delta |
-| :--- | :--- | :--- | :--- | :--- |
+| :--- | :--- | :--- | :--- |
 | **P50 (Median)** | **5.05 ms** | 5.45 ms | AsyncImage is **~8% slower** |
 | **P90** | **7.45 ms** | 8.8 ms | AsyncImage is **~18% slower** |
 | **P95** | **8.85 ms** | 10.5 ms | AsyncImage is **~19% slower** |
@@ -58,7 +58,7 @@ We used **Jetpack Macrobenchmark** to measure `FrameTimingMetric` during an aggr
 **Low-end Device (SM-T595):**
 
 | Metric | SubcomposeAsyncImage | AsyncImage + Box | Delta |
-| :--- | :--- | :--- | :--- | :--- |
+| :--- | :--- | :--- | :--- |
 | **P50 (Median)** | **9.1 ms** | 11.3 ms | AsyncImage is **~24% slower** |
 | **P90** | **14.0 ms** | 19.6 ms | AsyncImage is **~40% slower** |
 | **P95** | **17.5 ms** | 25.5 ms | AsyncImage is **~45% slower** |

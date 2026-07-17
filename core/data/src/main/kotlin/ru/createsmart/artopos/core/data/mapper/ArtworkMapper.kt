@@ -119,38 +119,27 @@ class ArtworkMapper @Inject constructor() {
             isFavorite = dbo.isFavorite,
         )
 
-        // If the details are not in the database, we return what is available (+ gallery from the first request)
-        val details = dbo.artworkWithDetails.details ?: return ArtworkDetails(
-            baseArtwork = baseArtwork,
-            technique = dbo.artworkWithDetails.artwork.technique,
-            description = dbo.artworkWithDetails.artwork.description,
-            url = dbo.artworkWithDetails.artwork.url,
-            provenance = null, creditLine = null, classification = null, century = null,
-            culture = null, medium = null, period = null, style = null,
-            dimensions = null, copyright = null, galleryLocation = null,
+        val details = dbo.artworkWithDetails.details
 
-            images = dbo.artworkWithDetails.artwork.galleryImages?.map { stored ->
-                ArtworkImage(url = stored.url, width = stored.width, height = stored.height)
-            } ?: emptyList(),
-        )
-
-        // If the parts are downloaded, return complete object
+        // If details == null, then details?.provenance will simply return null.
         return ArtworkDetails(
             baseArtwork = baseArtwork,
             technique = dbo.artworkWithDetails.artwork.technique,
             description = dbo.artworkWithDetails.artwork.description,
             url = dbo.artworkWithDetails.artwork.url,
-            provenance = details.provenance,
-            creditLine = details.creditLine,
-            classification = details.classification,
-            century = details.century,
-            culture = details.culture,
-            medium = details.medium,
-            period = details.period,
-            style = details.style,
-            dimensions = details.dimensions,
-            copyright = details.copyright,
-            galleryLocation = details.galleryLocation,
+
+            provenance = details?.provenance,
+            creditLine = details?.creditLine,
+            classification = details?.classification,
+            century = details?.century,
+            culture = details?.culture,
+            medium = details?.medium,
+            period = details?.period,
+            style = details?.style,
+            dimensions = details?.dimensions,
+            copyright = details?.copyright,
+            galleryLocation = details?.galleryLocation,
+
             images = dbo.artworkWithDetails.artwork.galleryImages?.map { stored ->
                 ArtworkImage(url = stored.url, width = stored.width, height = stored.height)
             } ?: emptyList(),

@@ -11,6 +11,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import ru.createsmart.artopos.core.imageloader.interceptor.CacheControlInterceptor
 import java.io.File
+import java.util.concurrent.TimeUnit
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
@@ -20,6 +21,8 @@ annotation class ImageClient
 
 private const val CACHE_SIZE_MB = 512L
 private const val BYTES_IN_KB = 1024L
+private const val CONNECT_TIMEOUT = 15L
+private const val READ_TIMEOUT = 30L
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -32,6 +35,8 @@ object ImageLoaderModule {
         @ApplicationContext context: Context,
     ): OkHttpClient {
         val builder = OkHttpClient.Builder()
+            .connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
+            .readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
 
         // Dedicated Cache: 300MB on disk.
         val cacheDir = File(context.cacheDir, "http_cache")

@@ -8,6 +8,15 @@ plugins {
     alias(libs.plugins.firebase.crashlytics)
 }
 
+// Automatically copy the mock google-services.json if the real one is missing (for Open Source)
+val realGoogleServicesFile = file("google-services.json")
+val mockGoogleServicesFile = rootProject.file("mock/mock-google-services.json")
+
+if (!realGoogleServicesFile.exists() && mockGoogleServicesFile.exists()) {
+    mockGoogleServicesFile.copyTo(realGoogleServicesFile)
+    println("WARNING: Using MOCK google-services.json. Firebase will not send data.")
+}
+
 android {
     defaultConfig {
         applicationId = "ru.createsmart.artopos"

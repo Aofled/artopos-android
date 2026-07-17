@@ -65,4 +65,28 @@ class ArtworkEdgeCasesTest {
         assertEquals(12345, artwork.id)
         assertEquals("Mona Lisa", artwork.title)
     }
+
+    @Test
+    fun `when json is malformed then throw SerializationException`() {
+        // Simulate a broken connection or a backend bug (no closing parentheses)
+        val brokenJson = """
+            {
+                "id": 12345,
+                "title": "Unfinished
+        """.trimIndent()
+
+        Assert.assertThrows(kotlinx.serialization.SerializationException::class.java) {
+            NetworkJson.decodeFromString<ArtworkDTO>(brokenJson)
+        }
+    }
+
+    @Test
+    fun `when response is html instead of json then throw SerializationException`() {
+        // the server crashed and Cloudflare/Nginx returned an HTML page (503 Service Unavailable)
+        val htmlResponse = "<html><body>503 Service Unavailable</body></html>"
+
+        Assert.assertThrows(kotlinx.serialization.SerializationException::class.java) {
+            NetworkJson.decodeFromString<ArtworkDTO>(htmlResponse)
+        }
+    }
 }

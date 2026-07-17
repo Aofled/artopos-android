@@ -9,7 +9,6 @@ data class FilterListItem(
     val backendId: Long,
     val type: FilterType,
     val name: String, // "19th century"
-    val localizedName: String, // Translated "name"
     val count: Int, // "53970"
     val isSelected: Boolean = false,
 )

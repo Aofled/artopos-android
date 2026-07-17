@@ -67,6 +67,7 @@ import androidx.compose.ui.unit.sp
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
+import ru.createsmart.artopos.core.common.util.DictionaryHelper
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
 import ru.createsmart.artopos.core.model.FilterParamItem
 import ru.createsmart.artopos.core.model.FilterSortOption
@@ -152,18 +153,21 @@ private fun FilterSheetContent(
             stringResource(R.string.discover_filter_label_type),
             filtersState.classifications,
             FilterType.CLASSIFICATION,
+            filtersState.searchQuery,
             onFilterSelected,
         )
         FilterSection(
             stringResource(R.string.discover_filter_label_period),
             filtersState.centuries,
             FilterType.CENTURY,
+            filtersState.searchQuery,
             onFilterSelected,
         )
         FilterSection(
             stringResource(R.string.discover_filter_label_culture),
             filtersState.cultures,
             FilterType.CULTURE,
+            filtersState.searchQuery,
             onFilterSelected,
         )
     }
@@ -367,10 +371,27 @@ private fun FilterSection(
     title: String,
     items: ImmutableList<FilterListItem>,
     type: FilterType,
+    searchQuery: String,
     onSelect: (FilterType, FilterParamItem?) -> Unit,
 ) {
-    val selectedItem = remember(items) { items.find { it.isSelected } }
-    val localizedHeaderName = selectedItem?.localizedName
+    val context = LocalContext.current
+
+    val filteredItems = remember(items, searchQuery, context) {
+        items.filter { item ->
+            if (searchQuery.isBlank() || item.isSelected) return@filter true
+
+            val localizedName = DictionaryHelper.getLocalizedName(context, item.name)
+
+            localizedName.contains(searchQuery, ignoreCase = true) ||
+                item.name.contains(searchQuery, ignoreCase = true)
+        }
+    }
+
+    val selectedItem = remember(filteredItems) { filteredItems.find { it.isSelected } }
+
+    val localizedHeaderName = remember(selectedItem?.name, context) {
+        selectedItem?.name?.let { DictionaryHelper.getLocalizedName(context, it) }
+    }
 
     Column(modifier = Modifier.padding(bottom = 16.dp)) {
         SectionHeaderTitle(
@@ -395,7 +416,12 @@ private fun FilterSection(
             }
 
             // Either only the selected element, or completely empty - then there will be only Any
-            items(items = items, key = { it.id }) { item ->
+            items(items = filteredItems, key = { it.id }) { item ->
+
+                val localizedName = remember(item.name, context) {
+                    DictionaryHelper.getLocalizedName(context, item.name)
+                }
+
                 FilterChip(
                     selected = item.isSelected,
                     onClick = {
@@ -406,7 +432,7 @@ private fun FilterSection(
                         }
                         onSelect(type, newValue)
                     },
-                    label = { Text(text = item.localizedName) },
+                    label = { Text(text = localizedName) },
                 )
             }
         }

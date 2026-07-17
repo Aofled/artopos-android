@@ -18,7 +18,8 @@ class AndroidRoomConventionPlugin : Plugin<Project> {
             extensions.configure<RoomExtension> {
                 // Critical for Auto-Migrations.
                 // Generates JSON schemas. COMMIT these files to Git!
-                schemaDirectory("${target.projectDir}/schemas")
+                val schemaDir = layout.projectDirectory.dir("schemas").asFile.absolutePath
+                schemaDirectory(schemaDir)
             }
 
             dependencies {

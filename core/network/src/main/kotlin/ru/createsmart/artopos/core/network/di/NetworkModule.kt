@@ -13,7 +13,11 @@ import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import ru.createsmart.artopos.core.network.BuildConfig
 import ru.createsmart.artopos.core.network.api.HarvardAPI
 import ru.createsmart.artopos.core.network.interceptor.HarvardApiKeyInterceptor
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
+
+private const val CONNECT_TIMEOUT = 15L
+private const val READ_TIMEOUT = 15L
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -28,6 +32,8 @@ object NetworkModule {
     @ApiClient // Use a specific Qualifier to inject THIS client into API, not the Coil client
     fun provideOkHttpClient(): OkHttpClient {
         val builder = OkHttpClient.Builder()
+            .connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
+            .readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
 
         // Auth: Auto-inject API Key into every request
         builder.addInterceptor(HarvardApiKeyInterceptor(BuildConfig.API_KEY))

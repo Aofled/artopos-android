@@ -1,5 +1,6 @@
 package ru.createsmart.artopos.core.datastore
 
+import androidx.annotation.VisibleForTesting
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -17,8 +18,14 @@ class DataStoreSettingsDataSource @Inject constructor(
 ) {
 
     companion object {
-        val THEME_CONFIG = stringPreferencesKey("theme_config")
-        val LANGUAGE = stringPreferencesKey("language")
+        @VisibleForTesting
+        internal const val KEY_THEME_CONFIG = "theme_config"
+
+        @VisibleForTesting
+        internal const val KEY_LANGUAGE = "language"
+
+        private val THEME_CONFIG = stringPreferencesKey(KEY_THEME_CONFIG)
+        private val LANGUAGE = stringPreferencesKey(KEY_LANGUAGE)
     }
 
     val userSettingsStream: Flow<UserSettings> = dataStore.data

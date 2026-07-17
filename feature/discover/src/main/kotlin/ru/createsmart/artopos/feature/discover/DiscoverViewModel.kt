@@ -6,7 +6,6 @@ import androidx.paging.cachedIn
 import androidx.paging.map
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -21,9 +20,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import ru.createsmart.artopos.core.artworkcard.mapper.ArtworkUiMapper
-import ru.createsmart.artopos.core.common.translation.FilterTranslator
 import ru.createsmart.artopos.core.domain.usecase.GetArtworksUseCase
 import ru.createsmart.artopos.core.domain.usecase.GetFiltersUseCase
 import ru.createsmart.artopos.core.domain.usecase.GetUserSettingsUseCase
@@ -54,14 +51,11 @@ class DiscoverViewModel @Inject constructor(
     private val initializeFilters: InitializeFiltersUseCase,
     private val messageManager: UiMessageManager,
     private val mapper: ArtworkUiMapper,
-    private val filterTranslator: FilterTranslator,
 ) : ViewModel() {
 
     private val _contentVersion = MutableStateFlow(0)
     val contentVersion =
         _contentVersion.asStateFlow() // Exposed to UI to force image reload on Pull-to-Refresh
-
-    private val _currentLanguage = MutableStateFlow("")
 
     val uiEffect = messageManager.uiEffect
 
@@ -100,35 +94,19 @@ class DiscoverViewModel @Inject constructor(
         return combine(
             filtersFlow,
             _draftFilterParams,
-            _searchQuery,
-            _currentLanguage,
-        ) { list, params, query, languageCode ->
+        ) { list, params ->
             val selectedValue = extractSelectedValue(params)
 
-            withContext(Dispatchers.Default) {
-                list.map { item ->
-                    val locName = filterTranslator.translate(item.name, languageCode)
-                    FilterListItem(
-                        // Unique ID for Compose/Room to prevent collisions between different FilterTypes
-                        id = "${item.type.name}_${item.id}",
-                        backendId = item.id,
-                        type = item.type,
-                        name = item.name,
-                        localizedName = locName,
-                        count = item.count,
-                        isSelected = item.id == selectedValue?.id,
-                    )
-                }.filter { uiItem ->
-                    // 1. If the search is empty, we return all list
-                    if (query.isBlank()) return@filter true
-
-                    // 2. Always keep the selected element visible
-                    if (uiItem.isSelected) return@filter true
-
-                    // 3. Else looking for matches in the text
-                    uiItem.localizedName.contains(query, ignoreCase = true) ||
-                        uiItem.name.contains(query, ignoreCase = true)
-                }
+            list.map { item ->
+                FilterListItem(
+                    // Unique ID for Compose/Room to prevent collisions between different FilterTypes
+                    id = "${item.type.name}_${item.id}",
+                    backendId = item.id,
+                    type = item.type,
+                    name = item.name,
+                    count = item.count,
+                    isSelected = item.id == selectedValue?.id,
+                )
             }
         }
     }
@@ -188,7 +166,6 @@ class DiscoverViewModel @Inject constructor(
 
         viewModelScope.launch {
             getUserSettings().collectLatest { settings ->
-                _currentLanguage.value = settings.languageCode
                 preloadTranslationModel(settings.languageCode) // ML Kit Translation dictionary preloading
             }
         }

@@ -3,6 +3,7 @@ package ru.createsmart.artopos.core.data.repository
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -17,7 +18,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 import ru.createsmart.artopos.core.data.mapper.ArtworkMapper
 import ru.createsmart.artopos.core.database.HarvardDatabase
 import ru.createsmart.artopos.core.database.converters.StoredImage
@@ -28,7 +28,7 @@ import ru.createsmart.artopos.core.network.api.HarvardAPI
 import ru.createsmart.artopos.core.network.model.ArtworkDTO
 import java.io.IOException
 
-@RunWith(RobolectricTestRunner::class)
+@RunWith(AndroidJUnit4::class)
 class OfflineFirstArtworkRepositoryDetailsTest {
 
     private val api: HarvardAPI = mockk()
@@ -70,7 +70,7 @@ class OfflineFirstArtworkRepositoryDetailsTest {
         database.artworkDao().insertArtworks(listOf(dbo))
 
         // WHEN
-        val result = repository.getArtwork(1).first() // Это ArtworkDetails?
+        val result = repository.getArtwork(1).first()
 
         // THEN
         assertNotNull(result)
