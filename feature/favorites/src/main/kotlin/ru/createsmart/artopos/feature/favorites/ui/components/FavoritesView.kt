@@ -148,7 +148,9 @@ internal fun FavoritesView(
                     onClick = { onArtworkClick(artwork.id) },
                     onFavoriteClick = { onIntent(FavoritesIntent.ToggleFavorite(artwork.id)) },
                     onShowMessage = onShowMessage,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .animateItem(),
                 )
             }
         }
