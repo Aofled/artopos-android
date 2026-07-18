@@ -29,6 +29,7 @@ import ru.createsmart.artopos.core.model.settings.UserSettings
 import ru.createsmart.artopos.core.uicomponents.manager.UiMessageManager
 import ru.createsmart.artopos.feature.details.translation.ArtworkTranslationFacade
 import ru.createsmart.artopos.feature.details.util.MainDispatcherRule
+import kotlin.time.Duration.Companion.milliseconds
 
 @RunWith(RobolectricTestRunner::class)
 class DetailsViewModelTest {
@@ -105,7 +106,7 @@ class DetailsViewModelTest {
         coEvery {
             translationFacade.translateDeep(mockArtwork, mockFastArtwork, "ru")
         } coAnswers {
-            delay(1000)
+            delay(1000.milliseconds)
             mockDeepArtwork
         }
 
@@ -115,7 +116,7 @@ class DetailsViewModelTest {
             // 1. Loading
             assertTrue(awaitItem() is ArtworkDetailUiState.Loading)
 
-            advanceTimeBy(301)
+            advanceTimeBy(301.milliseconds)
 
             // 2. Intermediate state (300ms timeout occurred)
             val partialState = awaitItem() as ArtworkDetailUiState.Success
@@ -125,7 +126,7 @@ class DetailsViewModelTest {
             assertTrue(partialState.artwork.isTranslationPending)
 
             // We skip forward another 700ms (total 1001ms, the transfer should be completed)
-            advanceTimeBy(700)
+            advanceTimeBy(700.milliseconds)
 
             // 3. We obtain the FINAL state
             val finalState = awaitItem() as ArtworkDetailUiState.Success

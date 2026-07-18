@@ -38,6 +38,7 @@ import java.net.ConnectException
 import java.net.UnknownHostException
 import java.util.Locale
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 import ru.createsmart.artopos.core.designsystem.R as DSR
 
 private const val TRANSLATION_TIMEOUT_MS = 300L
@@ -121,7 +122,7 @@ class DetailsViewModel @Inject constructor(
                 }
 
                 // Wait for up to TRANSLATION_TIMEOUT_MS to see if the translation finishes quickly
-                val quickDeepTranslation = withTimeoutOrNull(TRANSLATION_TIMEOUT_MS) {
+                val quickDeepTranslation = withTimeoutOrNull(TRANSLATION_TIMEOUT_MS.milliseconds) {
                     deepTranslationDeferred.await()
                 }
 
