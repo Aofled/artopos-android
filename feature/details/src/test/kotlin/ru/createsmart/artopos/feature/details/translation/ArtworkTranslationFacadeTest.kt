@@ -1,6 +1,5 @@
 package ru.createsmart.artopos.feature.details.translation
 
-import android.app.ActivityManager
 import android.content.Context
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -8,6 +7,8 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.unmockkAll
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -20,12 +21,13 @@ import ru.createsmart.artopos.core.model.Artwork
 import ru.createsmart.artopos.core.model.ArtworkDetails
 import ru.createsmart.artopos.core.model.CreationDate
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class ArtworkTranslationFacadeTest {
 
     private val mockContext: Context = mockk()
     private val mockLocalizedContext: Context = mockk()
     private val translator: TextTranslator = mockk()
-    private val mockActivityManager: ActivityManager = mockk()
+    private val testDispatcher = UnconfinedTestDispatcher()
 
     private lateinit var facade: ArtworkTranslationFacade
 
@@ -36,11 +38,11 @@ class ArtworkTranslationFacadeTest {
 
         every { LocaleHelper.getLocalizedContext(any(), any()) } returns mockLocalizedContext
 
-        every { mockContext.getSystemService(Context.ACTIVITY_SERVICE) } returns mockActivityManager
-
-        every { mockActivityManager.isLowRamDevice } returns false
-
-        facade = ArtworkTranslationFacade(mockContext, translator)
+        facade = ArtworkTranslationFacade(
+            baseContext = mockContext,
+            translator = translator,
+            mlKitDispatcher = testDispatcher,
+        )
     }
 
     @After
