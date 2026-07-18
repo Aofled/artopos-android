@@ -1,5 +1,6 @@
 package ru.createsmart.artopos.ui
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -56,6 +57,7 @@ private const val BOTTOM_BAR_ALPHA = 0.85f
 private const val BOTTOM_BAR_ANIMATION = 400
 private val SCROLL_THRESHOLD_DP = 10.dp
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun ArtoposApp(
     appState: ArtoposAppState = rememberArtoposAppState(),
