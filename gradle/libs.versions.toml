@@ -3,7 +3,7 @@
 android-sdk-target = "37"
 android-sdk-min = "26"
 android-sdk-compile = "37"
-agp = "9.2.1"
+agp = "9.3.0"
 
 # Core & Kotlin
 kotlin = "2.4.0"
