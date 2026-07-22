@@ -23,7 +23,7 @@ class AndroidBenchmarkConventionPlugin : Plugin<Project> {
 
                 defaultConfig {
                     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-                    targetSdk = libs.findVersion("android-sdk-target").get().toString().toInt()
+                    targetSdk = libs.findVersionInt("android-sdk-target")
                 }
 
                 buildTypes {

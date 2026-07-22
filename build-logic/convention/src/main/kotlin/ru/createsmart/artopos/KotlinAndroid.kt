@@ -27,7 +27,7 @@ internal fun Project.configureKotlinAndroid(
             "ru.createsmart.artopos"
         }
 
-        compileSdk = libs.findVersion("android-sdk-compile").get().toString().toInt()
+        compileSdk = libs.findVersionInt("android-sdk-compile")
 
         // Gradle Kotlin DSL quirks: requires casting to specific extensions
         // to access defaultConfig and compileOptions blocks in some AGP versions.
@@ -38,7 +38,7 @@ internal fun Project.configureKotlinAndroid(
                     targetCompatibility = JavaVersion.VERSION_17
                 }
                 defaultConfig {
-                    minSdk = libs.findVersion("android-sdk-min").get().toString().toInt()
+                    minSdk = libs.findVersionInt("android-sdk-min")
                 }
             }
 
@@ -48,7 +48,7 @@ internal fun Project.configureKotlinAndroid(
                     targetCompatibility = JavaVersion.VERSION_17
                 }
                 defaultConfig {
-                    minSdk = libs.findVersion("android-sdk-min").get().toString().toInt()
+                    minSdk = libs.findVersionInt("android-sdk-min")
                 }
             }
 

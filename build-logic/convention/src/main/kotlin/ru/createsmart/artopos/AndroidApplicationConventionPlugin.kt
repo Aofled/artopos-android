@@ -21,8 +21,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                 configureKotlinAndroid(this)
 
                 // Settings specific for App (not for Libraries)
-                defaultConfig.targetSdk =
-                    libs.findVersion("android-sdk-target").get().toString().toInt()
+                defaultConfig.targetSdk = libs.findVersionInt("android-sdk-target")
 
                 val vCode = (findProperty("ARTOPOS_VERSION_CODE") as? String)?.toIntOrNull() ?: 1
                 defaultConfig.versionCode = vCode
