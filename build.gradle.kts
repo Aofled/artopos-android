@@ -1,37 +1,39 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 /**
- * === DETEKT COMMANDS CHEAT SHEET ===
+ * ==========================================
+ *  ARTOPOS COMMANDS CHEAT SHEET
+ * ==========================================
  *
- * 1. RUN ALL CHECKS (Project + Build Logic)
- *    Runs checks on all modules including build-logic.
+ * --- STATIC ANALYSIS (DETEKT & LINT) ---
+ * 1. RUN DETEKT (Code Style & Smells)
+ *    Checks all modules including `build-logic`.
  *    Command: ./gradlew detektAll
+ *    Note: Auto-correction is enabled locally via `gradle.properties`.
  *
- * 2. STANDARD CHECK (Main Project Only)
- *    Scans app and features, logs errors to console, generates HTML report.
- *    Fails build if errors found.
- *    Command: ./gradlew detekt
+ * 2. RUN ANDROID LINT (Resources, Manifest, Android API)
+ *    Checks for Android-specific issues (e.g. Unused resources, accessibility).
+ *    Command: ./gradlew lintDebug
  *
- * 3. AUTO-CORRECT (Main Project Only)
- *    Fixes formatting (spaces, indents, imports) automatically.
- *    Command: ./gradlew detektAll -Pdetekt.autocorrect=true
+ * 3. RUN ALL CHECKS (CI Simulation)
+ *    Run this before pushing to trigger the same checks as GitHub Actions.
+ *    Command: ./gradlew detektAll lintDebug
  *
- * 4. CHECK SPECIFIC MODULE
- *    Runs checks only for the specified module (faster).
- *    Command: ./gradlew :feature:discover:detekt
+ * --- TESTING ---
+ * 4. RUN ALL UNIT TESTS
+ *    Runs tests across all modules.
+ *    Command: ./gradlew testDebugUnitTest
  *
- * 5. CHECK BUILD LOGIC
- *    Scans the build-logic (convention plugins) directory.
- *    Command: ./gradlew -p build-logic detekt
+ * 5. FORCE RERUN TESTS (No Cache)
+ *    Ignores Gradle cache and forces all tests to execute again.
+ *    Command: ./gradlew testDebugUnitTest --rerun-tasks
  *
- * 6. AUTO-CORRECT BUILD LOGIC
- *    Fixes formatting inside build-logic.
- *    Command: ./gradlew -p build-logic detekt -Pdetekt.autocorrect=true
- *
- * 7. GENERATE CONFIG
- *    Updates detekt.yml with default values.
- *    WARNING: Will remove all your custom comments in yaml file!
+ * --- DETEKT MAINTENANCE ---
+ * 6. GENERATE DETEKT CONFIG
+ *    Updates detekt.yml with default values for new rules.
+ *    WARNING: This will overwrite any custom comments in your detekt.yml file!
  *    Command: ./gradlew detektGenerateConfig
+ * ==========================================
  */
 
 plugins {
