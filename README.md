@@ -183,6 +183,9 @@ Create a `local.properties` file in the project root directory (if it wasn't cre
 sdk.dir=/path/to/your/android/sdk
 HARVARD_API_KEY=your-received-api-key-here
 ```  
+> **⚠️ Important note regarding memory usage:**  
+> By default, the `gradle.properties` file allocates up to **12 GB of RAM** for build processes.
+> If you are working on a machine with limited memory and experience OS freezes, please reduce the `-Xmx` arguments in `gradle.properties`.
 
 ### 4. Verify & Run
 Run static analysis to ensure the environment is set up correctly:
