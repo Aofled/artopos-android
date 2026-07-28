@@ -6,9 +6,10 @@ on:
     tags:
       - 'v*'
 
-# Force Node.js 24 for all tasks
+# Force Node.js 24 for all tasks & Limit Gradle memory for GitHub Actions runner (7GB limit)
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx3072m -XX:+UseG1GC -Dfile.encoding=UTF-8 -Dkotlin.daemon.jvmargs=-Xmx1536m -Dorg.gradle.workers.max=2"
 
 jobs:
   build-release:
@@ -54,7 +55,7 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: ./gradlew bundleRelease -PARTOPOS_VERSION_CODE=${{ env.VERSION_CODE }} -PARTOPOS_VERSION_NAME=${{ env.VERSION_NAME }}
+        run: ./gradlew bundleRelease -PARTOPOS_VERSION_CODE=${{ env.VERSION_CODE }} -PARTOPOS_VERSION_NAME=${{ env.VERSION_NAME }} --no-daemon
 
       - name: Send AAB to Telegram
         env:
