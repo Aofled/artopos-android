@@ -6,9 +6,10 @@ on:
   pull_request:
     branches: [ "main" ]
 
-# Force Node.js 24 for all tasks
+# Force Node.js 24 for all tasks & Limit Gradle memory for GitHub Actions runner (7GB limit)
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx3072m -XX:+UseG1GC -Dfile.encoding=UTF-8 -Dkotlin.daemon.jvmargs=-Xmx1536m -Dorg.gradle.workers.max=2"
 
 jobs:
   detekt:
@@ -28,7 +29,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Run Detekt
-        run: ./gradlew detektAll
+        run: ./gradlew detektAll --no-daemon
 
       - name: Upload Detekt Reports
         if: always() # We save reports even if the analysis fails (to view errors)
@@ -61,7 +62,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Run Android Lint
-        run: ./gradlew lintDebug
+        run: ./gradlew lintDebug --no-daemon
 
       - name: Upload Lint Reports
         if: always()
@@ -93,7 +94,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Run Unit Tests
-        run: ./gradlew testDebugUnitTest
+        run: ./gradlew testDebugUnitTest --no-daemon
 
       - name: Upload Test Reports
         if: always() # Save HTML test reports for easy viewing in a browser
@@ -125,7 +126,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Build Debug APK
-        run: ./gradlew assembleDebug
+        run: ./gradlew assembleDebug --no-daemon
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
