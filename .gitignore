@@ -1,62 +1,38 @@
-# Built application files
+# --- Android/Gradle ---
 *.apk
 *.aar
 *.ap_
 *.aab
-
-# Files for the ART/Dalvik VM
 *.dex
-
-# Java class files
 *.class
-
-# Generated files
 bin/
 gen/
 out/
 build/
-
-# Gradle files
 .gradle/
-build/
 !gradle-wrapper.jar
 .gradle-build-scan/
+**/build/reports/
+**/build/test-results/
 
-# Android Studio Navigation Editor temp files
-.navigation/
-
-# Android Studio captures folder
-captures/
-
-# IntelliJ / Android Studio / JetBrains
+# --- IDE (Android Studio/IntelliJ) ---
+.idea/
 *.iml
-.idea/workspace.xml
-.idea/tasks.xml
-.idea/gradle.xml
-.idea/assetWizardSettings.xml
-.idea/dictionaries
-.idea/libraries
-.idea/caches
-.idea/navEditor.xml
-.idea/compiler.xml
-.idea/modules.xml
-.idea/misc.xml
-
-# Keystore files (Security)
-*.jks
-*.keystore
-
-# External native build folder
+.navigation/
+captures/
 .cxx/
 .externalNativeBuild/
 
-# Google Services (Firebase etc)
+# --- Keystores & Security ---
+*.jks
+*.keystore
 app/google-services.json
 
-# Local configuration file (sdk path, etc)
+# --- Local Config & Secrets ---
 local.properties
+secrets.properties
 
-# OS specific
+# --- OS Specific ---
 .DS_Store
 .DS_Store?
 ._*
@@ -65,22 +41,11 @@ local.properties
 ehthumbs.db
 Thumbs.db
 
-# Memory dumps
+# --- Logs & Dumps ---
 *.hprof
 
-# Unit test reports
-**/build/reports/
-**/build/test-results/
+# --- AI Artifacts ---
+.artifacts/
 
-# Secrets and local config
-secrets.properties
-local.properties
-
-# Android Studio internal
-.idea/
-*.iml
-.navigation/
-captures/
-
-#Files generated for publication
+# --- Publication ---
 app/release/
