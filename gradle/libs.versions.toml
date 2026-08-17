@@ -61,6 +61,7 @@ robolectric = "4.16.1"
 googleServices = "4.5.0"
 firebaseCrashlyticsPlugin = "3.0.7"
 firebaseBom = "34.15.0"
+leakcanary = "1.0.0"
 
 [libraries]
 # Gradle Plugins
@@ -150,6 +151,7 @@ androidx-profileinstaller = { group = "androidx.profileinstaller", name = "profi
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
+leakcanary = { group = "com.android.tools.studio.leakcanary", name = "leakcanary", version.ref = "leakcanary" }
 
 [plugins]
 # Android & Kotlin
