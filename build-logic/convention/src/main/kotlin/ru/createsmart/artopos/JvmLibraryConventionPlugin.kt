@@ -23,8 +23,8 @@ class JvmLibraryConventionPlugin : Plugin<Project> {
             }
 
             extensions.configure<JavaPluginExtension> {
-                sourceCompatibility = org.gradle.api.JavaVersion.VERSION_17
-                targetCompatibility = org.gradle.api.JavaVersion.VERSION_17
+                sourceCompatibility = org.gradle.api.JavaVersion.VERSION_21
+                targetCompatibility = org.gradle.api.JavaVersion.VERSION_21
             }
 
             extensions.configure<KotlinProjectExtension> {
@@ -33,7 +33,7 @@ class JvmLibraryConventionPlugin : Plugin<Project> {
 
             tasks.withType(KotlinJvmCompile::class.java).configureEach {
                 compilerOptions {
-                    jvmTarget.set(JvmTarget.JVM_17)
+                    jvmTarget.set(JvmTarget.JVM_21)
                 }
             }
         }

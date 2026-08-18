@@ -34,8 +34,8 @@ internal fun Project.configureKotlinAndroid(
         when (this) {
             is ApplicationExtension -> {
                 compileOptions {
-                    sourceCompatibility = JavaVersion.VERSION_17
-                    targetCompatibility = JavaVersion.VERSION_17
+                    sourceCompatibility = JavaVersion.VERSION_21
+                    targetCompatibility = JavaVersion.VERSION_21
                 }
                 defaultConfig {
                     minSdk = libs.findVersionInt("android-sdk-min")
@@ -44,8 +44,8 @@ internal fun Project.configureKotlinAndroid(
 
             is LibraryExtension -> {
                 compileOptions {
-                    sourceCompatibility = JavaVersion.VERSION_17
-                    targetCompatibility = JavaVersion.VERSION_17
+                    sourceCompatibility = JavaVersion.VERSION_21
+                    targetCompatibility = JavaVersion.VERSION_21
                 }
                 defaultConfig {
                     minSdk = libs.findVersionInt("android-sdk-min")
@@ -54,8 +54,8 @@ internal fun Project.configureKotlinAndroid(
 
             is TestExtension -> {
                 compileOptions {
-                    sourceCompatibility = JavaVersion.VERSION_17
-                    targetCompatibility = JavaVersion.VERSION_17
+                    sourceCompatibility = JavaVersion.VERSION_21
+                    targetCompatibility = JavaVersion.VERSION_21
                 }
             }
         }
@@ -63,7 +63,7 @@ internal fun Project.configureKotlinAndroid(
 
     tasks.withType(KotlinJvmCompile::class.java).configureEach {
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_17)
+            jvmTarget.set(JvmTarget.JVM_21)
         }
     }
 }
