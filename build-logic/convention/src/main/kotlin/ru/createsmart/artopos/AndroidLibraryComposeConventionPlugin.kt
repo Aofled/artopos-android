@@ -4,6 +4,7 @@ import com.android.build.api.dsl.LibraryExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.getByType
+import ru.createsmart.artopos.extensions.configureAndroidCompose
 
 /**
  * Adds Compose support to Library modules (Android Lib + Compose)

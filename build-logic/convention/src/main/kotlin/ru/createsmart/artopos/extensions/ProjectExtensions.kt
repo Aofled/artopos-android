@@ -1,4 +1,4 @@
-package ru.createsmart.artopos
+package ru.createsmart.artopos.extensions
 
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog

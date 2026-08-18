@@ -4,6 +4,9 @@ import com.android.build.api.dsl.ApplicationExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
+import ru.createsmart.artopos.extensions.configureKotlinAndroid
+import ru.createsmart.artopos.extensions.findVersionInt
+import ru.createsmart.artopos.extensions.libs
 
 /**
  * Configures the main App module (builds APK). Don't use in libraries.

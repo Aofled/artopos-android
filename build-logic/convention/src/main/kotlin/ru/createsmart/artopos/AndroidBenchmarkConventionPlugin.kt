@@ -5,6 +5,9 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
+import ru.createsmart.artopos.extensions.configureKotlinAndroid
+import ru.createsmart.artopos.extensions.findVersionInt
+import ru.createsmart.artopos.extensions.libs
 
 /**
  * Configures Benchmark modules (Macrobenchmark) to measure performance

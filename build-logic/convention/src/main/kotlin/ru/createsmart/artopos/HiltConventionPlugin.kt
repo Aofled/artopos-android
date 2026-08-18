@@ -3,6 +3,7 @@ package ru.createsmart.artopos
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
+import ru.createsmart.artopos.extensions.libs
 
 /**
  * Configures Dependency Injection (Hilt + KSP)

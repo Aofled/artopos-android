@@ -1,4 +1,4 @@
-package ru.createsmart.artopos
+package ru.createsmart.artopos.extensions
 
 import com.android.build.api.dsl.CommonExtension
 import org.gradle.api.Project
