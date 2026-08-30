@@ -33,6 +33,11 @@
  *    Updates detekt.yml with default values for new rules.
  *    WARNING: This will overwrite any custom comments in your detekt.yml file!
  *    Command: ./gradlew detektGenerateConfig
+ *
+ * --- R8 CONFIGURATION ---
+ * 7. CREATES R8 REPORT
+ *    Creates a report in three directions: shrinking, obfuscation, optimization
+ *    Command: ./gradlew :app:analyzeReleaseR8Config
  * ==========================================
  */
 
