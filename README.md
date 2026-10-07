@@ -5,7 +5,7 @@
 [![Android CI](https://github.com/Aofled/artopos-android/actions/workflows/ci_debug.yml/badge.svg)](https://github.com/Aofled/artopos-android/actions/workflows/ci_debug.yml)
 [![Android CI](https://github.com/Aofled/artopos-android/actions/workflows/ci_release.yml/badge.svg)](https://github.com/Aofled/artopos-android/actions/workflows/ci_release.yml)
 [![Kotlin 2.0](https://img.shields.io/badge/Kotlin-2.0%2B-blue.svg)](https://kotlinlang.org)
-[![Min API 28](https://img.shields.io/badge/Min%20API-28-green.svg)](https://apilevels.com/)
+[![Min API 26](https://img.shields.io/badge/Min%20API-28-green.svg)](https://apilevels.com/)
 
 **Artopos** is a modern, offline-first Android application for exploring the world's finest masterpieces using the public [Harvard Art Museums API](https://github.com/harvardartmuseums/api-docs).
 
@@ -72,7 +72,7 @@ Built as a showcase of modern Android development, this app demonstrates strict 
 *   **Detekt** (Static code analysis with auto-formatting).
 *   **R8/ProGuard** (Optimized release builds with consumer-rules aggregation).
 *   **Baseline Profiles & Macrobenchmark** (AOT compilation and UI performance metrics).
-*   **Unit Testing** (JUnit 4, Mockk, Coroutines Test, Turbine).
+*   **Unit Testing & Test Harness** (Dedicated `:core:testing` module, JUnit 4, Mockk, Coroutines Test, Turbine).
 *   **GitHub Actions CI** (Automated pipeline for static analysis, unit testing, and secure APK building).
 </details>
 
@@ -154,6 +154,7 @@ root
 │   ├── translation     # Google ML Kit integration wrapper
 │   ├── navigation      # Type-safe @Serializable routes for Compose Navigation
 │   ├── image-loader    # Custom OkHttpClient provider for Coil disk caching
+│   ├── testing         # Shared testing infrastructure (MainDispatcherRule, Test Dispatchers)
 │   └── common          # General Utilities (NetworkMonitor, Locale Helper, Dictionaries)
 └── feature
     ├── discover        # "Discover" Infinite Feed screen with Paging 3 and Filter BottomSheet
