@@ -9,6 +9,7 @@ dependencies {
     implementation(projects.core.model)
     implementation(projects.core.common)
     implementation(projects.core.domain)
+    testImplementation(projects.core.testing)
 
     implementation(libs.androidx.hilt.navigation.compose)
 

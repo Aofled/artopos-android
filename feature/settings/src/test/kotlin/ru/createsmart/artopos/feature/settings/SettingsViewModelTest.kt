@@ -19,9 +19,9 @@ import ru.createsmart.artopos.core.domain.usecase.SetLanguageUseCase
 import ru.createsmart.artopos.core.domain.usecase.SetThemeConfigUseCase
 import ru.createsmart.artopos.core.model.settings.ThemeConfig
 import ru.createsmart.artopos.core.model.settings.UserSettings
+import ru.createsmart.artopos.core.testing.util.MainDispatcherRule
 import ru.createsmart.artopos.core.uicomponents.manager.UiMessageManager
 import ru.createsmart.artopos.feature.settings.model.SettingsIntent
-import ru.createsmart.artopos.feature.settings.util.MainDispatcherRule
 
 class SettingsViewModelTest {
 

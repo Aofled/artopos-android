@@ -19,9 +19,9 @@ import ru.createsmart.artopos.core.domain.usecase.ToggleFavoriteUseCase
 import ru.createsmart.artopos.core.model.Artwork
 import ru.createsmart.artopos.core.model.CreationDate
 import ru.createsmart.artopos.core.model.ImageDimensions
+import ru.createsmart.artopos.core.testing.util.MainDispatcherRule
 import ru.createsmart.artopos.core.uicomponents.manager.UiMessageManager
 import ru.createsmart.artopos.feature.favorites.model.FavoritesIntent
-import ru.createsmart.artopos.feature.favorites.util.MainDispatcherRule
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class FavoritesViewModelTest {

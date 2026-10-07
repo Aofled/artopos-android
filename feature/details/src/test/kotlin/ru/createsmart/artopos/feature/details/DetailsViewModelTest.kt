@@ -26,9 +26,9 @@ import ru.createsmart.artopos.core.model.ArtworkDetails
 import ru.createsmart.artopos.core.model.CreationDate
 import ru.createsmart.artopos.core.model.settings.ThemeConfig
 import ru.createsmart.artopos.core.model.settings.UserSettings
+import ru.createsmart.artopos.core.testing.util.MainDispatcherRule
 import ru.createsmart.artopos.core.uicomponents.manager.UiMessageManager
 import ru.createsmart.artopos.feature.details.translation.ArtworkTranslationFacade
-import ru.createsmart.artopos.feature.details.util.MainDispatcherRule
 import kotlin.time.Duration.Companion.milliseconds
 
 @RunWith(RobolectricTestRunner::class)

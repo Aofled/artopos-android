@@ -11,6 +11,8 @@ dependencies {
     implementation(projects.core.uiComponents)
     implementation(projects.core.navigation)
 
+    testImplementation(projects.core.testing)
+
     implementation(libs.androidx.hilt.navigation.compose)
 
     implementation(libs.kotlinx.collections.immutable)
