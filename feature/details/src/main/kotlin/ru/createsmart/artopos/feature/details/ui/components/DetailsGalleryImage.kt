@@ -18,7 +18,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
-import coil.compose.SubcomposeAsyncImage
+import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
@@ -26,7 +26,7 @@ import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.core.uicomponents.components.RetryDecision
 import ru.createsmart.artopos.core.uicomponents.components.RetryPlaceholder
 import ru.createsmart.artopos.core.uicomponents.components.analyzeRetry
-import ru.createsmart.artopos.core.uicomponents.components.shimmer.FullscreenShimmerBox
+import ru.createsmart.artopos.core.uicomponents.components.shimmer.fullscreenShimmerEffect
 import ru.createsmart.artopos.core.designsystem.R as DSR
 
 private const val RETRY_HASH = "retry_hash"
@@ -72,6 +72,9 @@ fun DetailsGalleryImage(
     val zoomState = rememberZoomState(maxScale = 10f)
     var isImageLoaded by remember { mutableStateOf(false) }
 
+    var isLoading by remember(imageUrl, globalVersion, localRetry) { mutableStateOf(true) }
+    var isError by remember(imageUrl, globalVersion, localRetry) { mutableStateOf(false) }
+
     val imageRequest = rememberGalleryImageRequest(
         imageUrl = imageUrl,
         version = globalVersion + localRetry,
@@ -97,29 +100,46 @@ fun DetailsGalleryImage(
             .fillMaxSize()
             .clipToBounds(),
     ) {
-        SubcomposeAsyncImage(
+        AsyncImage(
             model = imageRequest,
             contentDescription = stringResource(DSR.string.core_cd_image),
             contentScale = contentScale,
+            onLoading = {
+                isLoading = true
+                isError = false
+            },
+            onSuccess = {
+                isLoading = false
+                isError = false
+                isImageLoaded = true
+            },
+            onError = { state ->
+                isLoading = false
+                isError = true
+                isImageLoaded = false
+                lastError = state.result.throwable
+            },
             modifier = Modifier
                 .fillMaxSize()
+                .fullscreenShimmerEffect(enabled = isLoading)
                 .then(if (isImageLoaded) Modifier.zoomable(zoomState) else Modifier),
-            loading = {
-                FullscreenShimmerBox(
-                    modifier = Modifier.fillMaxSize(),
-                )
-            },
-            error = {
-                RetryPlaceholder(
-                    onRetry = {
-                        when (val decision = lastError.analyzeRetry(context)) {
-                            is RetryDecision.ShowMessage -> onShowMessage(decision.message)
-                            is RetryDecision.CanRetry -> localRetry++
-                        }
-                    },
-                )
-            },
         )
+
+        if (isError) {
+            RetryPlaceholder(
+                onRetry = {
+                    when (val decision = lastError.analyzeRetry(context)) {
+                        is RetryDecision.ShowMessage -> onShowMessage(decision.message)
+                        is RetryDecision.CanRetry -> {
+                            isError = false
+                            isLoading = true
+                            localRetry++
+                        }
+                    }
+                },
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
     }
 }
 

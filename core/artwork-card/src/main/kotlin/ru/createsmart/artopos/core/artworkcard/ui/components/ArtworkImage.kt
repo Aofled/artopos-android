@@ -1,5 +1,6 @@
 package ru.createsmart.artopos.core.artworkcard.ui.components
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,14 +17,14 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import coil.compose.SubcomposeAsyncImage
+import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import ru.createsmart.artopos.core.artworkcard.model.ArtworkListItem
 import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.core.uicomponents.components.RetryDecision
 import ru.createsmart.artopos.core.uicomponents.components.RetryPlaceholder
 import ru.createsmart.artopos.core.uicomponents.components.analyzeRetry
-import ru.createsmart.artopos.core.uicomponents.components.shimmer.ShimmerBox
+import ru.createsmart.artopos.core.uicomponents.components.shimmer.shimmerEffect
 import ru.createsmart.artopos.core.designsystem.R as DSR
 
 private const val RETRY_HASH = "retry_hash"
@@ -40,24 +41,15 @@ internal fun ArtworkImage(
 
     var errorTrigger by remember { mutableIntStateOf(0) }
 
+    var isLoading by remember(artwork.imageUrl, globalVersion, localRetry) { mutableStateOf(true) }
+    var isError by remember(artwork.imageUrl, globalVersion, localRetry) { mutableStateOf(false) }
+
     val imageRequest = remember(artwork.imageUrl, globalVersion, localRetry) {
         ImageRequest.Builder(context)
             .data(artwork.imageUrl)
             // Combine Global (Pull-to-Refresh) and Local (Tap) signals to force reload
             .setParameter(RETRY_HASH, globalVersion + localRetry, memoryCacheKey = null)
             .crossfade(true)
-            .listener(
-                onSuccess = { _, _ -> lastError = null },
-                onError = { _, result ->
-                    lastError = result.throwable
-
-                    // UX Logic: Don't show toast on first load failure (silent fail).
-                    // Only show specific error if USER explicitly tapped "Retry".
-                    if (localRetry > 0) {
-                        errorTrigger++
-                    }
-                },
-            )
             .build()
     }
 
@@ -72,25 +64,51 @@ internal fun ArtworkImage(
         }
     }
 
-    // Note: We use SubcomposeAsyncImage to support Custom Composables (Shimmer)
-    SubcomposeAsyncImage(
-        model = imageRequest,
-        contentDescription = stringResource(DSR.string.core_cd_image),
-        contentScale = ContentScale.Crop,
+    Box(
         modifier = Modifier
             .aspectRatio(artwork.aspectRatio)
             .clip(RoundedCornerShape(12.dp)),
-        loading = { ShimmerBox(modifier = Modifier.fillMaxSize()) }, // Show animation while downloading
+    ) {
+        AsyncImage(
+            model = imageRequest,
+            contentDescription = stringResource(DSR.string.core_cd_image),
+            contentScale = ContentScale.Crop,
+            onLoading = {
+                isLoading = true
+                isError = false
+            },
+            onSuccess = {
+                isLoading = false
+                isError = false
+                lastError = null
+            },
+            onError = { state ->
+                isLoading = false
+                isError = true
+                lastError = state.result.throwable
+                if (localRetry > 0) {
+                    errorTrigger++
+                }
+            },
+            modifier = Modifier
+                .fillMaxSize()
+                .shimmerEffect(enabled = isLoading),
+        )
 
-        error = {
+        if (isError) {
             RetryPlaceholder(
                 onRetry = {
                     when (val decision = lastError.analyzeRetry(context)) {
                         is RetryDecision.ShowMessage -> onShowMessage(decision.message)
-                        is RetryDecision.CanRetry -> localRetry++
+                        is RetryDecision.CanRetry -> {
+                            isError = false
+                            isLoading = true
+                            localRetry++
+                        }
                     }
                 },
+                modifier = Modifier.fillMaxSize(),
             )
-        },
-    )
+        }
+    }
 }
