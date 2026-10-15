@@ -2,8 +2,7 @@ package ru.createsmart.artopos.core.imageloader
 
 import android.content.Context
 import android.util.Log
-import coil.annotation.ExperimentalCoilApi
-import coil.imageLoader
+import coil3.SingletonImageLoader
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -22,11 +21,9 @@ class ImageCacheManager @Inject constructor(
     /**
      * The current strategy does not provide for a default coil cache.
      */
-    @OptIn(ExperimentalCoilApi::class)
     suspend fun clearCache(): Long = withContext(Dispatchers.IO) {
         var freedSpace = 0L
 
-        // 1. Clear our custom OkHttp cache (folder "http_cache")
         val okHttpCache = imageOkHttpClient.cache
         if (okHttpCache != null) {
             try {
@@ -37,13 +34,13 @@ class ImageCacheManager @Inject constructor(
             }
         }
 
-        // 2. Clear the default Coil caches (just in case)
-        val coilImageLoader = context.imageLoader
-        coilImageLoader.diskCache?.let {
-            freedSpace += it.size
-            it.clear()
+        val coilImageLoader = SingletonImageLoader.get(context)
+
+        coilImageLoader.diskCache?.let { diskCache ->
+            freedSpace += diskCache.size
+            diskCache.clear()
         }
-        coilImageLoader.memoryCache?.clear() // Clear RAM
+        coilImageLoader.memoryCache?.clear()
 
         return@withContext freedSpace
     }

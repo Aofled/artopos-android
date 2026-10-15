@@ -1,6 +1,7 @@
 package ru.createsmart.artopos.core.uicomponents.components
 
 import android.content.Context
+import coil3.network.HttpException
 import ru.createsmart.artopos.core.common.util.isNetworkAvailable
 import ru.createsmart.artopos.core.designsystem.R
 import ru.createsmart.artopos.core.designsystem.components.UiText
@@ -15,7 +16,7 @@ sealed class RetryDecision {
 fun Throwable?.isNotFound(): Boolean {
     return when (this) {
         // Error loading image via Coil
-        is coil.network.HttpException -> this.response.code == HttpURLConnection.HTTP_NOT_FOUND
+        is HttpException -> this.response.code == HttpURLConnection.HTTP_NOT_FOUND
         // Error loading data via API (Our domain exception)
         is AppError.ExternalSystem -> this.code == HttpURLConnection.HTTP_NOT_FOUND
         else -> false

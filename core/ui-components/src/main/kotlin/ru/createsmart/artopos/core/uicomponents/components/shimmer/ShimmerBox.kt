@@ -14,50 +14,8 @@ private const val SHIMMER_LIGHT_EDGE_ALPHA = 0.95f
 private const val SHIMMER_LIGHT_HIGHLIGHT_ALPHA = 0.4f
 
 /**
- * Standard Shimmer modifier for cards and list items.
+ * Shared color calculation for standard shimmer effects.
  */
-fun Modifier.shimmerEffect(
-    enabled: Boolean = true,
-): Modifier = composed {
-    if (!enabled) return@composed Modifier
-
-    val isDark = LocalAppThemeIsDark.current
-    val baseColor = MaterialTheme.colorScheme.surfaceVariant
-
-    // Visual Tweak: Dark theme needs lower opacity (subtle effect).
-    // Light theme needs higher opacity to be visible on white background.
-    // Optimization: Cache colors to avoid re-allocating List on every frame
-    val shimmerColors = remember(baseColor, isDark) {
-        val (edgeAlpha, highlightAlpha) = if (isDark) {
-            SHIMMER_DARK_EDGE_ALPHA to SHIMMER_DARK_HIGHLIGHT_ALPHA
-        } else {
-            SHIMMER_LIGHT_EDGE_ALPHA to SHIMMER_LIGHT_HIGHLIGHT_ALPHA
-        }
-        ShimmerColors(
-            listOf(
-                baseColor.copy(alpha = edgeAlpha),
-                baseColor.copy(alpha = highlightAlpha),
-                baseColor.copy(alpha = edgeAlpha),
-            ),
-        )
-    }
-
-    baseShimmer(
-        shimmerColors = shimmerColors,
-        enabled = enabled,
-        waveSizeMultiplier = 1.0f,
-    )
-}
-
-@Composable
-fun ShimmerBox(modifier: Modifier = Modifier) {
-    BaseShimmerBox(
-        shimmerColors = rememberShimmerColors(),
-        modifier = modifier,
-        waveSizeMultiplier = 1.0f,
-    )
-}
-
 @Composable
 private fun rememberShimmerColors(): ShimmerColors {
     val isDark = LocalAppThemeIsDark.current
@@ -77,4 +35,30 @@ private fun rememberShimmerColors(): ShimmerColors {
             ),
         )
     }
+}
+
+/**
+ * Standard Shimmer modifier for cards and list items.
+ */
+fun Modifier.shimmerEffect(
+    enabled: Boolean = true,
+): Modifier = composed {
+    if (!enabled) return@composed Modifier
+
+    val shimmerColors = rememberShimmerColors()
+
+    baseShimmer(
+        shimmerColors = shimmerColors,
+        enabled = enabled,
+        waveSizeMultiplier = 1.0f,
+    )
+}
+
+@Composable
+fun ShimmerBox(modifier: Modifier = Modifier) {
+    BaseShimmerBox(
+        shimmerColors = rememberShimmerColors(),
+        modifier = modifier,
+        waveSizeMultiplier = 1.0f,
+    )
 }

@@ -18,8 +18,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
 import ru.createsmart.artopos.core.designsystem.components.UiText
@@ -29,7 +30,6 @@ import ru.createsmart.artopos.core.uicomponents.components.analyzeRetry
 import ru.createsmart.artopos.core.uicomponents.components.shimmer.fullscreenShimmerEffect
 import ru.createsmart.artopos.core.designsystem.R as DSR
 
-private const val RETRY_HASH = "retry_hash"
 private const val ZOOM_ACTIVATION_THRESHOLD = 1.25f
 
 private const val BYTES_IN_GIGABYTE = 1024.0 * 1024.0 * 1024.0 // GB
@@ -72,18 +72,22 @@ fun DetailsGalleryImage(
     val zoomState = rememberZoomState(maxScale = 10f)
     var isImageLoaded by remember { mutableStateOf(false) }
 
-    var isLoading by remember(imageUrl, globalVersion, localRetry) { mutableStateOf(true) }
-    var isError by remember(imageUrl, globalVersion, localRetry) { mutableStateOf(false) }
+    var isSuccess by remember(imageUrl) { mutableStateOf(false) }
+    var isLoading by remember(imageUrl) { mutableStateOf(!isSuccess) }
+    var isError by remember(imageUrl) { mutableStateOf(false) }
+
+    LaunchedEffect(globalVersion) {
+        if (!isSuccess && isError) {
+            isError = false
+            isLoading = true
+        }
+    }
+
+    val retryAttempt = if (isSuccess) 0 else (globalVersion + localRetry)
 
     val imageRequest = rememberGalleryImageRequest(
         imageUrl = imageUrl,
-        version = globalVersion + localRetry,
-        onStateChange = { loaded, error ->
-            isImageLoaded = loaded
-            lastError = error
-            onImageLoaded(loaded)
-        },
-        onErrorMessage = { if (localRetry > 0) onShowMessage(it) },
+        retryAttempt = retryAttempt,
     )
 
     val isZoomed by remember {
@@ -105,23 +109,42 @@ fun DetailsGalleryImage(
             contentDescription = stringResource(DSR.string.core_cd_image),
             contentScale = contentScale,
             onLoading = {
-                isLoading = true
+                if (!isSuccess) {
+                    isLoading = true
+                }
                 isError = false
+                isImageLoaded = false
+                onImageLoaded(false)
             },
             onSuccess = {
                 isLoading = false
+                isSuccess = true
                 isError = false
                 isImageLoaded = true
+                lastError = null
+                onImageLoaded(true)
             },
             onError = { state ->
+                val throwable = state.result.throwable
                 isLoading = false
+                isSuccess = false
                 isError = true
                 isImageLoaded = false
-                lastError = state.result.throwable
+                lastError = throwable
+                onImageLoaded(false)
+                if (localRetry > 0) {
+                    val decision = throwable.analyzeRetry(context)
+                    val message = if (decision is RetryDecision.ShowMessage) {
+                        decision.message
+                    } else {
+                        UiText.StringResource(DSR.string.core_error_load_image)
+                    }
+                    onShowMessage(message)
+                }
             },
             modifier = Modifier
                 .fillMaxSize()
-                .fullscreenShimmerEffect(enabled = isLoading)
+                .fullscreenShimmerEffect(enabled = isLoading && !isSuccess)
                 .then(if (isImageLoaded) Modifier.zoomable(zoomState) else Modifier),
         )
 
@@ -146,9 +169,7 @@ fun DetailsGalleryImage(
 @Composable
 private fun rememberGalleryImageRequest(
     imageUrl: String,
-    version: Int,
-    onStateChange: (isLoaded: Boolean, error: Throwable?) -> Unit,
-    onErrorMessage: (UiText) -> Unit,
+    retryAttempt: Int,
 ): ImageRequest {
     val context = LocalContext.current
 
@@ -167,7 +188,7 @@ private fun rememberGalleryImageRequest(
         val totalRamGb = memoryInfo.totalMem / BYTES_IN_GIGABYTE
 
         // Dynamic multipliers and GPU hard limits (GL_MAX_TEXTURE_SIZE)
-        val (multiplier, absoluteMax) = when {
+        val pair = when {
             // 1. Ultra-budget (Android Go or < 2 GB)
             activityManager.isLowRamDevice || totalRamGb < GalleryHardwareConfig.RAM_ULTRA_LOW ->
                 GalleryHardwareConfig.MULTIPLIER_ULTRA_LOW to GalleryHardwareConfig.MAX_SIZE_ULTRA_LOW
@@ -189,32 +210,23 @@ private fun rememberGalleryImageRequest(
                 GalleryHardwareConfig.MULTIPLIER_ULTRA to GalleryHardwareConfig.MAX_SIZE_ULTRA
         }
 
-        val safeWidth = if (widthPx > 0) (widthPx * multiplier).toInt().coerceAtMost(absoluteMax) else absoluteMax
-        val safeHeight = if (heightPx > 0) (heightPx * multiplier).toInt().coerceAtMost(absoluteMax) else absoluteMax
+        val safeWidth = if (widthPx > 0) (widthPx * pair.first).toInt().coerceAtMost(pair.second) else pair.second
+        val safeHeight = if (heightPx > 0) (heightPx * pair.first).toInt().coerceAtMost(pair.second) else pair.second
 
         safeWidth to safeHeight
     }
 
-    return remember(imageUrl, version, targetWidth, targetHeight) {
+    return remember(imageUrl, retryAttempt, targetWidth, targetHeight) {
         ImageRequest.Builder(context)
             .data(imageUrl)
-            .setParameter(RETRY_HASH, version, memoryCacheKey = null)
+            .apply {
+                if (retryAttempt > 0) {
+                    // Bypass memory cache on retry to fetch a fresh image.
+                    memoryCacheKey("${imageUrl}_retry_$retryAttempt")
+                }
+            }
             .size(targetWidth, targetHeight)
             .crossfade(true)
-            .listener(
-                onStart = { onStateChange(false, null) },
-                onSuccess = { _, _ -> onStateChange(true, null) },
-                onError = { _, result ->
-                    onStateChange(false, result.throwable)
-                    val decision = result.throwable.analyzeRetry(context)
-                    val message = if (decision is RetryDecision.ShowMessage) {
-                        decision.message
-                    } else {
-                        UiText.StringResource(DSR.string.core_error_load_image)
-                    }
-                    onErrorMessage(message)
-                },
-            )
             .build()
     }
 }

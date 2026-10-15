@@ -110,7 +110,8 @@ dependencies {
     implementation(projects.feature.settings)
 
     implementation(libs.okhttp3)
-    implementation(libs.coil.base)
+    implementation(libs.coil)
+    implementation(libs.coil.network.okhttp)
     implementation(libs.androidx.core.ktx)
     implementation(libs.material)
     implementation(libs.androidx.core.splashscreen)

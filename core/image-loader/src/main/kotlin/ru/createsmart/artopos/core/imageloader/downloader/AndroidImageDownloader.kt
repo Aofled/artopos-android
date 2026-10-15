@@ -7,22 +7,22 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.webkit.MimeTypeMap
-import androidx.core.graphics.drawable.toBitmap
-import coil.annotation.ExperimentalCoilApi
-import coil.disk.DiskCache
-import coil.imageLoader
-import coil.request.ImageRequest
-import coil.request.SuccessResult
+import coil3.SingletonImageLoader
+import coil3.disk.DiskCache
+import coil3.request.ImageRequest
+import coil3.request.SuccessResult
+import coil3.request.allowHardware
+import coil3.toBitmap
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.File
 import java.io.IOException
 import java.io.OutputStream
 import javax.inject.Inject
 
 private const val BITMAP_QUALITY = 100
 
-@OptIn(ExperimentalCoilApi::class)
 class AndroidImageDownloader @Inject constructor(
     @ApplicationContext private val context: Context,
 ) {
@@ -33,13 +33,15 @@ class AndroidImageDownloader @Inject constructor(
                 // 1. Getting information about the file
                 val (fullFileName, mimeType) = getFileInfo(url, fileName)
 
-                // 2. Coil
+                // 2. Coil 3 ImageLoader & Request
+                val imageLoader = SingletonImageLoader.get(context)
                 val request = ImageRequest.Builder(context)
                     .data(url)
+                    // Disable hardware bitmaps so we can compress and save bytes to storage.
                     .allowHardware(false)
                     .build()
 
-                val result = context.imageLoader.execute(request)
+                val result = imageLoader.execute(request)
                 if (result !is SuccessResult) {
                     return@withContext Result.failure(Exception("Failed to load image from Coil"))
                 }
@@ -71,16 +73,17 @@ class AndroidImageDownloader @Inject constructor(
                 // 4. Recording
                 resolver.openOutputStream(imageUri)?.use { outputStream ->
                     writeImageToStream(
-                        result,
-                        context.imageLoader.diskCache,
-                        mimeType,
-                        outputStream,
+                        result = result,
+                        diskCache = imageLoader.diskCache,
+                        mimeType = mimeType,
+                        outputStream = outputStream,
                     )
                 } ?: return@withContext Result.failure(Exception("Failed to open output stream"))
 
                 // 5. Unlock the file
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     contentValues.clear()
+                    // Clear pending flag to make image visible in gallery.
                     contentValues.put(MediaStore.MediaColumns.IS_PENDING, 0)
                     resolver.update(imageUri, contentValues, null, null)
                 }
@@ -120,15 +123,15 @@ class AndroidImageDownloader @Inject constructor(
         val snapshot = result.diskCacheKey?.let { diskCache?.openSnapshot(it) }
 
         if (snapshot != null) {
-            // FAST PATH
+            // Fast path: copy disk cache file directly to stream.
             snapshot.use { snap ->
-                snap.data.toFile().inputStream().use { inputStream ->
+                File(snap.data.toString()).inputStream().use { inputStream ->
                     inputStream.copyTo(outputStream)
                 }
             }
         } else {
-            // SLOW PATH
-            val bitmap = result.drawable.toBitmap()
+            // Slow path: decode image to bitmap and re-encode.
+            val bitmap = result.image.toBitmap()
             val compressFormat = if (mimeType.contains("png", ignoreCase = true)) {
                 Bitmap.CompressFormat.PNG
             } else {

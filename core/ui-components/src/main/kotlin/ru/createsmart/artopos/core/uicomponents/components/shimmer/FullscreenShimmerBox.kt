@@ -14,55 +14,8 @@ private const val SHIMMER_LIGHT_HIGHLIGHT_ALPHA = 0.6f
 private const val SHIMMER_WAVE_SIZE = 1.5f
 
 /**
- * Fullscreen Shimmer modifier for detailed zoom gallery.
+ * Shared color calculation for fullscreen shimmer effects.
  */
-fun Modifier.fullscreenShimmerEffect(
-    enabled: Boolean = true,
-): Modifier = composed {
-    if (!enabled) return@composed Modifier
-
-    val isDark = LocalAppThemeIsDark.current
-    val baseColor = MaterialTheme.colorScheme.surfaceVariant
-
-    // Visual Tweak: Dark theme needs lower opacity (subtle effect).
-    // Light theme needs higher opacity to be visible on white background.
-    // Optimization: Cache colors to avoid re-allocating List on every frame
-    val shimmerColors = remember(baseColor, isDark) {
-        val edgeColor = baseColor.copy(alpha = 1f)
-
-        val highlightColor = if (isDark) {
-            Color.White.copy(alpha = SHIMMER_DARK_HIGHLIGHT_ALPHA).compositeOver(baseColor)
-        } else {
-            Color.White.copy(alpha = SHIMMER_LIGHT_HIGHLIGHT_ALPHA).compositeOver(baseColor)
-        }
-
-        ShimmerColors(
-            listOf(
-                edgeColor,
-                highlightColor,
-                highlightColor,
-                highlightColor,
-                edgeColor,
-            ),
-        )
-    }
-
-    baseShimmer(
-        shimmerColors = shimmerColors,
-        enabled = enabled,
-        waveSizeMultiplier = SHIMMER_WAVE_SIZE,
-    )
-}
-
-@Composable
-fun FullscreenShimmerBox(modifier: Modifier = Modifier) {
-    BaseShimmerBox(
-        shimmerColors = rememberFullscreenShimmerColors(),
-        modifier = modifier,
-        waveSizeMultiplier = SHIMMER_WAVE_SIZE,
-    )
-}
-
 @Composable
 private fun rememberFullscreenShimmerColors(): ShimmerColors {
     val isDark = LocalAppThemeIsDark.current
@@ -86,4 +39,32 @@ private fun rememberFullscreenShimmerColors(): ShimmerColors {
             ),
         )
     }
+}
+
+/**
+ * Fullscreen Shimmer modifier for detailed zoom gallery.
+ */
+fun Modifier.fullscreenShimmerEffect(
+    enabled: Boolean = true,
+): Modifier = composed {
+    if (!enabled) return@composed Modifier
+
+    // Note: Since modifier composed block can access @Composable context,
+    // we can invoke the remember composable helper directly here.
+    val shimmerColors = rememberFullscreenShimmerColors()
+
+    baseShimmer(
+        shimmerColors = shimmerColors,
+        enabled = enabled,
+        waveSizeMultiplier = SHIMMER_WAVE_SIZE,
+    )
+}
+
+@Composable
+fun FullscreenShimmerBox(modifier: Modifier = Modifier) {
+    BaseShimmerBox(
+        shimmerColors = rememberFullscreenShimmerColors(),
+        modifier = modifier,
+        waveSizeMultiplier = SHIMMER_WAVE_SIZE,
+    )
 }

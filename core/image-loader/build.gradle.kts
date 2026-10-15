@@ -5,7 +5,7 @@ plugins {
 
 dependencies {
     implementation(libs.okhttp.logging)
-    implementation(libs.coil.base)
+    implementation(libs.coil)
 
     testImplementation(libs.bundles.test.unit.full)
 }
