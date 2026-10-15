@@ -33,7 +33,7 @@ Built as a showcase of modern Android development, this app demonstrates strict 
 ## 🛠 Tech Stack
 
 **TL;DR:**
-* **Architecture:** Clean Architecture, Modular Monolith (15+ modules), Strict MVI.
+* **Architecture:** Clean Architecture, Modular Monolith (20+ modules), Strict MVI.
 * **UI:** Jetpack Compose (Material 3, Edge-to-Edge), Navigation Compose (Type-Safe).
 * **Data & Network:** Room, Paging 3, Retrofit, Kotlinx Serialization, Coil.
 * **Advanced:** Google ML Kit, Baseline Profiles, Macrobenchmark, GitHub Actions.
@@ -68,7 +68,7 @@ Built as a showcase of modern Android development, this app demonstrates strict 
 ### Build System & Quality
 *   **Gradle Kotlin DSL** (KTS).
 *   **Version Catalog** (`libs.versions.toml`).
-*   **Convention Plugins** (Custom `build-logic` automating dependency management, Namespace generation, and ProGuard rules across 15+ modules).
+*   **Convention Plugins** (Custom `build-logic` automating dependency management, Namespace generation, and ProGuard rules across 20+ modules).
 *   **Detekt** (Static code analysis with auto-formatting).
 *   **R8/ProGuard** (Optimized release builds with consumer-rules aggregation).
 *   **Baseline Profiles & Macrobenchmark** (AOT compilation and UI performance metrics).
@@ -84,50 +84,50 @@ Built as a showcase of modern Android development, this app demonstrates strict 
 <summary><b>1. Compose Performance & "Jump-Free" Grid</b></summary>
 <br/>
 
-* **Zero-Jank Shimmer Animations:** Custom shimmer effects utilize the `drawBehind` modifier to run exclusively in the Draw phase, bypassing expensive Composition/Layout phases and guaranteeing stable 60/120 FPS.
-* **Smart Gesture Tracking:** Heavy usage of `derivedStateOf` to monitor scroll and pinch-to-zoom (`zoomState`) thresholds, completely eliminating unnecessary recompositions during continuous gestures.
-* **CLS Prevention:** The `LazyVerticalStaggeredGrid` reserves exact space for placeholders using pre-calculated aspect ratios from the API, completely eliminating UI layout shifts as images load asynchronously.
-* **Baseline Profiles:** Bundled with AOT compilation rules (`baseline-prof.txt`) generated via Macrobenchmark, reducing JIT-compilation jank and improving startup time by ~30%.
+* **Draw-phase shimmer:** The shimmer effect is built with `drawBehind` and reads its animation state only in the Draw phase, so the animation does not trigger recomposition or re-layout of list items.
+* **Gesture-state tracking:** `derivedStateOf` is used to observe scroll and pinch-to-zoom (`zoomState`) thresholds, so recomposition happens only when a threshold is crossed rather than on every gesture frame.
+* **Layout-shift prevention:** `LazyVerticalStaggeredGrid` reserves space for placeholders using aspect ratios provided by the API, so items keep their size while images load asynchronously.
+* **Baseline Profiles:** Baseline Profile rules (`baseline-prof.txt`) are generated with Macrobenchmark and bundled with the app. Cold start improved by ~30% in my measurements.
 </details>
 
 <details>
 <summary><b>2. Hardware-Aware Image Decoding & Media</b></summary>
 <br/>
 
-* **Dynamic RAM-based Downsampling:** A custom `ImageRequest` interceptor calculates safe resolution caps (e.g., 2048px for <2GB RAM, up to 8192px for >8GB RAM flagships). This maximizes image crispness during zoom while preventing OpenGL `MAX_TEXTURE_SIZE` violations and `OutOfMemory` crashes on budget devices.
-* **Scoped Storage & Legacy Permissions:** Safely integrates Android's `MediaStore` to save artworks. Automatically uses Scoped Storage on Android 10+ (API 29+) while managing `WRITE_EXTERNAL_STORAGE` runtime permissions gracefully on legacy devices.
-* **Aggressive Caching:** Implements a dedicated `OkHttpClient` for Coil with a custom `NetworkInterceptor` to enforce 7-day disk caching, overriding restrictive server `Cache-Control` headers.
+* **RAM-based downsampling:** A custom `ImageRequest` interceptor caps the decode resolution by device RAM (e.g. 2048px below 2 GB, up to 8192px above 8 GB). This keeps zoomed images sharp on high-end devices and helps avoid `MAX_TEXTURE_SIZE` errors and `OutOfMemoryError` on budget ones.
+* **Scoped Storage:** Artworks are saved through `MediaStore`. Scoped Storage is used on Android 10+ (API 29+), and the `WRITE_EXTERNAL_STORAGE` runtime permission is requested only on older versions.
+* **Disk caching:** A dedicated `OkHttpClient` for Coil with a custom `NetworkInterceptor` enforces 7-day disk caching, overriding restrictive server `Cache-Control` headers.
 </details>
 
 <details>
 <summary><b>3. On-Device Machine Learning (Google ML Kit)</b></summary>
 <br/>
 
-* **Local Text Translation:** Translates complex art historical descriptions completely offline using heavy C++ ML models.
-* **Progressive UI:** Implemented a two-step UX using Coroutines `withTimeoutOrNull`. If the heavy ML model takes too long to warm up, the UI instantly shows a "Fast" dictionary-based translation, dynamically updating to the "Deep" ML translation in the background without freezing the screen.
-* **Hardware-Aware Concurrency:** Dynamically limits the number of parallel C++ ML Kit threads (`Dispatchers.IO.limitedParallelism`) based on the device's `ActivityManager.isLowRamDevice` to prevent system starvation.
+* **Offline translation:** Artwork descriptions are translated fully on-device with ML Kit, with no network round trip.
+* **Progressive UI:** A two-step flow built on `withTimeoutOrNull`: if the ML model is slow to warm up, the UI first shows a fast dictionary-based translation and then switches to the ML result in the background.
+* **Bounded concurrency:** The number of parallel ML Kit tasks is limited with `Dispatchers.IO.limitedParallelism` based on `ActivityManager.isLowRamDevice`, to reduce memory and CPU pressure on low-RAM devices.
 </details>
 
 <details>
 <summary><b>4. Robust Offline-First & Architecture</b></summary>
 <br/>
 
-* **Database SSOT:** The UI strictly observes the local Room database (`Flow<PagingData>`), ensuring instant data display on launch.
-* **Memory Optimization:** Uses lightweight Room projections (`ArtworkFeedProjectionDBO`) to exclude heavy columns during feed scrolling, avoiding `CursorWindow` limits.
-* **Strict API Contracts:** Enabled Kotlin `ExplicitApiMode.Strict` for pure JVM modules (`core:domain`, `core:model`) to prevent accidental exposure of internal classes and enforce robust architectural boundaries.
-* **Pure Domain Error Handling:** Retrofit's `HttpException` and serialization errors are caught at the Data layer and mapped into a pure Kotlin `AppError` sealed class hierarchy, keeping the Presentation layer 100% framework-agnostic.
+* **Database as single source of truth:** The UI observes the local Room database (`Flow<PagingData>`), so cached content is shown immediately on launch.
+* **Lightweight projections:** Room projections (`ArtworkFeedProjectionDBO`) leave out heavy columns while scrolling the feed, which helps stay within `CursorWindow` limits.
+* **Explicit API mode:** Kotlin `ExplicitApiMode.Strict` is enabled for the pure JVM modules (`core:domain`, `core:model`), so every public declaration is intentional.
+* **Domain error model:** Retrofit's `HttpException` and serialization errors are caught in the Data layer and mapped to a Kotlin `AppError` sealed hierarchy, so the Presentation layer does not depend on networking libraries.
 </details>
 
 <details>
 <summary><b>5. DevSecOps & CI/CD Pipelines</b></summary>
 <br/>
 
-* **Gradle Convention Plugins:** Automated dependency management, internal R8/ProGuard consumer-rules aggregation, and dynamic `namespace` generation across 15+ modules.
-* **Split CI/CD Workflows:**
-    * `ci_debug.yml`: Runs Detekt and Unit Tests on PRs.
-    * `ci_release.yml`: Semi-automated production pipeline triggered by Git tags.
-* **Secure Artifact Delivery:** Production AABs are never stored publicly. The CI pipeline securely delivers signed, obfuscated release bundles directly via **Telegram Bot API** and generates password-protected ZIP backups.
-</details>
+* **Gradle Convention Plugins:** Automated dependency management, internal R8/ProGuard consumer-rules aggregation, and dynamic `namespace` generation across 20+ modules.
+* **Convention Plugins:** Dependency management, R8/ProGuard consumer-rules aggregation, and `namespace` generation are shared across 20+ modules.
+* **Two CI workflows:**
+  * `ci_debug.yml`: runs Detekt and unit tests on pull requests.
+  * `ci_release.yml`: semi-automated release pipeline triggered by Git tags.
+* **Release artifact delivery:** Signed, obfuscated release bundles are not published as public artifacts. The pipeline delivers them through the Telegram Bot API and also produces password-protected ZIP backups.</details>
 
 ---
 
