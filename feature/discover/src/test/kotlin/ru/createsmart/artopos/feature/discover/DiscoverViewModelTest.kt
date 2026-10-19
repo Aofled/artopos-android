@@ -40,7 +40,7 @@ class DiscoverViewModelTest {
     private val getFilters: GetFiltersUseCase = mockk()
     private val getUserSettings: GetUserSettingsUseCase = mockk()
     private val toggleFavorite: ToggleFavoriteUseCase = mockk()
-    private val preloadTranslationModel: PreloadTranslationModelUseCase = mockk()
+    private val preloadTranslationModel: PreloadTranslationModelUseCase = mockk(relaxed = true)
     private val initializeFilters: InitializeFiltersUseCase = mockk()
 
     private val messageManager: UiMessageManager = mockk(relaxed = true)
@@ -57,7 +57,7 @@ class DiscoverViewModelTest {
 
         val defaultSettings = UserSettings(ThemeConfig.FOLLOW_SYSTEM, "en")
         every { getUserSettings() } returns flowOf(defaultSettings)
-        coEvery { preloadTranslationModel(any()) } returns Unit
+        coEvery { initializeFilters(any()) } returns Result.success(Unit)
 
         viewModel = DiscoverViewModel(
             getArtworks = getArtworks,
@@ -97,7 +97,7 @@ class DiscoverViewModelTest {
         viewModel.filtersUiState.test {
             // GIVEN
             val initialState = awaitItem()
-            assertEquals(FilterSortOption.RANK, initialState.sort) // Дефолт
+            assertEquals(FilterSortOption.RANK, initialState.sort) // Default
 
             // WHEN
             viewModel.onIntent(DiscoverIntent.ToggleFilterSort)
@@ -184,5 +184,34 @@ class DiscoverViewModelTest {
 
         // THEN
         io.mockk.verify(exactly = 1) { messageManager.resetLastEmittedMessage() }
+    }
+
+    @Test
+    fun `intent Refresh checks internet and calls initializeFilters`() = runTest {
+        // GIVEN
+        every { messageManager.checkInternetAndNotify() } returns true
+
+        // WHEN
+        viewModel.onIntent(DiscoverIntent.Refresh)
+
+        // THEN
+        io.mockk.verify(exactly = 1) { messageManager.checkInternetAndNotify() }
+        // 1 call from init {} + 1 call from Refresh = 2 calls
+        coVerify(exactly = 2) { initializeFilters(any()) }
+        io.mockk.verify(exactly = 1) { messageManager.resetLastEmittedMessage() }
+    }
+
+    @Test
+    fun `intent Retry checks internet and calls initializeFilters`() = runTest {
+        // GIVEN
+        every { messageManager.checkInternetAndNotify() } returns true
+
+        // WHEN
+        viewModel.onIntent(DiscoverIntent.Retry)
+
+        // THEN
+        io.mockk.verify(exactly = 1) { messageManager.checkInternetAndNotify() }
+        // 1 call from init {} + 1 call from Retry = 2 calls
+        coVerify(exactly = 2) { initializeFilters(any()) }
     }
 }
