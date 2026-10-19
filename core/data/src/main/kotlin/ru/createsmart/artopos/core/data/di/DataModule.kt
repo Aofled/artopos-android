@@ -10,11 +10,13 @@ import ru.createsmart.artopos.core.data.repository.OfflineFirstArtworkRepository
 import ru.createsmart.artopos.core.data.repository.OfflineFirstFilterRepository
 import ru.createsmart.artopos.core.data.repository.SettingsRepositoryImpl
 import ru.createsmart.artopos.core.data.repository.TextTranslatorImpl
+import ru.createsmart.artopos.core.data.time.DefaultTimeProvider
 import ru.createsmart.artopos.core.domain.repository.ArtworkRepository
 import ru.createsmart.artopos.core.domain.repository.FilterRepository
 import ru.createsmart.artopos.core.domain.repository.ImageCacheRepository
 import ru.createsmart.artopos.core.domain.repository.ImageDownloader
 import ru.createsmart.artopos.core.domain.repository.SettingsRepository
+import ru.createsmart.artopos.core.domain.time.TimeProvider
 import ru.createsmart.artopos.core.domain.translation.TextTranslator
 import javax.inject.Singleton
 
@@ -56,4 +58,10 @@ interface DataModule {
     fun bindTextTranslator(
         impl: TextTranslatorImpl,
     ): TextTranslator
+
+    @Binds
+    @Singleton
+    fun bindTimeProvider(
+        impl: DefaultTimeProvider,
+    ): TimeProvider
 }

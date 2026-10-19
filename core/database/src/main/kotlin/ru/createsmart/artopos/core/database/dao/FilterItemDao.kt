@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
 import ru.createsmart.artopos.core.database.model.FilterItemDBO
 
@@ -21,4 +22,10 @@ interface FilterItemDao {
 
     @Query("DELETE FROM filters")
     suspend fun clearFilters()
+
+    @Transaction
+    suspend fun replaceFilters(filters: List<FilterItemDBO>) {
+        clearFilters()
+        insertFilters(filters)
+    }
 }
