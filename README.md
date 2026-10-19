@@ -5,7 +5,7 @@
 [![Android CI](https://github.com/Aofled/artopos-android/actions/workflows/ci_debug.yml/badge.svg)](https://github.com/Aofled/artopos-android/actions/workflows/ci_debug.yml)
 [![Android CI](https://github.com/Aofled/artopos-android/actions/workflows/ci_release.yml/badge.svg)](https://github.com/Aofled/artopos-android/actions/workflows/ci_release.yml)
 [![Kotlin 2.0](https://img.shields.io/badge/Kotlin-2.0%2B-blue.svg)](https://kotlinlang.org)
-[![Min API 26](https://img.shields.io/badge/Min%20API-28-green.svg)](https://apilevels.com/)
+[![Min API 26](https://img.shields.io/badge/Min%20API-26-green.svg)](https://apilevels.com/)
 
 **Artopos** is a modern, offline-first Android application for exploring the world's finest masterpieces using the public [Harvard Art Museums API](https://github.com/harvardartmuseums/api-docs).
 
@@ -112,10 +112,11 @@ Built as a showcase of modern Android development, this app demonstrates strict 
 <summary><b>4. Robust Offline-First & Architecture</b></summary>
 <br/>
 
-* **Database as single source of truth:** The UI observes the local Room database (`Flow<PagingData>`), so cached content is shown immediately on launch.
-* **Lightweight projections:** Room projections (`ArtworkFeedProjectionDBO`) leave out heavy columns while scrolling the feed, which helps stay within `CursorWindow` limits.
-* **Explicit API mode:** Kotlin `ExplicitApiMode.Strict` is enabled for the pure JVM modules (`core:domain`, `core:model`), so every public declaration is intentional.
-* **Domain error model:** Retrofit's `HttpException` and serialization errors are caught in the Data layer and mapped to a Kotlin `AppError` sealed hierarchy, so the Presentation layer does not depend on networking libraries.
+* **Database SSOT:** The UI strictly observes the local Room database (`Flow<PagingData>`), ensuring instant data display on launch.
+* **Smart Catalog Synchronization (30-day In-App TTL):** Museum categories and filters are cached locally with a 30-day Time-To-Live (TTL) invalidation policy tracked via Jetpack DataStore. Instead of draining battery with periodic background workers for dormant users, the app evaluates cache freshness on startup with an abstracted `TimeProvider`. Updates execute inside an atomic SQLite `@Transaction` (clearing old records only after all parallel network requests succeed), preventing data loss or empty UI states on connection drops.
+* **Memory Optimization:** Uses lightweight Room projections (`ArtworkFeedProjectionDBO`) to exclude heavy columns during feed scrolling, avoiding `CursorWindow` limits.
+* **Strict API Contracts:** Enabled Kotlin `ExplicitApiMode.Strict` for pure JVM modules (`core:domain`, `core:model`) to prevent accidental exposure of internal classes and enforce robust architectural boundaries.
+* **Pure Domain Error Handling:** Retrofit's `HttpException` and serialization errors are caught at the Data layer and mapped into a pure Kotlin `AppError` sealed class hierarchy, keeping the Presentation layer 100% framework-agnostic.
 </details>
 
 <details>
