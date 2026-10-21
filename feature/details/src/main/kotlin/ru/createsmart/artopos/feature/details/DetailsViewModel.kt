@@ -32,6 +32,7 @@ import ru.createsmart.artopos.core.uicomponents.manager.UiMessageManager
 import ru.createsmart.artopos.core.uicomponents.util.toUiText
 import ru.createsmart.artopos.feature.details.mapper.toDetailUi
 import ru.createsmart.artopos.feature.details.model.DetailsIntent
+import ru.createsmart.artopos.feature.details.model.SyncStatus
 import ru.createsmart.artopos.feature.details.translation.ArtworkTranslationFacade
 import java.io.IOException
 import java.net.ConnectException
@@ -40,6 +41,13 @@ import java.util.Locale
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 import ru.createsmart.artopos.core.designsystem.R as DSR
+
+private data class DetailsSourceData(
+    val rawArtwork: ru.createsmart.artopos.core.model.ArtworkDetails?,
+    val languageCode: String,
+    val showTranslation: Boolean,
+    val syncStatus: SyncStatus,
+)
 
 private const val TRANSLATION_TIMEOUT_MS = 300L
 
@@ -69,6 +77,7 @@ class DetailsViewModel @Inject constructor(
     val isRefreshing = _isRefreshing.asStateFlow()
 
     private val _showTranslation = MutableStateFlow(true)
+    private val _syncStatus = MutableStateFlow<SyncStatus>(SyncStatus.Running)
 
     internal fun onIntent(intent: DetailsIntent) {
         when (intent) {
@@ -85,17 +94,36 @@ class DetailsViewModel @Inject constructor(
         getArtworkDetails(artworkId),
         getUserSettings(),
         _showTranslation,
-    ) { artwork, settings, showTranslation ->
-        Triple(artwork, settings.languageCode, showTranslation)
+        _syncStatus,
+    ) { artwork, settings, showTranslation, syncStatus ->
+        DetailsSourceData(
+            rawArtwork = artwork,
+            languageCode = settings.languageCode,
+            showTranslation = showTranslation,
+            syncStatus = syncStatus,
+        )
     }
-        .transformLatest { (rawArtwork, languageCode, showTranslation) ->
+        .transformLatest { data ->
+            val rawArtwork = data.rawArtwork
+
+            // If local database is empty:
             if (rawArtwork == null) {
-                emit(ArtworkDetailUiState.Loading)
+                when (data.syncStatus) {
+                    // Show error only if network request failed
+                    is SyncStatus.Failed -> emit(ArtworkDetailUiState.Error)
+
+                    // Keep loading while network is running or waiting for database update
+                    is SyncStatus.Running, is SyncStatus.Idle -> emit(ArtworkDetailUiState.Loading)
+                }
                 return@transformLatest
             }
 
             // CONDITION 1: Language is English or the system language (if the system is in English)
             // CONDITION 2: The user clicked "Show Original" (showTranslation = false)
+            // If local data exists, show it immediately (Offline-First)
+            val languageCode = data.languageCode
+            val showTranslation = data.showTranslation
+
             val isTargetEnglish = languageCode == "en" ||
                 (languageCode.isEmpty() && Locale.getDefault().language == "en")
 
@@ -164,8 +192,19 @@ class DetailsViewModel @Inject constructor(
         )
 
     init {
+        sync()
+    }
+
+    private fun sync() {
         viewModelScope.launch {
-            syncArtworkDetails(artworkId)
+            _syncStatus.value = SyncStatus.Running
+            val result = syncArtworkDetails(artworkId)
+
+            _syncStatus.value = if (result.isSuccess) SyncStatus.Idle else SyncStatus.Failed
+
+            result.onFailure { error ->
+                messageManager.sendSideEffect(error.toUiText())
+            }
         }
     }
 
@@ -182,8 +221,15 @@ class DetailsViewModel @Inject constructor(
         if (!messageManager.checkInternetAndNotify()) return
         viewModelScope.launch {
             _isRefreshing.value = true
+            _syncStatus.value = SyncStatus.Running
 
             val result = syncArtworkDetails(artworkId)
+
+            _syncStatus.value = if (result.isSuccess) {
+                SyncStatus.Idle
+            } else {
+                SyncStatus.Failed
+            }
 
             result.onFailure { error ->
                 messageManager.sendSideEffect(error.toUiText())

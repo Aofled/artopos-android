@@ -79,8 +79,11 @@ class OfflineFirstArtworkRepository @Inject constructor(
             // 1. Download fresh JSON with full details
             val dto = api.getArtworkDetails(id)
 
-            // 2. Save the "heavy" part of the data in a separate table (artwork_details).
-            // Thanks to @Relation, the getArtwork() method will immediately see this new data.
+            // 2. Save base artwork if absent in local database
+            val baseEntity = mapper.mapDtoToDbo(dto)
+            artworkDao.insertArtworkIfAbsent(baseEntity)
+
+            // 3. Save artwork details
             val detailsEntity = mapper.mapDtoToDetailsDbo(dto)
             artworkDetailDao.insertDetails(detailsEntity)
         }

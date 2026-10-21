@@ -138,6 +138,45 @@ class DetailsViewModelTest {
         }
     }
 
+    @Test
+    fun `when artwork is NOT in database and network fails, UI emits Error instead of infinite Loading`() = runTest {
+        // GIVEN: Artwork is missing in local database
+        every { getArtworkDetails(1) } returns flowOf(null)
+        every { getUserSettings() } returns flowOf(mockSettings)
+
+        // GIVEN: Network request takes time and fails with error
+        coEvery { syncArtworkDetails(1) } coAnswers {
+            delay(100)
+            Result.failure(java.io.IOException("No internet"))
+        }
+
+        // Create ViewModel
+        viewModel = DetailsViewModel(
+            getArtworkDetails = getArtworkDetails,
+            syncArtworkDetails = syncArtworkDetails,
+            getUserSettings = getUserSettings,
+            toggleFavorite = toggleFavoriteUseCase,
+            savedStateHandle = savedStateHandle,
+            messageManager = messageManager,
+            translationFacade = translationFacade,
+            imageDownloader = imageDownloader,
+        )
+
+        viewModel.uiState.test {
+            // 1. While network request is running, UI shows Loading state
+            assertEquals(ArtworkDetailUiState.Loading, awaitItem())
+
+            // Advance virtual time so network request fails
+            advanceTimeBy(101)
+
+            // 2. Network failed and no data in DB, so UI emits Error state
+            val errorState = awaitItem()
+            assertTrue("Expected Error but got $errorState", errorState is ArtworkDetailUiState.Error)
+
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
     private fun createEmptyArtwork(): ArtworkDetails {
         val base = Artwork(
             id = 1,

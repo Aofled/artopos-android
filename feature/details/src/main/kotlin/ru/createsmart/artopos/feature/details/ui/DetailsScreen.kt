@@ -2,12 +2,15 @@ package ru.createsmart.artopos.feature.details.ui
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -25,6 +28,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.Flow
@@ -107,13 +111,9 @@ fun DetailsScreen(
                 }
 
                 is ArtworkDetailUiState.Error -> {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text(
-                            text = stringResource(DSR.string.core_error_generic),
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.error,
-                        )
-                    }
+                    DetailsErrorContent(
+                        onRetry = { onIntent(DetailsIntent.Refresh) },
+                    )
                 }
 
                 is ArtworkDetailUiState.Success -> {
@@ -138,6 +138,29 @@ private fun DiscoverScreenEffects(
 ) {
     LaunchedEffect(effectFlow) {
         effectFlow?.collect { message -> onShowSnackbar(message) }
+    }
+}
+
+@Composable
+private fun DetailsErrorContent(
+    onRetry: () -> Unit,
+) {
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                text = stringResource(DSR.string.core_error_generic),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.error,
+            )
+            Spacer(modifier = Modifier.padding(top = 16.dp))
+            Button(
+                onClick = onRetry,
+            ) {
+                Text(text = stringResource(DSR.string.core_cd_retry))
+            }
+        }
     }
 }
 

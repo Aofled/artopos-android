@@ -33,6 +33,9 @@ interface ArtworkDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertArtworks(artwork: List<ArtworkDBO>)
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertArtworkIfAbsent(artwork: ArtworkDBO)
+
     // --- CLEANUP LOGIC ---
 
     // Reset the ribbon flag for ALL paintings
