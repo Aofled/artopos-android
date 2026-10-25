@@ -109,6 +109,8 @@ dependencies {
     implementation(projects.feature.favorites)
     implementation(projects.feature.settings)
 
+    implementation(libs.androidx.navigation.compose)
+
     implementation(libs.okhttp3)
     implementation(libs.coil)
     implementation(libs.coil.network.okhttp)
