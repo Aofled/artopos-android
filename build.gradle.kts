@@ -57,14 +57,11 @@ tasks.register("clean", Delete::class) {
     delete(rootProject.layout.buildDirectory)
 }
 
-// Helper task: Run Detekt for ALL modules
+// Root task to run Detekt on all modules and build-logic plugins.
 tasks.register("detektAll") {
-    // Check build-logic code too
+    group = "verification"
+    description = "Run Detekt on all modules including build-logic"
+
+    // Run detekt for build-logic using composite build.
     dependsOn(gradle.includedBuild("build-logic").task(":convention:detekt"))
-    dependsOn(
-        subprojects
-            // Run only on leaf modules (skip empty containers)
-            .filter { it.childProjects.isEmpty() }
-            .map { it.tasks.named("detekt") }
-    )
 }

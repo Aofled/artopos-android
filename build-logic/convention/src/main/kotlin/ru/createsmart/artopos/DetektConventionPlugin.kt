@@ -1,9 +1,11 @@
 package ru.createsmart.artopos
 
+import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
+import org.gradle.kotlin.dsl.withType
 import ru.createsmart.artopos.extensions.libs
 
 /**
@@ -18,11 +20,16 @@ class DetektConventionPlugin : Plugin<Project> {
         with(target) {
             pluginManager.apply("io.gitlab.arturbosch.detekt")
 
-            val isAutoCorrectEnabled = providers.gradleProperty("detekt.autocorrect").orNull == "true"
+            // Disable auto-correct on CI.
+            val isCi = providers.environmentVariable("CI").isPresent
+            val isAutoCorrectProperty = providers.gradleProperty("detekt.autocorrect").getOrElse("false") == "true"
+            val isAutoCorrectEnabled = !isCi && isAutoCorrectProperty
 
             extensions.configure<DetektExtension>("detekt") {
-                config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
+                // Locate config safely for Isolated Projects.
+                val configFile = rootProject.layout.projectDirectory.file("config/detekt/detekt.yml")
 
+                config.setFrom(files(configFile))
                 source.setFrom(files("src"))
 
                 // Combine default rules + our config
@@ -34,6 +41,16 @@ class DetektConventionPlugin : Plugin<Project> {
 
                 // Auto-fix simple errors (formatting)
                 autoCorrect = isAutoCorrectEnabled
+            }
+
+            tasks.withType<Detekt>().configureEach {
+                autoCorrect = isAutoCorrectEnabled
+            }
+
+            tasks.register("detektAll") {
+                group = "verification"
+                description = "Runs detekt for this module"
+                dependsOn(tasks.named("detekt"))
             }
 
             dependencies {
