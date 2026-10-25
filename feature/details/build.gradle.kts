@@ -20,5 +20,5 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.zoomable)
 
-    testImplementation(libs.bundles.test.unit.full)
+    testImplementation(libs.bundles.test.unit.android)
 }

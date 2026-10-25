@@ -13,5 +13,5 @@ dependencies {
 
     implementation(libs.androidx.hilt.navigation.compose)
 
-    testImplementation(libs.bundles.test.unit.full)
+    testImplementation(libs.bundles.test.unit.common)
 }

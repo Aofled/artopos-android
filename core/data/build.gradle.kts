@@ -18,5 +18,5 @@ dependencies {
     implementation(libs.retrofit.core)
     implementation(libs.kotlinx.serialization.json)
 
-    testImplementation(libs.bundles.test.unit.full)
+    testImplementation(libs.bundles.test.unit.android)
 }

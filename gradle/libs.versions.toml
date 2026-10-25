@@ -210,7 +210,14 @@ test-unit-minimal = [
     "junit",
 ]
 
-test-unit-full = [
+test-unit-common = [
+    "junit",
+    "test-coroutines",
+    "test-mockk",
+    "test-turbine",
+]
+
+test-unit-android = [
     "junit",
     "androidx-junit",
     "test-robolectric",

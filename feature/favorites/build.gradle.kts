@@ -16,5 +16,5 @@ dependencies {
 
     implementation(libs.kotlinx.collections.immutable)
 
-    testImplementation(libs.bundles.test.unit.full)
+    testImplementation(libs.bundles.test.unit.common)
 }

@@ -7,5 +7,5 @@ dependencies {
     implementation(libs.okhttp.logging)
     implementation(libs.coil)
 
-    testImplementation(libs.bundles.test.unit.full)
+    testImplementation(libs.bundles.test.unit.common)
 }
