@@ -15,14 +15,13 @@ import javax.inject.Singleton
 class NetworkMonitor @Inject constructor(
     @ApplicationContext private val context: Context,
 ) {
+    // Check for real internet access, not just active Wi-Fi or mobile network.
     fun isOnline(): Boolean = context.isNetworkAvailable()
 }
 
 fun Context.isNetworkAvailable(): Boolean {
-    val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-
-    return connectivityManager.activeNetwork?.let { network ->
-        connectivityManager.getNetworkCapabilities(network)
-            ?.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
-    } ?: false
+    val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+    val activeNetwork = connectivityManager?.activeNetwork
+    val capabilities = activeNetwork?.let { connectivityManager.getNetworkCapabilities(it) }
+    return capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED) == true
 }
