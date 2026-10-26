@@ -2,10 +2,15 @@ package ru.createsmart.artopos.extensions
 
 import android.content.Context
 import coil3.ImageLoader
+import coil3.disk.DiskCache
+import coil3.disk.directory
 import coil3.network.okhttp.OkHttpNetworkFetcherFactory
 import coil3.request.crossfade
 import coil3.util.DebugLogger
 import okhttp3.OkHttpClient
+
+private const val COIL_DISK_CACHE_MB = 512L
+private const val BYTES_IN_MB = 1024L * 1024L
 
 fun Context.createCoilImageLoader(
     okHttpClient: OkHttpClient,
@@ -13,14 +18,18 @@ fun Context.createCoilImageLoader(
 ): ImageLoader {
     return ImageLoader.Builder(this)
         .components {
-            // Important: We already handle cache headers manually in Interceptor.
-            // But setting this to 'false' forces Coil to ignore server's 'Cache-Control'
-            // if it conflicts with our logic.
             add(
                 OkHttpNetworkFetcherFactory(
                     callFactory = { okHttpClient },
                 ),
             )
+        }
+        // Single disk cache for images.
+        .diskCache {
+            DiskCache.Builder()
+                .directory(cacheDir.resolve("image_cache"))
+                .maxSizeBytes(COIL_DISK_CACHE_MB * BYTES_IN_MB)
+                .build()
         }
         .apply {
             if (isDebug) {
