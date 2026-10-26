@@ -5,7 +5,9 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import ru.createsmart.artopos.core.common.util.DictionaryHelper
 import ru.createsmart.artopos.core.common.util.LocaleHelper
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class FilterTranslatorImpl @Inject constructor(
     @ApplicationContext private val context: Context,
 ) : FilterTranslator {
