@@ -17,5 +17,6 @@ dependencies {
 
     implementation(libs.kotlinx.collections.immutable)
 
+    testImplementation(projects.core.testing)
     testImplementation(libs.bundles.test.unit.android)
 }

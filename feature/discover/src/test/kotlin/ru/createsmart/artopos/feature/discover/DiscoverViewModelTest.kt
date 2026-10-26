@@ -8,13 +8,12 @@ import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import ru.createsmart.artopos.core.artworkcard.mapper.ArtworkUiMapper
 import ru.createsmart.artopos.core.domain.usecase.GetArtworksUseCase
@@ -28,13 +27,15 @@ import ru.createsmart.artopos.core.model.FilterSortOption
 import ru.createsmart.artopos.core.model.FilterType
 import ru.createsmart.artopos.core.model.settings.ThemeConfig
 import ru.createsmart.artopos.core.model.settings.UserSettings
+import ru.createsmart.artopos.core.testing.util.MainDispatcherRule
 import ru.createsmart.artopos.core.uicomponents.manager.UiMessageManager
 import ru.createsmart.artopos.feature.discover.model.DiscoverIntent
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class DiscoverViewModelTest {
 
-    private val testDispatcher = UnconfinedTestDispatcher()
+    @get:Rule
+    val mainDispatcherRule = MainDispatcherRule()
 
     private val getArtworks: GetArtworksUseCase = mockk()
     private val getFilters: GetFiltersUseCase = mockk()
@@ -50,8 +51,6 @@ class DiscoverViewModelTest {
 
     @Before
     fun setUp() {
-        Dispatchers.setMain(testDispatcher)
-
         coEvery { initializeFilters() } returns Result.success(Unit)
         every { getFilters(any()) } returns flowOf(emptyList())
 

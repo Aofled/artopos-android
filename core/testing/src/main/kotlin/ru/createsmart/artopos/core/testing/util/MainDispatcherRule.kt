@@ -9,9 +9,13 @@ import kotlinx.coroutines.test.setMain
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 
+/**
+ * JUnit rule to set Main dispatcher for coroutine tests.
+ * Public testDispatcher allows controlling virtual time and injecting dispatcher.
+ */
 @OptIn(ExperimentalCoroutinesApi::class)
 public class MainDispatcherRule(
-    private val testDispatcher: TestDispatcher = UnconfinedTestDispatcher(),
+    public val testDispatcher: TestDispatcher = UnconfinedTestDispatcher(),
 ) : TestWatcher() {
     override fun starting(description: Description) {
         Dispatchers.setMain(testDispatcher)
