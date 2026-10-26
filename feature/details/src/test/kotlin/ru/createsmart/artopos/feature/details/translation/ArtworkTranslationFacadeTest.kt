@@ -8,7 +8,6 @@ import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.unmockkAll
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -27,7 +26,6 @@ class ArtworkTranslationFacadeTest {
     private val mockContext: Context = mockk()
     private val mockLocalizedContext: Context = mockk()
     private val translator: TextTranslator = mockk()
-    private val testDispatcher = UnconfinedTestDispatcher()
 
     private lateinit var facade: ArtworkTranslationFacade
 
@@ -41,7 +39,6 @@ class ArtworkTranslationFacadeTest {
         facade = ArtworkTranslationFacade(
             baseContext = mockContext,
             translator = translator,
-            mlKitDispatcher = testDispatcher,
         )
     }
 

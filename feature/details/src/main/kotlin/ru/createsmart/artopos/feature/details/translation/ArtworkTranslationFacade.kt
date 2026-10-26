@@ -2,15 +2,13 @@ package ru.createsmart.artopos.feature.details.translation
 
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.coroutineScope
 import ru.createsmart.artopos.core.common.util.DictionaryHelper
 import ru.createsmart.artopos.core.common.util.LocaleHelper
 import ru.createsmart.artopos.core.domain.translation.TextTranslator
 import ru.createsmart.artopos.core.model.ArtworkDetails
 import ru.createsmart.artopos.core.model.CreationDate
-import ru.createsmart.artopos.feature.details.di.MlKitDispatcher
 import javax.inject.Inject
 
 /**
@@ -28,8 +26,8 @@ import javax.inject.Inject
 class ArtworkTranslationFacade @Inject constructor(
     @ApplicationContext private val baseContext: Context,
     private val translator: TextTranslator,
-    @MlKitDispatcher private val mlKitDispatcher: CoroutineDispatcher,
 ) {
+
     fun translateFast(artwork: ArtworkDetails, languageCode: String): ArtworkDetails {
         val localizedContext = LocaleHelper.getLocalizedContext(baseContext, languageCode)
 
@@ -50,43 +48,41 @@ class ArtworkTranslationFacade @Inject constructor(
         originalArtwork: ArtworkDetails,
         fastArtwork: ArtworkDetails,
         languageCode: String,
-    ): ArtworkDetails {
-        return withContext(mlKitDispatcher) {
-            // 1. Availability of a language model
-            translator.preloadModel(languageCode)
+    ): ArtworkDetails = coroutineScope {
+        // 1. Preload language model
+        translator.preloadModel(languageCode)
 
-            // 2. Starting the translation
-            val descDef = async { translator.translate(originalArtwork.description, languageCode) }
-            val dimDef = async { translator.translate(originalArtwork.dimensions, languageCode) }
-            val styleDef = async { translator.translate(originalArtwork.style, languageCode) }
-            val locDef = async { translator.translate(originalArtwork.galleryLocation, languageCode) }
-            val creditDef = async { translator.translate(originalArtwork.creditLine, languageCode) }
-            val provDef = async { translator.translate(originalArtwork.provenance, languageCode) }
+        // 2. Run translations in parallel
+        val descDef = async { translator.translate(originalArtwork.description, languageCode) }
+        val dimDef = async { translator.translate(originalArtwork.dimensions, languageCode) }
+        val styleDef = async { translator.translate(originalArtwork.style, languageCode) }
+        val locDef = async { translator.translate(originalArtwork.galleryLocation, languageCode) }
+        val creditDef = async { translator.translate(originalArtwork.creditLine, languageCode) }
+        val provDef = async { translator.translate(originalArtwork.provenance, languageCode) }
 
-            // HYBRID & CUSTOM: Delegates
-            val dateDef = async { translateDate(originalArtwork.baseArtwork.creationDate, languageCode) }
-            val mediumDef = async { translateHybrid(originalArtwork.medium, fastArtwork.medium, languageCode) }
-            val techDef = async { translateHybrid(originalArtwork.technique, fastArtwork.technique, languageCode) }
-            val periodDef = async { translateHybrid(originalArtwork.period, fastArtwork.period, languageCode) }
+        // HYBRID & CUSTOM
+        val dateDef = async { translateDate(originalArtwork.baseArtwork.creationDate, languageCode) }
+        val mediumDef = async { translateHybrid(originalArtwork.medium, fastArtwork.medium, languageCode) }
+        val techDef = async { translateHybrid(originalArtwork.technique, fastArtwork.technique, languageCode) }
+        val periodDef = async { translateHybrid(originalArtwork.period, fastArtwork.period, languageCode) }
 
-            // 3. Assemble the result
-            val updatedBaseArtwork = fastArtwork.baseArtwork.copy(
-                creationDate = dateDef.await(),
-            )
+        // 3. Build final result
+        val updatedBaseArtwork = fastArtwork.baseArtwork.copy(
+            creationDate = dateDef.await(),
+        )
 
-            fastArtwork.copy(
-                baseArtwork = updatedBaseArtwork,
-                description = descDef.await(),
-                medium = mediumDef.await(),
-                technique = techDef.await(),
-                period = periodDef.await(),
-                dimensions = dimDef.await(),
-                style = styleDef.await(),
-                galleryLocation = locDef.await(),
-                creditLine = creditDef.await(),
-                provenance = provDef.await(),
-            )
-        }
+        fastArtwork.copy(
+            baseArtwork = updatedBaseArtwork,
+            description = descDef.await(),
+            medium = mediumDef.await(),
+            technique = techDef.await(),
+            period = periodDef.await(),
+            dimensions = dimDef.await(),
+            style = styleDef.await(),
+            galleryLocation = locDef.await(),
+            creditLine = creditDef.await(),
+            provenance = provDef.await(),
+        )
     }
 
     private suspend fun translateDate(
@@ -121,8 +117,7 @@ class ArtworkTranslationFacade @Inject constructor(
     // Checks if string exists in local mapping
     private fun translateWithDictionary(text: String?, context: Context): String? {
         if (text == null) return null
-        val localized = DictionaryHelper.getLocalizedName(context, text)
-        return localized
+        return DictionaryHelper.getLocalizedName(context, text)
     }
 
     suspend fun close() {
