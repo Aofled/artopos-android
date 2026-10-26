@@ -1,11 +1,11 @@
-@file:OptIn(kotlinx.serialization.InternalSerializationApi::class)
-
 package ru.createsmart.artopos.core.database.converters
 
 import androidx.room.TypeConverter
+import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
+@OptIn(InternalSerializationApi::class)
 @Serializable
 data class StoredImage(
     val url: String,
@@ -13,6 +13,7 @@ data class StoredImage(
     val height: Int,
 )
 
+@OptIn(InternalSerializationApi::class)
 class ImagesConverter {
     private val json = Json { ignoreUnknownKeys = true }
 

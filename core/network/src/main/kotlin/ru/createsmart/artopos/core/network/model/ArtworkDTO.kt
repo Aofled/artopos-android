@@ -1,10 +1,10 @@
-@file:OptIn(kotlinx.serialization.InternalSerializationApi::class)
-
 package ru.createsmart.artopos.core.network.model
 
+import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+@OptIn(InternalSerializationApi::class)
 @Serializable
 data class ArtworkDTO(
     @SerialName("id") val id: Int,
@@ -31,12 +31,14 @@ data class ArtworkDTO(
     @SerialName("gallery") val gallery: GalleryDTO? = null,
 )
 
+@OptIn(InternalSerializationApi::class)
 @Serializable
 data class PersonDTO(
     @SerialName("displayname") val name: String? = null,
     @SerialName("role") val role: String? = null, // "Artist", "Maker"
 )
 
+@OptIn(InternalSerializationApi::class)
 @Serializable
 data class ImageDTO(
     @SerialName("width") val width: Int = 0,
@@ -44,11 +46,13 @@ data class ImageDTO(
     @SerialName("baseimageurl") val url: String? = null,
 )
 
+@OptIn(InternalSerializationApi::class)
 @Serializable
 data class PlaceDTO(
     @SerialName("displayname") val name: String? = null, // "Paris, France"
 )
 
+@OptIn(InternalSerializationApi::class)
 @Serializable
 data class GalleryDTO(
     @SerialName("gallerynumber") val number: String? = null,

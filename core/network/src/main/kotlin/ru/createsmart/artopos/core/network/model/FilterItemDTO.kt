@@ -1,10 +1,10 @@
-@file:OptIn(kotlinx.serialization.InternalSerializationApi::class)
-
 package ru.createsmart.artopos.core.network.model
 
+import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+@OptIn(InternalSerializationApi::class)
 @Serializable
 data class FilterItemDTO(
     @SerialName("id") val id: Long,
