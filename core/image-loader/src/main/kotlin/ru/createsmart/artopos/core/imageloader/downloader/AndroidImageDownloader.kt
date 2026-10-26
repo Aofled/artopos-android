@@ -7,7 +7,8 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.webkit.MimeTypeMap
-import coil3.SingletonImageLoader
+import coil3.ImageLoader
+import coil3.Uri
 import coil3.disk.DiskCache
 import coil3.request.ImageRequest
 import coil3.request.SuccessResult
@@ -25,16 +26,19 @@ private const val BITMAP_QUALITY = 100
 
 class AndroidImageDownloader @Inject constructor(
     @ApplicationContext private val context: Context,
+    private val imageLoader: ImageLoader,
 ) {
 
     suspend fun downloadImage(url: String, fileName: String): Result<String> =
         withContext(Dispatchers.IO) {
+            val resolver = context.contentResolver
+            var imageUri: Uri? = null
+
             try {
                 // 1. Getting information about the file
                 val (fullFileName, mimeType) = getFileInfo(url, fileName)
 
                 // 2. Coil 3 ImageLoader & Request
-                val imageLoader = SingletonImageLoader.get(context)
                 val request = ImageRequest.Builder(context)
                     .data(url)
                     // Disable hardware bitmaps so we can compress and save bytes to storage.
@@ -43,7 +47,7 @@ class AndroidImageDownloader @Inject constructor(
 
                 val result = imageLoader.execute(request)
                 if (result !is SuccessResult) {
-                    return@withContext Result.failure(Exception("Failed to load image from Coil"))
+                    return@withContext Result.failure(IOException("Failed to load image from Coil"))
                 }
 
                 // 3. Gallery Metadata

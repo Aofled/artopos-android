@@ -1,8 +1,6 @@
 package ru.createsmart.artopos.core.imageloader
 
-import android.content.Context
-import coil3.SingletonImageLoader
-import dagger.hilt.android.qualifiers.ApplicationContext
+import coil3.ImageLoader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -10,26 +8,23 @@ import javax.inject.Singleton
 
 @Singleton
 class ImageCacheManager @Inject constructor(
-    @ApplicationContext private val context: Context,
+    private val imageLoader: ImageLoader,
 ) {
     suspend fun clearCache(): Long = withContext(Dispatchers.IO) {
         var freedSpace = 0L
-        val coilImageLoader = SingletonImageLoader.get(context)
 
-        coilImageLoader.diskCache?.let { diskCache ->
+        imageLoader.diskCache?.let { diskCache ->
             freedSpace = diskCache.size
             diskCache.clear()
         }
 
-        coilImageLoader.memoryCache?.clear()
+        imageLoader.memoryCache?.clear()
 
         freedSpace
     }
 
     suspend fun getCacheSize(): Long = withContext(Dispatchers.IO) {
-        val coilImageLoader = SingletonImageLoader.get(context)
-
         // Get cache size directly from Coil without scanning disk folders.
-        coilImageLoader.diskCache?.size ?: 0L
+        imageLoader.diskCache?.size ?: 0L
     }
 }

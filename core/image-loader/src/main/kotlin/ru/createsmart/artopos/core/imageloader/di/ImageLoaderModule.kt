@@ -2,6 +2,8 @@ package ru.createsmart.artopos.core.imageloader.di
 
 import android.content.Context
 import android.content.pm.ApplicationInfo
+import coil3.ImageLoader
+import coil3.SingletonImageLoader
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -48,5 +50,16 @@ object ImageLoaderModule {
             builder.addInterceptor(loggingInterceptor)
         }
         return builder.build()
+    }
+
+    /**
+     * Provide ImageLoader via Hilt.
+     */
+    @Provides
+    @Singleton
+    fun provideImageLoader(
+        @ApplicationContext context: Context,
+    ): ImageLoader {
+        return SingletonImageLoader.get(context)
     }
 }
