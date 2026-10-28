@@ -46,7 +46,7 @@ fun AppNavGraph(
         }
 
         // 4. DETAILS Screen (NESTED SCREEN)
-        composable<DetailsRoute> { backStackEntry ->
+        composable<DetailsRoute> {
             DetailsScreenRoute(
                 onBackClick = { navController.popBackStack() },
             )

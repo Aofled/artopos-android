@@ -28,6 +28,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,15 +41,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hasRoute
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.shareIn
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposDimens
 import ru.createsmart.artopos.core.navigation.DiscoverRoute
 import ru.createsmart.artopos.core.navigation.FavoritesRoute
 import ru.createsmart.artopos.core.uicomponents.notifiers.BottomBarCommand
-import ru.createsmart.artopos.core.uicomponents.notifiers.GlobalUiEvent
-import ru.createsmart.artopos.core.uicomponents.notifiers.GlobalUiEventBus
 import ru.createsmart.artopos.core.uicomponents.notifiers.LocalBottomBarStateNotifier
 import ru.createsmart.artopos.core.uicomponents.notifiers.LocalBottomBarVisibility
-import ru.createsmart.artopos.core.uicomponents.notifiers.LocalGlobalUiEventBus
+import ru.createsmart.artopos.core.uicomponents.notifiers.LocalTabReselectFlow
 import ru.createsmart.artopos.navigation.AppNavGraph
 import ru.createsmart.artopos.navigation.ArtoposAppState
 import ru.createsmart.artopos.navigation.rememberArtoposAppState
@@ -65,8 +67,13 @@ fun ArtoposApp(
     var isBottomBarVisible by remember { mutableStateOf(true) }
     var isLockedAtBottom by remember { mutableStateOf(false) }
 
-    // To move to the top of the list by clicking on the navigation icon
-    val globalUiEventBus = remember { GlobalUiEventBus() }
+    // Map to route object because feature modules do not know about TopLevelDestination.
+    val coroutineScope = rememberCoroutineScope()
+    val tabReselectFlow = remember(appState) {
+        appState.reselectedTab
+            .map { it.route }
+            .shareIn(coroutineScope, SharingStarted.Lazily)
+    }
 
     // When you go back (PopBackStack) or switch to a new tab the menu will always be in place
     val currentDestination = appState.currentDestination
@@ -92,10 +99,7 @@ fun ArtoposApp(
                 // If we swipe UP (the content moves down, dy > 0) -> Show the menu
                 if (available.y > scrollThresholdPx) {
                     isBottomBarVisible = true
-                }
-                // If we swipe DOWN (content moves up, dy < 0) -> Hide the menu
-                else if (available.y < -scrollThresholdPx) {
-                    // Hide the menu ONLY if we are not blocked at the end of the list
+                } else if (available.y < -scrollThresholdPx) {
                     if (!isLockedAtBottom) {
                         isBottomBarVisible = false
                     }
@@ -144,22 +148,24 @@ fun ArtoposApp(
                         durationMillis = BOTTOM_BAR_ANIMATION,
                         easing = FastOutSlowInEasing,
                     ),
-                ) { it },
+                ) { height -> height },
                 exit = slideOutVertically(
                     animationSpec = tween(
                         durationMillis = BOTTOM_BAR_ANIMATION,
                         easing = FastOutSlowInEasing,
                     ),
-                ) { it },
+                ) { height -> height },
             ) {
-                ArtoposBottomBar(appState = appState, eventBus = globalUiEventBus)
+                ArtoposBottomBar(
+                    appState = appState,
+                )
             }
         },
-    ) { _ -> // contentPadding for lists we will pass later via CompositionLocal
+    ) { _ ->
         CompositionLocalProvider(
             LocalBottomBarStateNotifier provides bottomBarNotifier,
             LocalBottomBarVisibility provides isBottomBarVisible,
-            LocalGlobalUiEventBus provides globalUiEventBus,
+            LocalTabReselectFlow provides tabReselectFlow,
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
                 AppNavGraph(appState = appState)
@@ -171,7 +177,6 @@ fun ArtoposApp(
 @Composable
 private fun ArtoposBottomBar(
     appState: ArtoposAppState,
-    eventBus: GlobalUiEventBus,
 ) {
     val glassColor = MaterialTheme.colorScheme.surface.copy(alpha = BOTTOM_BAR_ALPHA)
 
@@ -192,14 +197,12 @@ private fun ArtoposBottomBar(
             val currentDestination = appState.currentDestination
 
             appState.topLevelDestinations.forEach { destination ->
-                val routeString = destination.route::class.qualifiedName ?: ""
                 val selected = currentDestination?.hasRoute(destination.route::class) == true
 
                 IconButton(
                     onClick = {
                         if (selected) {
-                            // If the tab is ALREADY selected, send a "Scroll up" event for this screen
-                            eventBus.sendEvent(GlobalUiEvent.ScrollToTop(routeString))
+                            appState.onTopLevelDestinationReselected(destination)
                         } else {
                             // If not selected, just go to it
                             appState.navigateToTopLevelDestination(destination)
@@ -207,9 +210,7 @@ private fun ArtoposBottomBar(
                     },
                     modifier = Modifier.size(ArtoposDimens.BottomBarHeight),
                 ) {
-                    val iconRes =
-                        if (selected) destination.iconSelected else destination.iconUnselected
-
+                    val iconRes = if (selected) destination.iconSelected else destination.iconUnselected
                     val tint = if (selected) {
                         MaterialTheme.colorScheme.primary
                     } else {

@@ -40,9 +40,8 @@ import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
 import ru.createsmart.artopos.core.navigation.FavoritesRoute
 import ru.createsmart.artopos.core.uicomponents.notifiers.BottomBarCommand
-import ru.createsmart.artopos.core.uicomponents.notifiers.GlobalUiEvent
 import ru.createsmart.artopos.core.uicomponents.notifiers.LocalBottomBarStateNotifier
-import ru.createsmart.artopos.core.uicomponents.notifiers.LocalGlobalUiEventBus
+import ru.createsmart.artopos.core.uicomponents.notifiers.LocalTabReselectFlow
 import ru.createsmart.artopos.feature.favorites.model.FavoritesIntent
 import ru.createsmart.artopos.core.designsystem.R as DSR
 
@@ -60,7 +59,7 @@ internal fun FavoritesView(
 ) {
     val listState = rememberLazyStaggeredGridState()
     val bottomBarNotifier = LocalBottomBarStateNotifier.current
-    val globalEventBus = LocalGlobalUiEventBus.current
+    val tabReselectFlow = LocalTabReselectFlow.current
     val coroutineScope = rememberCoroutineScope()
 
     var isRefreshing by remember { mutableStateOf(false) }
@@ -72,17 +71,11 @@ internal fun FavoritesView(
     }
 
     // Return to the top of the list when clicking on the icon in the navigation
-    LaunchedEffect(globalEventBus) {
-        val targetRoute = FavoritesRoute::class.qualifiedName
-
-        globalEventBus.events.collect { event ->
-            when (event) {
-                is GlobalUiEvent.ScrollToTop -> {
-                    if (event.route == targetRoute) {
-                        bottomBarNotifier(BottomBarCommand.SHOW)
-                        listState.scrollToItem(0)
-                    }
-                }
+    LaunchedEffect(tabReselectFlow) {
+        tabReselectFlow.collect { route ->
+            if (route == FavoritesRoute) {
+                bottomBarNotifier(BottomBarCommand.SHOW)
+                listState.animateScrollToItem(0)
             }
         }
     }

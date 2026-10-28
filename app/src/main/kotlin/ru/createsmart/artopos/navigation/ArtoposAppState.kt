@@ -9,6 +9,9 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import ru.createsmart.artopos.core.navigation.DetailsRoute
 
 @Composable
@@ -36,7 +39,10 @@ class ArtoposAppState(
             }
         } ?: false
 
-    // Avoid opening the same screen twice
+    // Emits when active tab is reselected (Scroll-to-top)
+    private val _reselectedTab = MutableSharedFlow<TopLevelDestination>(extraBufferCapacity = 1)
+    val reselectedTab: SharedFlow<TopLevelDestination> = _reselectedTab.asSharedFlow()
+
     fun navigateToTopLevelDestination(topLevelDestination: TopLevelDestination) {
         navController.navigate(topLevelDestination.route) {
             popUpTo(navController.graph.findStartDestination().id) {
@@ -45,6 +51,10 @@ class ArtoposAppState(
             launchSingleTop = true
             restoreState = true
         }
+    }
+
+    fun onTopLevelDestinationReselected(topLevelDestination: TopLevelDestination) {
+        _reselectedTab.tryEmit(topLevelDestination)
     }
 
     fun navigateToArtworkDetails(artworkId: Int) {
