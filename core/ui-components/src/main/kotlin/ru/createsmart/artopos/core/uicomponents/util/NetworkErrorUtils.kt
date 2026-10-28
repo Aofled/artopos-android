@@ -10,16 +10,21 @@ import java.net.UnknownHostException
 
 fun Throwable.toUiText(): UiText {
     return when (this) {
-        // Specific network errors (No DNS / No Internet)
+        // Domain network error: check inner cause
+        is AppError.Network -> {
+            when (this.cause) {
+                is UnknownHostException -> UiText.StringResource(R.string.core_error_failed_connect)
+                is SocketTimeoutException -> UiText.StringResource(R.string.core_error_timed_out)
+                else -> UiText.StringResource(R.string.core_error_network)
+            }
+        }
+
+        // Platform network errors (for backwards compatibility)
         is UnknownHostException -> UiText.StringResource(R.string.core_error_failed_connect)
-
-        // Slow connection
         is SocketTimeoutException -> UiText.StringResource(R.string.core_error_timed_out)
-
-        // Generic Network IO error (must be checked AFTER specific subclasses like SocketTimeoutException)
         is IOException -> UiText.StringResource(R.string.core_error_network)
 
-        // The external system (API) responded with an error (e.g. 404, 500)
+        // Server errors (HTTP 404, 500, etc.)
         is AppError.ExternalSystem -> {
             if (this.code == HttpURLConnection.HTTP_NOT_FOUND) {
                 UiText.StringResource(R.string.core_error_server_not_found)
@@ -30,7 +35,7 @@ fun Throwable.toUiText(): UiText {
 
         is AppError.DataFormat -> UiText.StringResource(R.string.core_error_server)
 
-        // Fallback: Any other crash (NPE, JsonParsing, etc.) -> "Server Error"
+        // Fallback for unexpected errors
         else -> UiText.StringResource(R.string.core_error_server)
     }
 }

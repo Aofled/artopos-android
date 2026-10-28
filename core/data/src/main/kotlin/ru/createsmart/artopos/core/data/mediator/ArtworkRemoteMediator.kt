@@ -44,68 +44,79 @@ class ArtworkRemoteMediator(
         loadType: LoadType,
         state: PagingState<Int, ArtworkFeedWithFavoriteFlagDBO>,
     ): MediatorResult {
-        val effectiveOrder = resolveEffectiveOrder()
-        val effectiveSort = resolveEffectiveSort()
-
         val page = when (loadType) {
-            LoadType.REFRESH -> {
-                // Logic: Find the page key closest to the current scroll position.
-                // If Refresh -> the closest key to the current position or start from 1
-                val remoteKeys = getRemoteKeyClosestToCurrentPosition(state)
-                remoteKeys?.nextKey?.minus(1)
-                    ?: remoteKeys?.prevKey?.plus(1)
-                    ?: 1
-            }
-
+            LoadType.REFRESH -> getRefreshPage(state)
             LoadType.PREPEND -> {
-                // Loading "top" (scrolling up).
-                // If remoteKeys is null, we are at the start -> Success(endOfPaginationReached = true)
                 val remoteKeys = getRemoteKeyForFirstItem(state)
-                val prevKey = remoteKeys?.prevKey ?: return MediatorResult.Success(
+                remoteKeys?.prevKey ?: return MediatorResult.Success(
                     endOfPaginationReached = remoteKeys != null,
                 )
-                prevKey
             }
 
             LoadType.APPEND -> {
-                // Loading "down" (scrolling down).
-                // If remoteKeys is null, we are at the end -> Success(endOfPaginationReached = true)
                 val remoteKeys = getRemoteKeyForLastItem(state)
-                val nextKey = remoteKeys?.nextKey ?: return MediatorResult.Success(
+                remoteKeys?.nextKey ?: return MediatorResult.Success(
                     endOfPaginationReached = remoteKeys != null,
                 )
-                nextKey
             }
         }
 
         return try {
-            val apiResponse = api.getArtworks(
-                page = page,
-                size = state.config.pageSize,
-                classification = params.classification?.id?.toString(),
-                century = params.century?.id?.toString(),
-                culture = params.culture?.id?.toString(),
-                sort = effectiveOrder,
-                sortOrder = effectiveSort,
-            )
-            val validRecords = apiResponse.records.filter { !it.images.isNullOrEmpty() }
-
-            val endOfPaginationReached = apiResponse.info.nextUrl == null || apiResponse.records.isEmpty()
-
-            updateDatabase(loadType, page, validRecords, state, endOfPaginationReached)
-
-            MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)
+            fetchAndStore(page, loadType, state)
         } catch (exception: IOException) {
-            MediatorResult.Error(exception)
+            MediatorResult.Error(
+                AppError.Network(cause = exception),
+            )
         } catch (exception: HttpException) {
             MediatorResult.Error(
-                AppError.ExternalSystem(code = exception.code(), message = exception.message()),
+                AppError.ExternalSystem(
+                    code = exception.code(),
+                    message = exception.message(),
+                    cause = exception,
+                ),
             )
         } catch (exception: SerializationException) {
             MediatorResult.Error(
-                AppError.DataFormat(message = exception.message),
+                AppError.DataFormat(
+                    message = exception.message,
+                    cause = exception,
+                ),
             )
         }
+    }
+
+    private suspend fun getRefreshPage(
+        state: PagingState<Int, ArtworkFeedWithFavoriteFlagDBO>,
+    ): Int {
+        val remoteKeys = getRemoteKeyClosestToCurrentPosition(state)
+        return remoteKeys?.nextKey?.minus(1)
+            ?: remoteKeys?.prevKey?.plus(1)
+            ?: 1
+    }
+
+    private suspend fun fetchAndStore(
+        page: Int,
+        loadType: LoadType,
+        state: PagingState<Int, ArtworkFeedWithFavoriteFlagDBO>,
+    ): MediatorResult {
+        val effectiveOrder = resolveEffectiveOrder()
+        val effectiveSort = resolveEffectiveSort()
+
+        val apiResponse = api.getArtworks(
+            page = page,
+            size = state.config.pageSize,
+            classification = params.classification?.id?.toString(),
+            century = params.century?.id?.toString(),
+            culture = params.culture?.id?.toString(),
+            sort = effectiveOrder,
+            sortOrder = effectiveSort,
+        )
+        val validRecords = apiResponse.records.filter { !it.images.isNullOrEmpty() }
+        val endOfPaginationReached = apiResponse.info.nextUrl == null || apiResponse.records.isEmpty()
+
+        updateDatabase(loadType, page, validRecords, state, endOfPaginationReached)
+
+        return MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)
     }
 
     private fun resolveEffectiveOrder(): String {
