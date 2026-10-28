@@ -16,9 +16,8 @@ interface FilterItemDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFilters(filter: List<FilterItemDBO>)
 
-    // "3" - Count of categories. We need all 3 to display filters.
-    @Query("SELECT (COUNT(DISTINCT type) = 3) FROM filters")
-    suspend fun hasAllCategories(): Boolean
+    @Query("SELECT DISTINCT type FROM filters")
+    suspend fun getDistinctFilterTypes(): List<String>
 
     @Query("DELETE FROM filters")
     suspend fun clearFilters()

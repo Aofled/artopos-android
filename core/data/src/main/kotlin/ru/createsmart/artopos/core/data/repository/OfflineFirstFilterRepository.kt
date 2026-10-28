@@ -32,24 +32,29 @@ class OfflineFirstFilterRepository @Inject constructor(
 
     override suspend fun initializeFilters(forceRefresh: Boolean): Result<Unit> {
         return suspendRunCatching {
-            val hasCategories = dao.hasAllCategories()
+            // Get saved filter types from DB
+            val savedTypes = dao.getDistinctFilterTypes().toSet()
+
+            // Check if all FilterType enum values are present in DB
+            val hasAllCategories = FilterType.entries.all { it.name in savedTypes }
+
             val now = timeProvider.getCurrentTimeMillis()
 
-            // 1. Check cache only if DB has data and forceRefresh is not set
-            if (hasCategories && !forceRefresh) {
+            // 1. Check cache only if all categories exist and forceRefresh is false
+            if (hasAllCategories && !forceRefresh) {
                 val lastSyncTimestamp = syncMetadata.getLastFiltersSyncTimestamp()
                 val isExpired = FilterCachePolicy.isCacheExpired(
                     lastSyncTimestamp = lastSyncTimestamp,
                     currentTime = now,
                 )
 
-                // Cache is still fresh — skip network call
+                // Cache is fresh - skip network call
                 if (!isExpired) {
                     return@suspendRunCatching
                 }
             }
 
-            // 2. Fetch fresh filters from API (parallel calls)
+            // 2. Fetch all categories from network
             val allFilters = fetchFiltersFromNetwork()
 
             // 3. Replace all filters in DB inside one transaction

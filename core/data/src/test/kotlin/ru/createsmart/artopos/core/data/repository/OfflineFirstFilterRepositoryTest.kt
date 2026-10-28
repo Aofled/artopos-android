@@ -17,6 +17,7 @@ import ru.createsmart.artopos.core.database.dao.FilterItemDao
 import ru.createsmart.artopos.core.database.model.FilterItemDBO
 import ru.createsmart.artopos.core.datastore.SyncMetadataDataSource
 import ru.createsmart.artopos.core.domain.time.TimeProvider
+import ru.createsmart.artopos.core.model.FilterType
 import ru.createsmart.artopos.core.network.api.HarvardAPI
 import ru.createsmart.artopos.core.network.model.FilterItemDTO
 import ru.createsmart.artopos.core.network.model.NetworkResponse
@@ -55,7 +56,7 @@ class OfflineFirstFilterRepositoryTest {
     fun `initializeFilters skips network call when db is not empty and cache is fresh`() = runTest {
         // GIVEN: Filters exist in database and last sync was 10 days ago (< 30 days)
         val tenDaysAgo = currentTime - 10.days.inWholeMilliseconds
-        coEvery { dao.hasAllCategories() } returns true
+        coEvery { dao.getDistinctFilterTypes() } returns FilterType.entries.map { it.name }
         coEvery { syncMetadata.getLastFiltersSyncTimestamp() } returns tenDaysAgo
 
         // WHEN
@@ -72,7 +73,7 @@ class OfflineFirstFilterRepositoryTest {
     fun `initializeFilters fetches from network when cache is expired (more than 30 days)`() = runTest {
         // GIVEN: Filters exist but last sync was 31 days ago (> 30 days)
         val thirtyOneDaysAgo = currentTime - 31.days.inWholeMilliseconds
-        coEvery { dao.hasAllCategories() } returns true
+        coEvery { dao.getDistinctFilterTypes() } returns FilterType.entries.map { it.name }
         coEvery { syncMetadata.getLastFiltersSyncTimestamp() } returns thirtyOneDaysAgo
 
         val mockResponse = createMockFilterResponse()
@@ -99,7 +100,7 @@ class OfflineFirstFilterRepositoryTest {
     @Test
     fun `initializeFilters fetches from network on first launch when db is empty regardless of timestamp`() = runTest {
         // GIVEN: First launch - database is empty (hasAllCategories = false)
-        coEvery { dao.hasAllCategories() } returns false
+        coEvery { dao.getDistinctFilterTypes() } returns emptyList()
 
         val mockResponse = createMockFilterResponse()
         coEvery { api.getClassification() } returns mockResponse
@@ -119,7 +120,7 @@ class OfflineFirstFilterRepositoryTest {
     fun `initializeFilters handles network error on expired cache without wiping database`() = runTest {
         // GIVEN: 31 days passed, but network failed with error
         val thirtyOneDaysAgo = currentTime - 31.days.inWholeMilliseconds
-        coEvery { dao.hasAllCategories() } returns true
+        coEvery { dao.getDistinctFilterTypes() } returns FilterType.entries.map { it.name }
         coEvery { syncMetadata.getLastFiltersSyncTimestamp() } returns thirtyOneDaysAgo
         coEvery { api.getClassification() } throws IOException("No internet connection")
 
@@ -139,7 +140,7 @@ class OfflineFirstFilterRepositoryTest {
     fun `initializeFilters forces fetch when forceRefresh is true even if cache is fresh`() = runTest {
         // GIVEN: Sync was 2 days ago, but forceRefresh = true is passed
         val twoDaysAgo = currentTime - 2.days.inWholeMilliseconds
-        coEvery { dao.hasAllCategories() } returns true
+        coEvery { dao.getDistinctFilterTypes() } returns FilterType.entries.map { it.name }
         coEvery { syncMetadata.getLastFiltersSyncTimestamp() } returns twoDaysAgo
 
         val mockResponse = createMockFilterResponse()
