@@ -2,9 +2,20 @@ package ru.createsmart.artopos.core.database.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "artwork_details")
+@Entity(
+    tableName = "artwork_details",
+    foreignKeys = [
+        ForeignKey(
+            entity = ArtworkDBO::class,
+            parentColumns = ["id"],
+            childColumns = ["id"],
+            onDelete = ForeignKey.CASCADE,
+        ),
+    ],
+)
 data class ArtworkDetailsDBO(
     @PrimaryKey val id: Int,
     @ColumnInfo(name = "provenance") val provenance: String?,

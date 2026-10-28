@@ -46,11 +46,6 @@ interface ArtworkDao {
     @Query("DELETE FROM artworks WHERE in_discover_feed = 0 AND id NOT IN (SELECT id FROM favorites)")
     suspend fun deleteOrphanedArtworks()
 
-    // 1. For automatic cleaning (Garbage Collector).
-    // Remove painting parts that are no longer physically present in the artworks table.
-    @Query("DELETE FROM artwork_details WHERE id NOT IN (SELECT id FROM artworks)")
-    suspend fun deleteOrphanedDetails()
-
     // 2. For manual cleaning from Settings.
     // Delete ALL details, leaving only those that are linked to Favorites
     @Query("DELETE FROM artwork_details WHERE id NOT IN (SELECT id FROM favorites)")
@@ -60,7 +55,6 @@ interface ArtworkDao {
     suspend fun clearArtworks() {
         resetDiscoverFeedFlag()
         deleteOrphanedArtworks()
-        deleteOrphanedDetails()
     }
 
     // --- TEST LOGIC ---
