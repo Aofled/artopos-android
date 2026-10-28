@@ -47,8 +47,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import ru.createsmart.artopos.core.artworkcard.components.ArtworkCard
 import ru.createsmart.artopos.core.artworkcard.model.ArtworkListItem
-import ru.createsmart.artopos.core.artworkcard.ui.components.ArtworkCard
 import ru.createsmart.artopos.core.common.util.DictionaryHelper
 import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposDimens

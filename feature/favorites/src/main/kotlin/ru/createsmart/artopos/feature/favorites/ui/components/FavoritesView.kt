@@ -34,8 +34,8 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import ru.createsmart.artopos.core.artworkcard.components.ArtworkCard
 import ru.createsmart.artopos.core.artworkcard.model.ArtworkListItem
-import ru.createsmart.artopos.core.artworkcard.ui.components.ArtworkCard
 import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
 import ru.createsmart.artopos.core.navigation.FavoritesRoute

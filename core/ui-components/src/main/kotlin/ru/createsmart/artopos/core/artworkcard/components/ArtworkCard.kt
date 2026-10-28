@@ -1,4 +1,4 @@
-package ru.createsmart.artopos.core.artworkcard.ui.components
+package ru.createsmart.artopos.core.artworkcard.components
 
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable

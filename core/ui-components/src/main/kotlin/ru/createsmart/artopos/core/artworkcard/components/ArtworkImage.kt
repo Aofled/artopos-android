@@ -1,4 +1,4 @@
-package ru.createsmart.artopos.core.artworkcard.ui.components
+package ru.createsmart.artopos.core.artworkcard.components
 
 import android.content.Context
 import androidx.compose.foundation.layout.Box

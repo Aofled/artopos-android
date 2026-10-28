@@ -12,4 +12,7 @@ dependencies {
     implementation(libs.javax.inject)
     implementation(libs.coil.core)
     implementation(libs.coil.network.core)
+    implementation(libs.coil.compose)
+
+    testImplementation(libs.bundles.test.unit.common)
 }

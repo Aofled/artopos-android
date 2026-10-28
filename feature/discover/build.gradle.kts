@@ -9,7 +9,6 @@ dependencies {
     implementation(projects.core.domain)
     implementation(projects.core.model)
     implementation(projects.core.uiComponents)
-    implementation(projects.core.artworkCard)
     implementation(projects.core.navigation)
 
     implementation(libs.androidx.hilt.navigation.compose)
