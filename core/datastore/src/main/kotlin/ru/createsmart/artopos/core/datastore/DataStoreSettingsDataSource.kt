@@ -4,11 +4,14 @@ import androidx.annotation.VisibleForTesting
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import ru.createsmart.artopos.core.model.settings.ThemeConfig
 import ru.createsmart.artopos.core.model.settings.UserSettings
+import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -29,9 +32,16 @@ class DataStoreSettingsDataSource @Inject constructor(
     }
 
     val userSettingsStream: Flow<UserSettings> = dataStore.data
+        // Handle IO errors
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
         .map { preferences ->
-            val themeString =
-                preferences[THEME_CONFIG] ?: ThemeConfig.FOLLOW_SYSTEM.name
+            val themeString = preferences[THEME_CONFIG] ?: ThemeConfig.FOLLOW_SYSTEM.name
             val themeConfig = try {
                 ThemeConfig.valueOf(themeString)
             } catch (ignored: IllegalArgumentException) {
