@@ -4,7 +4,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
 import ru.createsmart.artopos.core.designsystem.theme.LocalAppThemeIsDark
@@ -41,19 +40,13 @@ private fun rememberFullscreenShimmerColors(): ShimmerColors {
     }
 }
 
-/**
- * Fullscreen Shimmer modifier for detailed zoom gallery.
- */
+@Composable
 fun Modifier.fullscreenShimmerEffect(
     enabled: Boolean = true,
-): Modifier = composed {
-    if (!enabled) return@composed Modifier
-
-    // Note: Since modifier composed block can access @Composable context,
-    // we can invoke the remember composable helper directly here.
+): Modifier {
+    if (!enabled) return this
     val shimmerColors = rememberFullscreenShimmerColors()
-
-    baseShimmer(
+    return baseShimmer(
         shimmerColors = shimmerColors,
         enabled = enabled,
         waveSizeMultiplier = SHIMMER_WAVE_SIZE,

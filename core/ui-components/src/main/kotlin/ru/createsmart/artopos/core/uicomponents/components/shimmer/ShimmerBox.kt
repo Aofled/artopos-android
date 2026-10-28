@@ -4,7 +4,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import ru.createsmart.artopos.core.designsystem.theme.LocalAppThemeIsDark
 
 private const val SHIMMER_DARK_EDGE_ALPHA = 0.6f
@@ -37,17 +36,13 @@ private fun rememberShimmerColors(): ShimmerColors {
     }
 }
 
-/**
- * Standard Shimmer modifier for cards and list items.
- */
+@Composable
 fun Modifier.shimmerEffect(
     enabled: Boolean = true,
-): Modifier = composed {
-    if (!enabled) return@composed Modifier
-
+): Modifier {
+    if (!enabled) return this
     val shimmerColors = rememberShimmerColors()
-
-    baseShimmer(
+    return baseShimmer(
         shimmerColors = shimmerColors,
         enabled = enabled,
         waveSizeMultiplier = 1.0f,
