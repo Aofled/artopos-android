@@ -7,6 +7,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
+import androidx.room.withTransaction
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -16,7 +17,6 @@ import ru.createsmart.artopos.core.common.result.suspendRunCatching
 import ru.createsmart.artopos.core.data.mapper.ArtworkMapper
 import ru.createsmart.artopos.core.data.mediator.ArtworkRemoteMediator
 import ru.createsmart.artopos.core.database.HarvardDatabase
-import ru.createsmart.artopos.core.database.model.FavoriteDBO
 import ru.createsmart.artopos.core.domain.repository.ArtworkRepository
 import ru.createsmart.artopos.core.model.Artwork
 import ru.createsmart.artopos.core.model.ArtworkDetails
@@ -51,7 +51,7 @@ class OfflineFirstArtworkRepository @Inject constructor(
     ): Flow<PagingData<Artwork>> {
         return Pager(
             config = pagingConfig,
-            // 1. Check DB -> 2. If empty/more needed -> Call API -> 3. Save to DB -> 4. UI updates automatically
+            // Fetch from API and save to database when needed
             remoteMediator = ArtworkRemoteMediator(
                 database = database,
                 api = api,
@@ -76,16 +76,15 @@ class OfflineFirstArtworkRepository @Inject constructor(
 
     override suspend fun syncArtworkDetails(id: Int): Result<Unit> {
         return suspendRunCatching {
-            // 1. Download fresh JSON with full details
             val dto = api.getArtworkDetails(id)
-
-            // 2. Save base artwork if absent in local database
             val baseEntity = mapper.mapDtoToDbo(dto)
-            artworkDao.insertArtworkIfAbsent(baseEntity)
-
-            // 3. Save artwork details
             val detailsEntity = mapper.mapDtoToDetailsDbo(dto)
-            artworkDetailDao.insertDetails(detailsEntity)
+
+            // Save artwork and details in one transaction
+            database.withTransaction {
+                artworkDao.insertArtworkIfAbsent(baseEntity)
+                artworkDetailDao.insertDetails(detailsEntity)
+            }
         }
     }
 
@@ -96,13 +95,7 @@ class OfflineFirstArtworkRepository @Inject constructor(
     }
 
     override suspend fun toggleFavorite(artworkId: Int) {
-        val isFavorite = favoriteDao.isFavorite(artworkId)
-
-        if (isFavorite) {
-            favoriteDao.removeFavorite(artworkId)
-        } else {
-            favoriteDao.insertFavorite(FavoriteDBO(id = artworkId))
-        }
+        favoriteDao.toggleFavorite(artworkId)
     }
 
     // To clear unused fields from the detail_table

@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
 import ru.createsmart.artopos.core.database.model.ArtworkFeedWithFavoriteFlagDBO
 import ru.createsmart.artopos.core.database.model.FavoriteDBO
@@ -30,4 +31,14 @@ interface FavoriteDao {
 
     @Query("SELECT EXISTS(SELECT 1 FROM favorites WHERE id = :id)")
     suspend fun isFavorite(id: Int): Boolean
+
+    // Use transaction to prevent race conditions on fast clicks.
+    @Transaction
+    suspend fun toggleFavorite(artworkId: Int) {
+        if (isFavorite(artworkId)) {
+            removeFavorite(artworkId)
+        } else {
+            insertFavorite(FavoriteDBO(id = artworkId))
+        }
+    }
 }
