@@ -9,6 +9,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import ru.createsmart.artopos.core.database.HarvardDatabase
 import ru.createsmart.artopos.core.database.dao.ArtworkDao
+import ru.createsmart.artopos.core.database.dao.ArtworkDetailDao
 import ru.createsmart.artopos.core.database.dao.ArtworkRemoteKeysDao
 import ru.createsmart.artopos.core.database.dao.FavoriteDao
 import ru.createsmart.artopos.core.database.dao.FilterItemDao
@@ -36,6 +37,11 @@ object DatabaseModule {
     @Provides
     fun provideArtworkDao(database: HarvardDatabase): ArtworkDao {
         return database.artworkDao()
+    }
+
+    @Provides
+    fun provideArtworkDetailDao(database: HarvardDatabase): ArtworkDetailDao {
+        return database.artworkDetailDao()
     }
 
     @Provides
