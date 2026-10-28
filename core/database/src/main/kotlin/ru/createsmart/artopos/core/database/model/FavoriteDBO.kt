@@ -2,9 +2,15 @@ package ru.createsmart.artopos.core.database.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "favorites")
+@Entity(
+    tableName = "favorites",
+    indices = [
+        Index(value = ["saved_at_timestamp"]),
+    ],
+)
 data class FavoriteDBO(
     @PrimaryKey val id: Int, // artworkId
     @ColumnInfo(name = "saved_at_timestamp") val savedAtTimestamp: Long = System.currentTimeMillis(),

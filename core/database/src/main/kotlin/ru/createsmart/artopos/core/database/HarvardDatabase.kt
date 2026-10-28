@@ -24,10 +24,11 @@ import ru.createsmart.artopos.core.database.model.FilterItemDBO
         FilterItemDBO::class,
         FavoriteDBO::class,
     ],
-    version = 8,
+    version = 9,
     exportSchema = true, // Connects to Gradle config 'schemaDirectory' for Auto-Migrations
     autoMigrations = [
         AutoMigration(from = 7, to = 8),
+        AutoMigration(from = 8, to = 9),
     ],
 )
 @TypeConverters(ImagesConverter::class)

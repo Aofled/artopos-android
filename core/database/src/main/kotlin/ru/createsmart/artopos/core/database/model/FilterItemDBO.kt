@@ -2,9 +2,15 @@ package ru.createsmart.artopos.core.database.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "filters")
+@Entity(
+    tableName = "filters",
+    indices = [
+        Index(value = ["type", "count"]),
+    ],
+)
 data class FilterItemDBO(
     @PrimaryKey(autoGenerate = true) val uId: Long = 0,
     @ColumnInfo(name = "server_id") val id: Long,

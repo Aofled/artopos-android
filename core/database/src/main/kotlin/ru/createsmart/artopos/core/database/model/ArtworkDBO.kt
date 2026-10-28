@@ -3,10 +3,16 @@ package ru.createsmart.artopos.core.database.model
 import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import ru.createsmart.artopos.core.database.converters.StoredImage
 
-@Entity(tableName = "artworks")
+@Entity(
+    tableName = "artworks",
+    indices = [
+        Index(value = ["in_discover_feed", "sorting_index"]),
+    ],
+)
 data class ArtworkDBO(
     @PrimaryKey val id: Int,
     @ColumnInfo(name = "sorting_index") val sortingIndex: Int = 0,
