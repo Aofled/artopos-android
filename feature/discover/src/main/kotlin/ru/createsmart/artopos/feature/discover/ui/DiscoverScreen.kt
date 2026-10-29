@@ -18,20 +18,14 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -44,7 +38,6 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.launch
 import ru.createsmart.artopos.core.artworkcard.model.ArtworkListItem
 import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposDimens
@@ -63,22 +56,29 @@ import ru.createsmart.artopos.feature.discover.ui.components.FilterBottomSheet
 import ru.createsmart.artopos.feature.discover.ui.components.LoadingView
 import ru.createsmart.artopos.feature.discover.ui.preview.DiscoverStateProvider
 
-private val FAB_HEIGHT_WITH_PADDING = 74.dp
-private val SNACKBAR_PADDING_BASE = 4.dp
-
 @Composable
 fun DiscoverRoute(
     viewModel: DiscoverViewModel = hiltViewModel(),
     onArtworkClick: (Int) -> Unit,
+    onShowSnackbar: (UiText) -> Unit,
+    onUpdateFabVisibility: (Boolean) -> Unit,
 ) {
-    // Lifecycle-aware collection. Pauses when app is in background.
     val pagingItems = viewModel.artworksFlow.collectAsLazyPagingItems()
-
     val contentVersion by viewModel.contentVersion.collectAsStateWithLifecycle()
-
     val filtersState by viewModel.filtersUiState.collectAsStateWithLifecycle()
-
     val activeParams by viewModel.activeFilterParams.collectAsStateWithLifecycle()
+
+    // 1. Check if screen is in full screen error or initial loading state
+    val isListEmpty = pagingItems.itemCount == 0
+    val isFullScreenError = pagingItems.loadState.refresh is LoadState.Error && isListEmpty
+    val isFullScreenLoading = pagingItems.loadState.refresh is LoadState.Loading && isListEmpty
+
+    // 2. FAB is active only when filterable data is present
+    val showFab = filtersState.isAvailable && !isFullScreenError && !isFullScreenLoading
+
+    LaunchedEffect(showFab) {
+        onUpdateFabVisibility(showFab)
+    }
 
     DiscoverScreen(
         pagingItems = pagingItems,
@@ -87,7 +87,9 @@ fun DiscoverRoute(
         effectFlow = viewModel.uiEffect,
         filterParams = activeParams,
         scrollUp = viewModel.actions,
+        showFab = showFab,
         onArtworkClick = onArtworkClick,
+        onShowSnackbar = onShowSnackbar,
         onIntent = { intent ->
             when (intent) {
                 is DiscoverIntent.Refresh -> {
@@ -111,26 +113,16 @@ private fun DiscoverScreen(
     pagingItems: LazyPagingItems<ArtworkListItem>,
     filtersState: FiltersUiState,
     contentVersion: Int,
-    effectFlow: Flow<UiText>? = null,
+    effectFlow: Flow<UiText>?,
     filterParams: FilterParams,
     scrollUp: Flow<DiscoverEvent>,
+    showFab: Boolean,
     onArtworkClick: (Int) -> Unit,
+    onShowSnackbar: (UiText) -> Unit,
     onIntent: (DiscoverIntent) -> Unit,
 ) {
-    val context = LocalContext.current
-    val snackbarHostState = remember { SnackbarHostState() }
-
     var showFilterSheet by rememberSaveable { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-
-    val scope = rememberCoroutineScope()
-
-    val onShowSnackbar: (UiText) -> Unit = { message ->
-        scope.launch {
-            snackbarHostState.currentSnackbarData?.dismiss()
-            snackbarHostState.showSnackbar(message.asString(context))
-        }
-    }
 
     DiscoverScreenEffects(
         effectFlow = effectFlow,
@@ -139,7 +131,6 @@ private fun DiscoverScreen(
         onIntent = onIntent,
     )
 
-    val showFab = filtersState.isAvailable
     val isBottomBarVisible = LocalBottomBarVisibility.current
 
     // Animate FAB vertical offset to avoid overlapping with the BottomBar
@@ -152,29 +143,11 @@ private fun DiscoverScreen(
         label = "fabPadding",
     )
 
-    // Animate Snackbar padding to ensure it stacks correctly above the FAB and BottomBar.
-    // Scaffold handles system bars (Status/Nav Bar) automatically via contentWindowInsets.
-    val snackbarBottomPadding by animateDpAsState(
-        targetValue = when {
-            // If FAB exists, NAV is visible, else NAV not visible.
-            showFab && isBottomBarVisible -> FAB_HEIGHT_WITH_PADDING + ArtoposDimens.BottomBarHeight
-            showFab && !isBottomBarVisible -> FAB_HEIGHT_WITH_PADDING
-            !showFab && isBottomBarVisible -> ArtoposDimens.BottomBarHeight + SNACKBAR_PADDING_BASE
-            else -> SNACKBAR_PADDING_BASE // If FAB does not exist, NAV is visible, else NAV not visible.
-        },
-        animationSpec = tween(
-            durationMillis = ArtoposDimens.BOTTOM_BAR_ANIMATION_DURATION,
-            easing = FastOutSlowInEasing,
-        ),
-        label = "snackbarPadding",
-    )
-
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             containerColor = MaterialTheme.colorScheme.background,
             contentWindowInsets = WindowInsets.statusBars,
-
             floatingActionButton = {
                 DiscoverFloatingButton(
                     visible = showFab,
@@ -192,7 +165,7 @@ private fun DiscoverScreen(
                 pagingItems = pagingItems,
                 contentVersion = contentVersion,
                 innerPadding = innerPadding,
-                onShowMessage = { onShowSnackbar(it) },
+                onShowMessage = onShowSnackbar,
                 filterParams = filterParams,
                 scrollUp = scrollUp,
                 onArtworkClick = onArtworkClick,
@@ -200,25 +173,12 @@ private fun DiscoverScreen(
             )
         }
 
-        SnackbarHost(
-            hostState = snackbarHostState,
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .windowInsetsPadding(WindowInsets.navigationBars)
-                .padding(bottom = snackbarBottomPadding),
-        )
-
         if (showFilterSheet) {
             FilterBottomSheet(
                 sheetState = sheetState,
                 filtersState = filtersState,
                 onFilterSelected = { type, value ->
-                    onIntent(
-                        DiscoverIntent.FilterSelected(
-                            type,
-                            value,
-                        ),
-                    )
+                    onIntent(DiscoverIntent.FilterSelected(type, value))
                 },
                 onSearchQueryChanged = { query -> onIntent(DiscoverIntent.SearchQueryChanged(query)) },
                 onReset = { onIntent(DiscoverIntent.FilterReset) },
@@ -308,8 +268,7 @@ private fun DiscoverScreenContent(
                 ErrorView(onRetry = { onIntent(DiscoverIntent.Retry) })
             }
         }
-
-        hasActiveFilters -> { // For filters if the result is empty
+        hasActiveFilters -> {
             ArtworksView(
                 artworks = pagingItems,
                 contentVersion = contentVersion,
@@ -350,8 +309,10 @@ private fun DiscoverScreenPreview(
                 isAvailable = false,
             ),
             filterParams = FilterParams(),
+            showFab = false,
             onArtworkClick = { },
-            onIntent = { intent -> println("Preview Intent: $intent") },
+            onShowSnackbar = { },
+            onIntent = { },
             scrollUp = emptyFlow(),
         )
     }

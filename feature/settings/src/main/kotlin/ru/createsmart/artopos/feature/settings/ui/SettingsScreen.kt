@@ -16,15 +16,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -72,6 +69,7 @@ import ru.createsmart.artopos.core.designsystem.R as DSR
 @Composable
 fun SettingsRoute(
     viewModel: SettingsViewModel = hiltViewModel(),
+    onShowSnackbar: (UiText) -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -80,7 +78,7 @@ fun SettingsRoute(
     val cacheSizeMb = successState?.cacheSizeMb
 
     val lifecycleOwner = LocalLifecycleOwner.current
-    DisposableEffect(lifecycleOwner) { // Recalculate the occupied cache
+    DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
                 viewModel.onIntent(SettingsIntent.RecalculateCache)
@@ -97,6 +95,7 @@ fun SettingsRoute(
         cacheSizeMb = cacheSizeMb,
         effectFlow = viewModel.uiEffect,
         currentLanguageTag = currentLanguageTag,
+        onShowSnackbar = onShowSnackbar,
         onIntent = viewModel::onIntent,
     )
 }
@@ -107,29 +106,17 @@ private fun SettingsScreen(
     cacheSizeMb: Long?,
     effectFlow: Flow<UiText>?,
     currentLanguageTag: String,
+    onShowSnackbar: (UiText) -> Unit,
     onIntent: (SettingsIntent) -> Unit,
 ) {
-    val context = LocalContext.current
-    val snackbarHostState = remember { SnackbarHostState() }
-
     LaunchedEffect(effectFlow) {
-        effectFlow?.collect { message ->
-            snackbarHostState.showSnackbar(message.asString(context))
-        }
+        effectFlow?.collect { message -> onShowSnackbar(message) }
     }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.background,
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
-        snackbarHost = {
-            SnackbarHost(
-                hostState = snackbarHostState,
-                modifier = Modifier
-                    .windowInsetsPadding(WindowInsets.navigationBars)
-                    .padding(bottom = ArtoposDimens.BottomBarHeight + 4.dp),
-            )
-        },
         topBar = { SettingsTopAppBar() },
     ) { innerPadding ->
         SettingsScreenContent(
@@ -401,6 +388,7 @@ private fun SettingsScreenPreview(
             cacheSizeMb = 142L,
             effectFlow = null,
             currentLanguageTag = "en",
+            onShowSnackbar = { },
             onIntent = { },
         )
     }
