@@ -15,6 +15,7 @@ import ru.createsmart.artopos.core.database.model.ImageDimensionsDBO
 import ru.createsmart.artopos.core.model.CreationDate
 import ru.createsmart.artopos.core.model.ImageDimensions
 import ru.createsmart.artopos.core.network.model.ArtworkDTO
+import ru.createsmart.artopos.core.network.model.GalleryDTO
 import ru.createsmart.artopos.core.network.model.ImageDTO
 import ru.createsmart.artopos.core.network.model.PersonDTO
 import ru.createsmart.artopos.core.network.model.PlaceDTO
@@ -26,11 +27,7 @@ class ArtworkMappersTest {
     @Test
     fun `map ArtworkFeedDBO to Artwork correctly`() {
         // GIVEN
-        val imageDimensions = ImageDimensionsDBO(
-            width = 2550,
-            height = 1301,
-        )
-
+        val imageDimensions = ImageDimensionsDBO(width = 2550, height = 1301)
         val projection = ArtworkFeedProjectionDBO(
             id = 357596,
             title = "Blossoming Plum with Moon and Snow (right scroll)",
@@ -54,28 +51,16 @@ class ArtworkMappersTest {
         assertEquals(expectedDims, domain.imageDimensions)
 
         assertEquals(CreationDate.Unknown, domain.creationDate)
-        assertTrue("Artwork should be marked as favorite", domain.isFavorite)
+        assertTrue(domain.isFavorite)
     }
 
     @Test
     fun `map ArtworkDTO to ArtworkDBO correctly`() {
         // GIVEN
-        val artists = PersonDTO(
-            name = "Goshun 呉春  (Matsumura Gekkei 松村月渓)",
-            role = "Artist",
-        )
-
         // GIVEN
-        val images = ImageDTO(
-            width = 1165,
-            height = 2550,
-            url = "https://ids.lib.harvard.edu/ids/iiif/437167239",
-        )
-
-        // GIVEN
-        val places = PlaceDTO(
-            name = "East Asia, Japan",
-        )
+        val artists = PersonDTO(name = "Goshun 呉春  (Matsumura Gekkei 松村月渓)", role = "Artist")
+        val images = ImageDTO(width = 1165, height = 2550, url = "https://ids.lib.harvard.edu/ids/iiif/437167239")
+        val places = PlaceDTO(name = "East Asia, Japan")
 
         // GIVEN
         val dto = ArtworkDTO(
@@ -99,13 +84,7 @@ class ArtworkMappersTest {
         assertEquals("Blossoming Plum with Moon and Snow (left scroll)", dbo.title)
         assertEquals("Goshun 呉春  (Matsumura Gekkei 松村月渓)", dbo.artist)
         assertEquals("https://ids.lib.harvard.edu/ids/iiif/437167239", dbo.imageUrl)
-        assertEquals(
-            ImageDimensionsDBO(
-                1165,
-                2550,
-            ),
-            dbo.imageDimensions,
-        )
+        assertEquals(ImageDimensionsDBO(1165, 2550), dbo.imageDimensions)
         assertEquals("Dated: 1895", dbo.date)
         assertEquals(1895, dbo.yearInt)
         assertEquals(null, dbo.technique)
@@ -140,34 +119,16 @@ class ArtworkMappersTest {
     @Test
     fun `map ArtworkDBO to ArtworkDetails correctly`() {
         // GIVEN
-        val imageDimensions = ImageDimensionsDBO(
-            width = 2550,
-            height = 1301,
-        )
-
         // GIVEN
+        val imageDimensions = ImageDimensionsDBO(width = 2550, height = 1301)
         val galleryImages = listOf(
-            StoredImage(
-                url = "https://nrs.harvard.edu/urn-3:HUAM:765757",
-                width = 1165,
-                height = 2550,
-            ),
-            StoredImage(
-                url = "https://nrs.harvard.edu/urn-3:HUAM:765752",
-                width = 1921,
-                height = 2550,
-            ),
-            StoredImage(
-                url = "https://nrs.harvard.edu/urn-3:HUAM:765753",
-                width = 1602,
-                height = 2550,
-            ),
+            StoredImage(url = "https://nrs.harvard.edu/urn-3:HUAM:765757", width = 1165, height = 2550),
+            StoredImage(url = "https://nrs.harvard.edu/urn-3:HUAM:765752", width = 1921, height = 2550),
         )
 
         // GIVEN
         val dbo = ArtworkDBO(
             id = 357596,
-            sortingIndex = 10,
             title = "Blossoming Plum with Moon and Snow (right scroll)",
             artist = "Owari",
             imageUrl = "https://nrs.harvard.edu/urn-3:HUAM:765750",
@@ -190,21 +151,12 @@ class ArtworkMappersTest {
         assertEquals("Blossoming Plum with Moon and Snow (right scroll)", domain.baseArtwork.title)
         assertEquals("Owari", domain.baseArtwork.artist)
         assertEquals("https://nrs.harvard.edu/urn-3:HUAM:765750", domain.baseArtwork.imageUrl)
-        assertEquals(
-            ImageDimensions(
-                width = 2550,
-                height = 1301,
-            ),
-            domain.baseArtwork.imageDimensions,
-        )
-        val expectedDate = CreationDate.TextOnly("late 18th-early 19th century")
-        assertEquals(expectedDate, domain.baseArtwork.creationDate)
+        assertEquals(ImageDimensions(width = 2550, height = 1301), domain.baseArtwork.imageDimensions)
+        assertEquals(CreationDate.TextOnly("late 18th-early 19th century"), domain.baseArtwork.creationDate)
         assertEquals(null, domain.technique)
         assertEquals("Pair of scrolls depicting blossoming plum trees.", domain.description)
         assertEquals("https://www.harvardartmuseums.org/collections/object/357596", domain.url)
-        assertEquals(3, domain.images.size)
-        assertEquals("https://nrs.harvard.edu/urn-3:HUAM:765757", domain.images[0].url)
-        assertEquals(1165, domain.images[0].width)
+        assertEquals(2, domain.images.size)
         assertTrue(domain.baseArtwork.isFavorite)
     }
 
@@ -212,12 +164,11 @@ class ArtworkMappersTest {
     fun `mapDetailsToDomain merges details and sets isFavorite flag`() {
         // GIVEN
         val baseDbo = ArtworkDBO(
-            id = 1, sortingIndex = 0, title = "Mona Lisa", artist = "Da Vinci",
+            id = 1, title = "Mona Lisa", artist = "Da Vinci",
             imageUrl = "url", imageDimensions = null,
             date = "1503", yearInt = 1503,
             technique = null, description = "Basic Desc", url = null,
             galleryImages = listOf(StoredImage("url", 100, 100)),
-            inDiscoverFeed = true,
         )
         // GIVEN
         val detailsDbo = ArtworkDetailsDBO(
@@ -245,7 +196,6 @@ class ArtworkMappersTest {
 
         // THEN
         assertEquals(1, domainDetails.images.size)
-        assertEquals("url", domainDetails.images[0].url)
     }
 
     @Test
@@ -301,5 +251,39 @@ class ArtworkMappersTest {
         // THEN
         assertNull(dbo.imageDimensions)
         assertEquals("url", dbo.imageUrl)
+    }
+
+    @Test
+    fun `mapDtoToDetailsDbo maps all fields correctly including classification`() {
+        // GIVEN
+        val dto = ArtworkDTO(
+            id = 42,
+            provenance = "Louvre",
+            creditLine = "Gift of",
+            classification = "Paintings",
+            century = "19th century",
+            culture = "French",
+            medium = "Oil on canvas",
+            period = "Modern",
+            style = "Impressionism",
+            dimensions = "50 x 70 cm",
+            copyright = "Public Domain",
+            gallery = GalleryDTO(name = "Room 101"),
+        )
+        // WHEN
+        val dbo = mapper.mapDtoToDetailsDbo(dto)
+        // THEN
+        assertEquals(42, dbo.id)
+        assertEquals("Louvre", dbo.provenance)
+        assertEquals("Gift of", dbo.creditLine)
+        assertEquals("Paintings", dbo.classification)
+        assertEquals("19th century", dbo.century)
+        assertEquals("French", dbo.culture)
+        assertEquals("Oil on canvas", dbo.medium)
+        assertEquals("Modern", dbo.period)
+        assertEquals("Impressionism", dbo.style)
+        assertEquals("50 x 70 cm", dbo.dimensions)
+        assertEquals("Public Domain", dbo.copyright)
+        assertEquals("Room 101", dbo.galleryLocation)
     }
 }

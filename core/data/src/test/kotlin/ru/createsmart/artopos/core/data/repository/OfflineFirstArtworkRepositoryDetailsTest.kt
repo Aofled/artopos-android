@@ -61,11 +61,10 @@ class OfflineFirstArtworkRepositoryDetailsTest {
     fun `getArtwork returns artwork when present in database without details`() = runTest {
         // GIVEN
         val dbo = ArtworkDBO(
-            id = 1, sortingIndex = 0, title = "Test Title", artist = "Artist",
+            id = 1, title = "Test Title", artist = "Artist",
             imageUrl = "url", imageDimensions = null, date = "1890", yearInt = 1890,
             technique = null, description = null, url = null,
             galleryImages = listOf(StoredImage("url", 100, 100)),
-            inDiscoverFeed = true,
         )
         database.artworkDao().insertArtworks(listOf(dbo))
 
@@ -86,10 +85,10 @@ class OfflineFirstArtworkRepositoryDetailsTest {
     fun `syncArtworkDetails fetches data and saves to details table`() = runTest {
         // GIVEN
         val baseDbo = ArtworkDBO(
-            id = 1, sortingIndex = 5, title = "Base Title", artist = "",
+            id = 1, title = "Base Title", artist = "",
             imageUrl = "", imageDimensions = null, date = null, yearInt = null,
             technique = null, description = "Description loaded from list",
-            url = null, galleryImages = null, inDiscoverFeed = true,
+            url = null, galleryImages = null,
         )
         database.artworkDao().insertArtworks(listOf(baseDbo))
 
@@ -129,10 +128,9 @@ class OfflineFirstArtworkRepositoryDetailsTest {
     fun `toggleFavorite correctly adds and removes artwork from favorites table`() = runTest {
         // GIVEN
         val baseDbo = ArtworkDBO(
-            id = 99, sortingIndex = 0, title = "Mona Lisa", artist = "",
+            id = 99, title = "Mona Lisa", artist = "",
             imageUrl = "", imageDimensions = null, date = null, yearInt = null,
             technique = null, description = null, url = null, galleryImages = null,
-            inDiscoverFeed = true,
         )
         database.artworkDao().insertArtworks(listOf(baseDbo))
 
@@ -182,9 +180,8 @@ class OfflineFirstArtworkRepositoryDetailsTest {
         assertNull(repository.getArtwork(20).first()?.provenance)
     }
 
-    private fun createArtwork(id: Int, title: String = "Title", inFeed: Boolean = true) = ArtworkDBO(
+    private fun createArtwork(id: Int, title: String = "Title") = ArtworkDBO(
         id = id,
-        sortingIndex = 0,
         title = title,
         artist = "",
         imageUrl = "",
@@ -195,7 +192,6 @@ class OfflineFirstArtworkRepositoryDetailsTest {
         description = null,
         url = null,
         galleryImages = null,
-        inDiscoverFeed = inFeed,
     )
 
     private fun createDetails(id: Int, provenance: String?) = ArtworkDetailsDBO(

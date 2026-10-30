@@ -9,19 +9,20 @@ import androidx.room.Query
 import androidx.room.Transaction
 import ru.createsmart.artopos.core.database.model.ArtworkDBO
 import ru.createsmart.artopos.core.database.model.ArtworkFeedWithFavoriteFlagDBO
+import ru.createsmart.artopos.core.database.model.DiscoverFeedItemDBO
 
 @Dao
 interface ArtworkDao {
-    // Reactive stream: Updates UI automatically when DB changes
-    // EXISTS - Looking for the first match
-    // Take only those pictures that relate to the CURRENT feed
+
+    // Select feed artworks via INNER JOIN on discover_feed ordered by session sorting index
     @Query(
         """
-        SELECT id, title, artist, image_url, image_dimensions_width, image_dimensions_height, 
+        SELECT artworks.id, artworks.title, artworks.artist, artworks.image_url, 
+               artworks.image_dimensions_width, artworks.image_dimensions_height, 
                EXISTS(SELECT 1 FROM favorites WHERE favorites.id = artworks.id) AS isFavorite 
         FROM artworks 
-        WHERE in_discover_feed = 1 
-        ORDER BY sorting_index ASC
+        INNER JOIN discover_feed ON artworks.id = discover_feed.artwork_id 
+        ORDER BY discover_feed.sorting_index ASC
     """,
     )
     fun getArtworksWithFavoriteFlags(): PagingSource<Int, ArtworkFeedWithFavoriteFlagDBO>
@@ -37,29 +38,29 @@ interface ArtworkDao {
     suspend fun insertArtworkIfAbsent(artwork: ArtworkDBO)
 
     // --- CLEANUP LOGIC ---
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertDiscoverFeedItems(items: List<DiscoverFeedItemDBO>)
 
-    // Reset the ribbon flag for ALL paintings
-    @Query("UPDATE artworks SET in_discover_feed = 0")
-    suspend fun resetDiscoverFeedFlag()
+    @Query("DELETE FROM discover_feed")
+    suspend fun clearDiscoverFeed()
 
-    // Remove "orphans": those that are no longer in the feed and are not in favorites
-    @Query("DELETE FROM artworks WHERE in_discover_feed = 0 AND id NOT IN (SELECT id FROM favorites)")
-    suspend fun deleteOrphanedArtworks()
+    // Removes artworks from catalog except favorited ones
+    @Query("DELETE FROM artworks WHERE id NOT IN (SELECT id FROM favorites)")
+    suspend fun deleteNonFavoriteArtworks()
 
-    // 2. For manual cleaning from Settings.
-    // Delete ALL details, leaving only those that are linked to Favorites
-    @Query("DELETE FROM artwork_details WHERE id NOT IN (SELECT id FROM favorites)")
-    suspend fun clearDetailsCacheFromSettings(): Int
-
+    // Clears discover feed and removes non-favorite artworks on refresh
     @Transaction
     suspend fun clearArtworks() {
-        resetDiscoverFeedFlag()
-        deleteOrphanedArtworks()
+        clearDiscoverFeed()
+        deleteNonFavoriteArtworks()
     }
 
     // --- TEST LOGIC ---
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @Query("SELECT * FROM artworks ORDER BY id ASC")
+    suspend fun getAllArtworksForTest(): List<ArtworkDBO>
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    @Query("SELECT * FROM artworks ORDER BY sorting_index ASC") // For ArtworkRemoteMediatorTest
-    suspend fun getAllArtworksForTest(): List<ArtworkDBO>
+    @Query("SELECT * FROM discover_feed ORDER BY sorting_index ASC")
+    suspend fun getAllDiscoverFeedItemsForTest(): List<DiscoverFeedItemDBO>
 }

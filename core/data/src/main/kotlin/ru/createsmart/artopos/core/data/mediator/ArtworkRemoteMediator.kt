@@ -11,6 +11,7 @@ import ru.createsmart.artopos.core.data.mapper.ArtworkMapper
 import ru.createsmart.artopos.core.database.HarvardDatabase
 import ru.createsmart.artopos.core.database.model.ArtworkFeedWithFavoriteFlagDBO
 import ru.createsmart.artopos.core.database.model.ArtworkRemoteKeysDBO
+import ru.createsmart.artopos.core.database.model.DiscoverFeedItemDBO
 import ru.createsmart.artopos.core.model.FilterParams
 import ru.createsmart.artopos.core.model.FilterSortOption
 import ru.createsmart.artopos.core.model.error.AppError
@@ -44,79 +45,62 @@ class ArtworkRemoteMediator(
         loadType: LoadType,
         state: PagingState<Int, ArtworkFeedWithFavoriteFlagDBO>,
     ): MediatorResult {
+        val effectiveOrder = resolveEffectiveOrder()
+        val effectiveSort = resolveEffectiveSort()
+
         val page = when (loadType) {
-            LoadType.REFRESH -> getRefreshPage(state)
+            LoadType.REFRESH -> {
+                val remoteKeys = getRemoteKeyClosestToCurrentPosition(state)
+                remoteKeys?.nextKey?.minus(1)
+                    ?: remoteKeys?.prevKey?.plus(1)
+                    ?: 1
+            }
+
             LoadType.PREPEND -> {
                 val remoteKeys = getRemoteKeyForFirstItem(state)
-                remoteKeys?.prevKey ?: return MediatorResult.Success(
+                val prevKey = remoteKeys?.prevKey ?: return MediatorResult.Success(
                     endOfPaginationReached = remoteKeys != null,
                 )
+                prevKey
             }
 
             LoadType.APPEND -> {
                 val remoteKeys = getRemoteKeyForLastItem(state)
-                remoteKeys?.nextKey ?: return MediatorResult.Success(
+                val nextKey = remoteKeys?.nextKey ?: return MediatorResult.Success(
                     endOfPaginationReached = remoteKeys != null,
                 )
+                nextKey
             }
         }
 
         return try {
-            fetchAndStore(page, loadType, state)
-        } catch (exception: IOException) {
-            MediatorResult.Error(
-                AppError.Network(cause = exception),
+            val apiResponse = api.getArtworks(
+                page = page,
+                size = state.config.pageSize,
+                classification = params.classification?.id?.toString(),
+                century = params.century?.id?.toString(),
+                culture = params.culture?.id?.toString(),
+                sort = effectiveOrder,
+                sortOrder = effectiveSort,
             )
+            val validRecords = apiResponse.records.filter { !it.images.isNullOrEmpty() }
+
+            val endOfPaginationReached = apiResponse.info.nextUrl == null || apiResponse.records.isEmpty()
+
+            updateDatabase(loadType, page, validRecords, state, endOfPaginationReached)
+
+            MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)
+        } catch (exception: IOException) {
+            MediatorResult.Error(AppError.Network(cause = exception))
         } catch (exception: HttpException) {
             MediatorResult.Error(
-                AppError.ExternalSystem(
-                    code = exception.code(),
-                    message = exception.message(),
-                    cause = exception,
-                ),
+                AppError.ExternalSystem(code = exception.code(), message = exception.message(), cause = exception),
             )
         } catch (exception: SerializationException) {
             MediatorResult.Error(
-                AppError.DataFormat(
-                    message = exception.message,
-                    cause = exception,
-                ),
+                AppError.DataFormat(message = exception.message, cause = exception),
             )
         }
-    }
-
-    private suspend fun getRefreshPage(
-        state: PagingState<Int, ArtworkFeedWithFavoriteFlagDBO>,
-    ): Int {
-        val remoteKeys = getRemoteKeyClosestToCurrentPosition(state)
-        return remoteKeys?.nextKey?.minus(1)
-            ?: remoteKeys?.prevKey?.plus(1)
-            ?: 1
-    }
-
-    private suspend fun fetchAndStore(
-        page: Int,
-        loadType: LoadType,
-        state: PagingState<Int, ArtworkFeedWithFavoriteFlagDBO>,
-    ): MediatorResult {
-        val effectiveOrder = resolveEffectiveOrder()
-        val effectiveSort = resolveEffectiveSort()
-
-        val apiResponse = api.getArtworks(
-            page = page,
-            size = state.config.pageSize,
-            classification = params.classification?.id?.toString(),
-            century = params.century?.id?.toString(),
-            culture = params.culture?.id?.toString(),
-            sort = effectiveOrder,
-            sortOrder = effectiveSort,
-        )
-        val validRecords = apiResponse.records.filter { !it.images.isNullOrEmpty() }
-        val endOfPaginationReached = apiResponse.info.nextUrl == null || apiResponse.records.isEmpty()
-
-        updateDatabase(loadType, page, validRecords, state, endOfPaginationReached)
-
-        return MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)
     }
 
     private fun resolveEffectiveOrder(): String {
@@ -155,27 +139,41 @@ class ArtworkRemoteMediator(
     ) {
         database.withTransaction {
             if (loadType == LoadType.REFRESH) {
-                // Clear cache only on full Refresh (Pull-to-Refresh or initial load)
                 database.artworkRemoteKeysDao().clearRemoteKeys()
+                // Clears discover feed and removes non-favorite artworks
                 database.artworkDao().clearArtworks()
             }
 
             val prevKey = if (page == 1) null else page - 1
             val nextKey = if (endOfPaginationReached) null else page + 1
 
+            // 1. Pagination keys
             val keys = validRecords.map { dto ->
                 ArtworkRemoteKeysDBO(artworkId = dto.id, prevKey = prevKey, nextKey = nextKey)
             }
 
-            val artworks = validRecords.mapIndexed { index, dto ->
-                // Sort Order: Explicitly save the order index.
-                // Room does not guarantee insertion order, so we need a column to sort by later.
-                val globalIndex = (page - 1) * state.config.pageSize + index
-                mapper.mapDtoToDbo(dto).copy(sortingIndex = globalIndex, inDiscoverFeed = true)
+            // 2. Artworks catalog entities
+            val artworks = validRecords.map { dto ->
+                mapper.mapDtoToDbo(dto)
             }
 
-            database.artworkRemoteKeysDao().insertAll(keys)
+            // 3. Discover feed items with session sorting index
+            val feedItems = validRecords.mapIndexed { index, dto ->
+                val globalIndex = (page - 1) * state.config.pageSize + index
+                DiscoverFeedItemDBO(
+                    artworkId = dto.id,
+                    sortingIndex = globalIndex,
+                )
+            }
+
+            // Insert parent artwork entities first (foreign key requirement)
             database.artworkDao().insertArtworks(artworks)
+
+            // Insert discover feed items (child entities)
+            database.artworkDao().insertDiscoverFeedItems(feedItems)
+
+            // Save pagination keys
+            database.artworkRemoteKeysDao().insertAll(keys)
         }
     }
 

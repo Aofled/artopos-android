@@ -25,6 +25,7 @@ import ru.createsmart.artopos.core.database.model.ArtworkDBO
 import ru.createsmart.artopos.core.database.model.ArtworkFeedProjectionDBO
 import ru.createsmart.artopos.core.database.model.ArtworkFeedWithFavoriteFlagDBO
 import ru.createsmart.artopos.core.database.model.ArtworkRemoteKeysDBO
+import ru.createsmart.artopos.core.database.model.DiscoverFeedItemDBO
 import ru.createsmart.artopos.core.database.model.FavoriteDBO
 import ru.createsmart.artopos.core.model.FilterParams
 import ru.createsmart.artopos.core.network.api.HarvardAPI
@@ -79,18 +80,7 @@ class ArtworkRemoteMediatorTest {
             records = listOf(mockDto),
         )
         coEvery {
-            api.getArtworks(
-                any(),
-                any(),
-                any(),
-                any(),
-                any(),
-                any(),
-                any(),
-                any(),
-                any(),
-                any(),
-            )
+            api.getArtworks(any(), any(), any(), any(), any(), any(), any(), any(), any(), any())
         } returns networkResponse
 
         // Mock the PagingState
@@ -108,14 +98,18 @@ class ArtworkRemoteMediatorTest {
         assertTrue(result is RemoteMediator.MediatorResult.Success)
         assertFalse((result as RemoteMediator.MediatorResult.Success).endOfPaginationReached)
 
-        // Verify Data: Check if API data is actually saved to Room
+        // 1. Verify artwork catalog
         val cachedArtworks = database.artworkDao().getAllArtworksForTest()
         assertEquals(1, cachedArtworks.size)
         assertEquals("Test Artwork", cachedArtworks.first().title)
-        assertEquals(0, cachedArtworks.first().sortingIndex)
-        assertTrue(cachedArtworks.first().inDiscoverFeed)
 
-        // Verify Keys: Check if next page key (2) is calculated correctly
+        // 2. Verify discover_feed table
+        val feedItems = database.artworkDao().getAllDiscoverFeedItemsForTest()
+        assertEquals(1, feedItems.size)
+        assertEquals(1, feedItems.first().artworkId)
+        assertEquals(0, feedItems.first().sortingIndex)
+
+        // 3. Verify pagination keys
         val key = database.artworkRemoteKeysDao().remoteKeyArtworkId(1)
         assertEquals(null, key?.prevKey)
         assertEquals(2, key?.nextKey)
@@ -148,18 +142,9 @@ class ArtworkRemoteMediatorTest {
             images = listOf(ImageDTO(100, 100, "url2")),
         )
         // Expect call for Page 2
+
         coEvery {
-            api.getArtworks(
-                any(),
-                any(), any(),
-                any(),
-                any(),
-                any(),
-                any(),
-                any(),
-                any(),
-                any(),
-            )
+            api.getArtworks(any(), any(), any(), any(), any(), any(), any(), any(), any(), any())
         } returns NetworkResponse(
             info = PageInfo(page = 2, totalPages = 10, totalRecords = 100, nextUrl = "url"),
             records = listOf(nextDto),
@@ -194,18 +179,7 @@ class ArtworkRemoteMediatorTest {
     fun `refresh load error returns mediator result error`() = runTest {
         // GIVEN
         coEvery {
-            api.getArtworks(
-                any(),
-                any(),
-                any(),
-                any(),
-                any(),
-                any(),
-                any(),
-                any(),
-                any(),
-                any(),
-            )
+            api.getArtworks(any(), any(), any(), any(), any(), any(), any(), any(), any(), any())
         } throws IOException("No internet")
 
         val pagingState = PagingState<Int, ArtworkFeedWithFavoriteFlagDBO>(
@@ -266,23 +240,12 @@ class ArtworkRemoteMediatorTest {
         val invalidDto = ArtworkDTO(id = 2, title = "Invalid", images = emptyList())
 
         val networkResponse = NetworkResponse(
-            info = PageInfo(page = 1, totalPages = 1, totalRecords = 2, nextUrl = null), // nextUrl = null means end
+            info = PageInfo(page = 1, totalPages = 1, totalRecords = 2, nextUrl = null),
             records = listOf(validDto, invalidDto),
         )
 
         coEvery {
-            api.getArtworks(
-                any(),
-                any(),
-                any(),
-                any(),
-                any(),
-                any(),
-                any(),
-                any(),
-                any(),
-                any(),
-            )
+            api.getArtworks(any(), any(), any(), any(), any(), any(), any(), any(), any(), any())
         } returns networkResponse
 
         val pagingState = PagingState<Int, ArtworkFeedWithFavoriteFlagDBO>(
@@ -300,28 +263,36 @@ class ArtworkRemoteMediatorTest {
         assertTrue((result as RemoteMediator.MediatorResult.Success).endOfPaginationReached)
 
         val cachedArtworks = database.artworkDao().getAllArtworksForTest()
-        // Invalid item (ID = 2) should be filtered out
         assertEquals(1, cachedArtworks.size)
         assertEquals(1, cachedArtworks.first().id)
     }
 
     @Test
-    fun `CRITICAL - refresh clears old feed but keeps favorites intact`() = runTest {
-        // GIVEN: The database contains an old film and one of the pictures has been added to favorites.
+    fun `CRITICAL - refresh clears old feed but keeps favorites intact in catalog`() = runTest {
+        // GIVEN: Catalog contains 2 artworks: regular (10) and favorited (20)
         val oldFeedArtwork = ArtworkDBO(
-            id = 10, sortingIndex = 0, title = "Old Feed", artist = "", imageUrl = "",
+            id = 10, title = "Old Feed", artist = "", imageUrl = "",
             imageDimensions = null, date = null, yearInt = null, technique = null,
-            description = null, url = null, galleryImages = null, inDiscoverFeed = true,
+            description = null, url = null, galleryImages = null,
         )
         val favoriteArtwork = ArtworkDBO(
-            id = 20, sortingIndex = 1, title = "Favorite", artist = "", imageUrl = "",
+            id = 20, title = "Favorite", artist = "", imageUrl = "",
             imageDimensions = null, date = null, yearInt = null, technique = null,
-            description = null, url = null, galleryImages = null, inDiscoverFeed = true,
+            description = null, url = null, galleryImages = null,
         )
 
         database.artworkDao().insertArtworks(listOf(oldFeedArtwork, favoriteArtwork))
+        // Populate old feed
+        database.artworkDao().insertDiscoverFeedItems(
+            listOf(
+                DiscoverFeedItemDBO(artworkId = 10, sortingIndex = 0),
+                DiscoverFeedItemDBO(artworkId = 20, sortingIndex = 1),
+            ),
+        )
+        // Artwork 20 is favorited
         database.favoriteDao().insertFavorite(FavoriteDBO(id = 20, savedAtTimestamp = 123L))
 
+        // Server returns new artwork (30)
         val newDto = ArtworkDTO(id = 30, title = "New Feed", images = listOf(ImageDTO(100, 100, "url")))
         coEvery {
             api.getArtworks(any(), any(), any(), any(), any(), any(), any(), any(), any(), any())
@@ -337,24 +308,21 @@ class ArtworkRemoteMediatorTest {
             leadingPlaceholderCount = 0,
         )
 
-        // WHEN: Refresh (e.g., user changes culture from America to Japan)
+        // WHEN: Refresh feed
         mediator.load(LoadType.REFRESH, pagingState)
 
-        // THEN
-        val cache = database.artworkDao().getAllArtworksForTest()
+        // THEN:
+        // 1. Verify artworks catalog:
+        val catalog = database.artworkDao().getAllArtworksForTest()
+        assertEquals(2, catalog.size) // Only 20 (favorite) and 30 (new) remain
+        assertTrue("Old un-favorited artwork must be deleted", catalog.none { it.id == 10 })
+        assertTrue("Favorite artwork must be kept in catalog", catalog.any { it.id == 20 })
+        assertTrue("New artwork must be inserted into catalog", catalog.any { it.id == 30 })
 
-        // There should be 2 pictures left (Selected old + New from the feed)
-        assertEquals(2, cache.size)
-
-        // 1. Old un-featured painting (ID 10) MUST BE REMOVED
-        assertTrue(cache.none { it.id == 10 })
-
-        // 2. The old Featured Painting (ID 20) SHOULD REMAIN, but its ribbon flag should be reset to false
-        val savedFavorite = cache.find { it.id == 20 }!!
-        assertFalse(savedFavorite.inDiscoverFeed)
-
-        // 3. New painting (ID 30) MUST BE ADDED with ribbon flag = true
-        val newFeedItem = cache.find { it.id == 30 }!!
-        assertTrue(newFeedItem.inDiscoverFeed)
+        // 2. Verify discover_feed table:
+        val feed = database.artworkDao().getAllDiscoverFeedItemsForTest()
+        assertEquals(1, feed.size) // Feed must contain only the new artwork (30)
+        assertEquals(30, feed.first().artworkId)
+        assertTrue("Old favorite must NOT be in discover feed", feed.none { it.artworkId == 20 })
     }
 }

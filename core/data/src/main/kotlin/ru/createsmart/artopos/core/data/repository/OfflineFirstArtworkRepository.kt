@@ -101,7 +101,7 @@ class OfflineFirstArtworkRepository @Inject constructor(
     // To clear unused fields from the detail_table
     override suspend fun clearDatabaseCache() {
         try {
-            val deletedCount = artworkDao.clearDetailsCacheFromSettings()
+            val deletedCount = artworkDetailDao.clearDetailsCacheFromSettings()
             Log.d("DatabaseCache", "Cleared $deletedCount cached artwork details.")
         } catch (e: SQLiteException) {
             Log.e("DatabaseCache", "Failed to clear details cache", e)

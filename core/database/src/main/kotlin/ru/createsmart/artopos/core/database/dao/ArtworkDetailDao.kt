@@ -25,4 +25,8 @@ interface ArtworkDetailDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertDetails(details: ArtworkDetailsDBO)
+
+    // Clears details cache for non-favorite artworks (used in settings cache cleanup)
+    @Query("DELETE FROM artwork_details WHERE id NOT IN (SELECT id FROM favorites)")
+    suspend fun clearDetailsCacheFromSettings(): Int
 }
