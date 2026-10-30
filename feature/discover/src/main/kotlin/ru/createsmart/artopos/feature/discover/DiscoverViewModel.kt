@@ -27,6 +27,8 @@ import ru.createsmart.artopos.core.domain.usecase.GetUserSettingsUseCase
 import ru.createsmart.artopos.core.domain.usecase.InitializeFiltersUseCase
 import ru.createsmart.artopos.core.domain.usecase.PreloadTranslationModelUseCase
 import ru.createsmart.artopos.core.domain.usecase.ToggleFavoriteUseCase
+import ru.createsmart.artopos.core.filter.model.FilterListItem
+import ru.createsmart.artopos.core.filter.model.FiltersUiState
 import ru.createsmart.artopos.core.model.FilterItem
 import ru.createsmart.artopos.core.model.FilterParamItem
 import ru.createsmart.artopos.core.model.FilterParams
@@ -36,8 +38,6 @@ import ru.createsmart.artopos.core.uicomponents.manager.UiMessageManager
 import ru.createsmart.artopos.core.uicomponents.util.toUiText
 import ru.createsmart.artopos.feature.discover.model.DiscoverEvent
 import ru.createsmart.artopos.feature.discover.model.DiscoverIntent
-import ru.createsmart.artopos.feature.discover.model.FilterListItem
-import ru.createsmart.artopos.feature.discover.model.FiltersUiState
 import javax.inject.Inject
 
 @Suppress("TooManyFunctions", "LongParameterList")

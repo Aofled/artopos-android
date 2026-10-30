@@ -29,4 +29,25 @@
 
     <string name="core_placeholder_artist">Неизвестный автор</string>
     <string name="core_placeholder_title">Без названия</string>
+
+    <string name="core_filter_label_type">Тип</string>
+    <string name="core_filter_label_period">Период времени</string>
+    <string name="core_filter_label_culture">Культура</string>
+    <string name="core_filter_value_any">Любой</string>
+
+    <string name="core_title_sort_filters">Сортировка фильтров</string>
+    <string name="core_search_hint">Поиск фильтров...</string>
+
+    <string name="core_cd_search">Поиск</string>
+    <string name="core_cd_clear_search">Очистить</string>
+    <string name="core_cd_sort">Сортировка</string>
+
+    <string name="core_sort_option_rank">Выбор куратора</string>
+    <string name="core_sort_option_views">Популярное</string>
+    <string name="core_sort_option_newest">Новинки</string>
+    <string name="core_sort_option_oldest">Сначала старые</string>
+    <string name="core_sort_option_random">Перемешать</string>
+
+    <string name="core_empty_title">Нет результатов!</string>
+    <string name="core_empty_subtitle">Попробуйте изменить фильтры</string>
 </resources>

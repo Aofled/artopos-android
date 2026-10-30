@@ -1,4 +1,4 @@
-package ru.createsmart.artopos.feature.discover.ui.components
+package ru.createsmart.artopos.core.filter
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
@@ -69,13 +69,12 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
 import ru.createsmart.artopos.core.common.util.DictionaryHelper
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
+import ru.createsmart.artopos.core.filter.model.FilterListItem
+import ru.createsmart.artopos.core.filter.model.FiltersUiState
+import ru.createsmart.artopos.core.filter.preview.FilterPreviewData
 import ru.createsmart.artopos.core.model.FilterParamItem
 import ru.createsmart.artopos.core.model.FilterSortOption
 import ru.createsmart.artopos.core.model.FilterType
-import ru.createsmart.artopos.feature.discover.R
-import ru.createsmart.artopos.feature.discover.model.FilterListItem
-import ru.createsmart.artopos.feature.discover.model.FiltersUiState
-import ru.createsmart.artopos.feature.discover.ui.preview.FilterPreviewData
 import ru.createsmart.artopos.core.designsystem.R as DSR
 
 private val FILTER_GRID_HEIGHT = 130.dp
@@ -87,7 +86,7 @@ private const val BEFORE_UPDATE_FILTER = 300L
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun FilterBottomSheet(
+fun FilterBottomSheet(
     sheetState: SheetState,
     filtersState: FiltersUiState,
     onFilterSelected: (FilterType, FilterParamItem?) -> Unit,
@@ -150,25 +149,25 @@ private fun FilterSheetContent(
         FilterSearchBar(query = filtersState.searchQuery, onQueryChanged = onSearchQueryChanged)
 
         FilterSection(
-            stringResource(R.string.discover_filter_label_type),
-            filtersState.classifications,
-            FilterType.CLASSIFICATION,
-            filtersState.searchQuery,
-            onFilterSelected,
+            title = stringResource(DSR.string.core_filter_label_type),
+            items = filtersState.classifications,
+            type = FilterType.CLASSIFICATION,
+            searchQuery = filtersState.searchQuery,
+            onSelect = onFilterSelected,
         )
         FilterSection(
-            stringResource(R.string.discover_filter_label_period),
-            filtersState.centuries,
-            FilterType.CENTURY,
-            filtersState.searchQuery,
-            onFilterSelected,
+            title = stringResource(DSR.string.core_filter_label_period),
+            items = filtersState.centuries,
+            type = FilterType.CENTURY,
+            searchQuery = filtersState.searchQuery,
+            onSelect = onFilterSelected,
         )
         FilterSection(
-            stringResource(R.string.discover_filter_label_culture),
-            filtersState.cultures,
-            FilterType.CULTURE,
-            filtersState.searchQuery,
-            onFilterSelected,
+            title = stringResource(DSR.string.core_filter_label_culture),
+            items = filtersState.cultures,
+            type = FilterType.CULTURE,
+            searchQuery = filtersState.searchQuery,
+            onSelect = onFilterSelected,
         )
     }
 }
@@ -239,21 +238,21 @@ private fun SortToggleButton(
         AnimatedContent(targetState = sort, label = "sort_anim") { targetSort ->
             val (iconRes, textRes) = when (targetSort) {
                 FilterSortOption.RANK ->
-                    DSR.drawable.ic_action_sort to R.string.discover_sort_option_rank // "Curator's Pick"
+                    DSR.drawable.ic_action_sort to DSR.string.core_sort_option_rank // "Curator's Pick"
                 FilterSortOption.TOTAL_PAGE_VIEWS ->
-                    DSR.drawable.ic_action_person_heart to R.string.discover_sort_option_views // "Most Viewed"
+                    DSR.drawable.ic_action_person_heart to DSR.string.core_sort_option_views // "Most Viewed"
                 FilterSortOption.ACCESSION_YEAR ->
-                    DSR.drawable.ic_action_schedule to R.string.discover_sort_option_newest // "New Arrivals"
+                    DSR.drawable.ic_action_schedule to DSR.string.core_sort_option_newest // "New Arrivals"
                 FilterSortOption.DATE_BEGIN ->
-                    DSR.drawable.ic_action_hourglass to R.string.discover_sort_option_oldest // "Oldest First"
+                    DSR.drawable.ic_action_hourglass to DSR.string.core_sort_option_oldest // "Oldest First"
                 FilterSortOption.RANDOM ->
-                    DSR.drawable.ic_action_shuffle to R.string.discover_sort_option_random // "Shuffle"
+                    DSR.drawable.ic_action_shuffle to DSR.string.core_sort_option_random // "Shuffle"
             }
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     painter = painterResource(id = iconRes),
-                    contentDescription = stringResource(R.string.discover_cd_sort),
+                    contentDescription = stringResource(DSR.string.core_cd_sort),
                     modifier = Modifier.size(16.dp),
                 )
                 Spacer(modifier = Modifier.width(6.dp))
@@ -297,7 +296,7 @@ private fun FilterSearchBar(
     ) {
         Icon(
             painter = painterResource(id = DSR.drawable.ic_search),
-            contentDescription = stringResource(R.string.discover_cd_search),
+            contentDescription = stringResource(DSR.string.core_cd_search),
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(20.dp),
         )
@@ -338,7 +337,7 @@ private fun SearchInputField(
                 Box(contentAlignment = Alignment.CenterStart) {
                     if (query.isEmpty()) {
                         Text(
-                            text = stringResource(R.string.discover_search_hint),
+                            text = stringResource(DSR.string.core_search_hint),
                             style = LocalTextStyle.current.copy(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                                 fontSize = 14.sp,
@@ -357,7 +356,7 @@ private fun SearchInputField(
             ) {
                 Icon(
                     painter = painterResource(id = DSR.drawable.ic_action_close),
-                    contentDescription = stringResource(R.string.discover_cd_clear_search),
+                    contentDescription = stringResource(DSR.string.core_cd_clear_search),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(16.dp),
                 )
@@ -489,7 +488,7 @@ private fun AnyFilterChip(isSelected: Boolean, onClick: () -> Unit) {
     FilterChip(
         selected = isSelected,
         onClick = onClick,
-        label = { Text(text = stringResource(R.string.discover_filter_value_any)) },
+        label = { Text(text = stringResource(DSR.string.core_filter_value_any)) },
         colors = FilterChipDefaults.filterChipColors(
             selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
         ),

@@ -1,4 +1,4 @@
-package ru.createsmart.artopos.feature.discover.model
+package ru.createsmart.artopos.core.filter.model
 
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
@@ -11,6 +11,6 @@ data class FiltersUiState(
     val centuries: ImmutableList<FilterListItem> = persistentListOf(),
     val cultures: ImmutableList<FilterListItem> = persistentListOf(),
     val searchQuery: String = "",
-    val isAvailable: Boolean = false, // If ALL filters are in the database
+    val isAvailable: Boolean = false, // Если категории загружены в базу
     val sort: FilterSortOption = FilterSortOption.RANK,
 )

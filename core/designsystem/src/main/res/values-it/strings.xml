@@ -29,4 +29,25 @@
 
     <string name="core_placeholder_artist">Artista sconosciuto</string>
     <string name="core_placeholder_title">Senza titolo</string>
+
+    <string name="core_filter_label_type">Tipo</string>
+    <string name="core_filter_label_period">Periodo storico</string>
+    <string name="core_filter_label_culture">Cultura</string>
+    <string name="core_filter_value_any">Qualsiasi</string>
+
+    <string name="core_title_sort_filters">Ordina filtri</string>
+    <string name="core_search_hint">Cerca filtri...</string>
+
+    <string name="core_cd_search">Cerca</string>
+    <string name="core_cd_clear_search">Cancella</string>
+    <string name="core_cd_sort">Ordinamento</string>
+
+    <string name="core_sort_option_rank">Scelta del curatore</string>
+    <string name="core_sort_option_views">Più visti</string>
+    <string name="core_sort_option_newest">Nuovi arrivi</string>
+    <string name="core_sort_option_oldest">I più antichi</string>
+    <string name="core_sort_option_random">Casuale</string>
+
+    <string name="core_empty_title">Nessun risultato!</string>
+    <string name="core_empty_subtitle">Prova a modificare i filtri</string>
 </resources>

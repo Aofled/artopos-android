@@ -1,7 +1,7 @@
-package ru.createsmart.artopos.feature.discover.ui.preview
+package ru.createsmart.artopos.core.filter.preview
 
+import ru.createsmart.artopos.core.filter.model.FilterListItem
 import ru.createsmart.artopos.core.model.FilterType
-import ru.createsmart.artopos.feature.discover.model.FilterListItem
 
 object FilterPreviewData {
 
@@ -20,7 +20,14 @@ object FilterPreviewData {
     val centuries = listOf(
         FilterListItem("10", 37525806L, FilterType.CENTURY, "19th century", 53000),
         FilterListItem("11", 37525815L, FilterType.CENTURY, "20th century", 48000),
-        FilterListItem("12", 37525797L, FilterType.CENTURY, "18th century", 21000, isSelected = true),
+        FilterListItem(
+            "12",
+            37525797L,
+            FilterType.CENTURY,
+            "18th century",
+            21000,
+            isSelected = true,
+        ),
         FilterListItem("13", 37525788L, FilterType.CENTURY, "17th century", 15000),
         FilterListItem("14", 37525779L, FilterType.CENTURY, "16th century", 8000),
         FilterListItem("15", 37525770L, FilterType.CENTURY, "15th century", 5000),

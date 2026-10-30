@@ -14,5 +14,7 @@ dependencies {
     implementation(libs.coil.network.core)
     implementation(libs.coil.compose)
 
+    implementation(libs.kotlinx.collections.immutable)
+
     testImplementation(libs.bundles.test.unit.common)
 }

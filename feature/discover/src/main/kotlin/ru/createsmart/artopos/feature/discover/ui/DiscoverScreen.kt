@@ -42,17 +42,17 @@ import ru.createsmart.artopos.core.artworkcard.model.ArtworkListItem
 import ru.createsmart.artopos.core.designsystem.components.UiText
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposDimens
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposTheme
+import ru.createsmart.artopos.core.filter.FilterBottomSheet
+import ru.createsmart.artopos.core.filter.model.FilterListItem
+import ru.createsmart.artopos.core.filter.model.FiltersUiState
 import ru.createsmart.artopos.core.model.FilterParams
 import ru.createsmart.artopos.core.uicomponents.components.FilterFloatingActionButton
 import ru.createsmart.artopos.core.uicomponents.notifiers.LocalBottomBarVisibility
 import ru.createsmart.artopos.feature.discover.DiscoverViewModel
 import ru.createsmart.artopos.feature.discover.model.DiscoverEvent
 import ru.createsmart.artopos.feature.discover.model.DiscoverIntent
-import ru.createsmart.artopos.feature.discover.model.FilterListItem
-import ru.createsmart.artopos.feature.discover.model.FiltersUiState
 import ru.createsmart.artopos.feature.discover.ui.components.ArtworksView
 import ru.createsmart.artopos.feature.discover.ui.components.ErrorView
-import ru.createsmart.artopos.feature.discover.ui.components.FilterBottomSheet
 import ru.createsmart.artopos.feature.discover.ui.components.LoadingView
 import ru.createsmart.artopos.feature.discover.ui.preview.DiscoverStateProvider
 
