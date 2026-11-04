@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="search_hint">アルファベット（ラテン文字）で検索 (Monet)…</string>
+    <string name="search_initial_title">コレクションを探す</string>
+    <string name="search_initial_subtitle">美術館のカタログは英語表記です。作者名や作品名の検索にはアルファベット（ラテン文字）をご使用ください。</string>
+    <string name="search_not_found_title">見つかりませんでした</string>
+    <string name="search_not_found_subtitle">検索条件を変更するか、フィルターをリセットしてください。</string>
+    <string name="search_not_found_cyrillic_title">カタログは英語表記です</string>
+    <string name="search_not_found_cyrillic_hint">美術館のコレクションはアルファベットでカタログ化されています。英語の文字で入力してみてください（例：「Моне」の代わりに「Monet」、「Ван Гог」の代わりに「Van Gogh」）。</string>
+    <string name="search_cd_filter">フィルター</string>
+</resources>

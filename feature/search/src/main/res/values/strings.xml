@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="search_hint">Search in Latin alphabet (Monet)…</string>
+    <string name="search_initial_title">Explore the collection</string>
+    <string name="search_initial_subtitle">The museum catalog is in English. Use the Latin alphabet to search for authors and titles.</string>
+    <string name="search_not_found_title">Nothing found</string>
+    <string name="search_not_found_subtitle">Try changing your search query or resetting the filters.</string>
+    <string name="search_not_found_cyrillic_title">Catalog is in English</string>
+    <string name="search_not_found_cyrillic_hint">The museum collection is cataloged in the Latin alphabet. Try typing your search query in English letters (e.g., “Monet” instead of “Моне” or “Van Gogh” instead of “Ван Гог”).</string>
+    <string name="search_cd_filter">Filters</string>
+</resources>

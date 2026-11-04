@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="search_hint">Пошук лацінкай (Monet)…</string>
+    <string name="search_initial_title">Даследуйце калекцыю</string>
+    <string name="search_initial_subtitle">Каталог музея на англійскай мове. Выкарыстоўвайце лацінку для пошуку аўтараў і назваў.</string>
+    <string name="search_not_found_title">Нічога не знойдзена</string>
+    <string name="search_not_found_subtitle">Паспрабуйце змяніць запыт або скінуць фільтры.</string>
+    <string name="search_not_found_cyrillic_title">Каталог на англійскай мове</string>
+    <string name="search_not_found_cyrillic_hint">Калекцыя музея каталагізаваная лацінкай. Паспрабуйце напісаць запыт англійскімі літарамі (напрыклад, «Monet» замест «Моне» ці «Van Gogh» замест «Ван Гог»).</string>
+    <string name="search_cd_filter">Фільтры</string>
+</resources>

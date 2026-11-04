@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="search_hint">使用拉丁字母搜索 (Monet)…</string>
+    <string name="search_initial_title">探索馆藏</string>
+    <string name="search_initial_subtitle">博物馆目录为英文。请使用拉丁字母搜索作者和作品名称。</string>
+    <string name="search_not_found_title">未找到相关结果</string>
+    <string name="search_not_found_subtitle">请尝试修改搜索词或重置筛选条件。</string>
+    <string name="search_not_found_cyrillic_title">目录为英文</string>
+    <string name="search_not_found_cyrillic_hint">博物馆馆藏采用拉丁字母编目。请尝试输入英文字母进行搜索（例如：用“Monet”代替“Моне”，用“Van Gogh”代替“Ван Гог”）。</string>
+    <string name="search_cd_filter">筛选</string>
+</resources>

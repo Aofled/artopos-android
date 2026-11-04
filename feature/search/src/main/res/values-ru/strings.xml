@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="search_hint">Поиск на латинице (Monet)…</string>
+    <string name="search_initial_title">Исследуйте коллекцию</string>
+    <string name="search_initial_subtitle">Каталог музея на английском языке. Используйте латиницу для поиска авторов и названий.</string>
+    <string name="search_not_found_title">Ничего не найдено</string>
+    <string name="search_not_found_subtitle">Попробуйте изменить запрос или сбросить фильтры.</string>
+    <string name="search_not_found_cyrillic_title">Каталог на английском языке</string>
+    <string name="search_not_found_cyrillic_hint">Коллекция музея каталогизирована на латинице. Попробуйте написать запрос английскими буквами (например, «Monet» вместо «Моне» или «Van Gogh» вместо «Ван Гог»).</string>
+    <string name="search_cd_filter">Фильтры</string>
+</resources>
