@@ -29,8 +29,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -128,6 +130,8 @@ private fun ArtworksGrid(
 
     val navBarsHeight = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
 
+    var pendingScrollToTop by remember { mutableStateOf(false) }
+
     val isAtBottom by remember {
         derivedStateOf { !listState.canScrollForward }
     }
@@ -155,10 +159,17 @@ private fun ArtworksGrid(
         scrollUp.collect { action ->
             when (action) {
                 is DiscoverEvent.ScrollToTop -> {
-                    bottomBarNotifier(BottomBarCommand.SHOW)
-                    listState.scrollToItem(0)
+                    pendingScrollToTop = true
                 }
             }
+        }
+    }
+
+    LaunchedEffect(artworks.loadState.refresh) {
+        if (artworks.loadState.refresh is LoadState.NotLoading && pendingScrollToTop) {
+            bottomBarNotifier(BottomBarCommand.SHOW)
+            listState.scrollToItem(0)
+            pendingScrollToTop = false
         }
     }
 
