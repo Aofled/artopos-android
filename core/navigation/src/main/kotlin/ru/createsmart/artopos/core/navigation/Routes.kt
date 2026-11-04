@@ -6,6 +6,9 @@ import kotlinx.serialization.Serializable
 public object DiscoverRoute
 
 @Serializable
+public object SearchRoute
+
+@Serializable
 public object FavoritesRoute
 
 @Serializable

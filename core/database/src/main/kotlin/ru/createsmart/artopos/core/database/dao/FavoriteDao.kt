@@ -11,6 +11,7 @@ import ru.createsmart.artopos.core.database.model.FavoriteDBO
 
 @Dao
 interface FavoriteDao {
+
     @Query(
         """
         SELECT artworks.id, artworks.title, artworks.artist, artworks.image_url, 
@@ -22,6 +23,9 @@ interface FavoriteDao {
     """,
     )
     fun getFavorites(): Flow<List<ArtworkFeedWithFavoriteFlagDBO>>
+
+    @Query("SELECT id FROM favorites")
+    fun getFavoriteIds(): Flow<List<Int>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFavorite(favorite: FavoriteDBO)

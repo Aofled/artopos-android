@@ -11,6 +11,6 @@ data class FiltersUiState(
     val centuries: ImmutableList<FilterListItem> = persistentListOf(),
     val cultures: ImmutableList<FilterListItem> = persistentListOf(),
     val searchQuery: String = "",
-    val isAvailable: Boolean = false, // Если категории загружены в базу
+    val isAvailable: Boolean = false,
     val sort: FilterSortOption = FilterSortOption.RANK,
 )

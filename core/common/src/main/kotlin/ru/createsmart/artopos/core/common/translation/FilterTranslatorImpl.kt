@@ -16,4 +16,8 @@ class FilterTranslatorImpl @Inject constructor(
         val locContext = LocaleHelper.getLocalizedContext(context, languageCode)
         return DictionaryHelper.getLocalizedName(locContext, rawName)
     }
+
+    override fun translate(rawName: String): String {
+        return DictionaryHelper.getLocalizedName(context, rawName)
+    }
 }

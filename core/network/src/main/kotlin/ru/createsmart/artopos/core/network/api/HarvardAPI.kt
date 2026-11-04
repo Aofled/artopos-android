@@ -7,6 +7,9 @@ import ru.createsmart.artopos.core.network.model.ArtworkDTO
 import ru.createsmart.artopos.core.network.model.FilterItemDTO
 import ru.createsmart.artopos.core.network.model.NetworkResponse
 
+private const val DEFAULT_ARTWORK_FIELDS =
+    "id,title,dated,technique,primaryimageurl,description,url,people,images,places"
+
 /**
  * https://github.com/harvardartmuseums/api-docs
  */
@@ -14,6 +17,7 @@ interface HarvardAPI {
     @GET("object")
     suspend fun getArtworks(
         // Default filters for the main feed (Public Paintings with Images)
+        @Query("q") query: String? = null,
         @Query("classification") classification: String? = null,
         @Query("century") century: String? = null,
         @Query("culture") culture: String? = null,
@@ -24,9 +28,7 @@ interface HarvardAPI {
         @Query("size") size: Int = 50,
         @Query("page") page: Int = 1,
         // Optimization: Request only necessary fields to save traffic/bandwidth
-        @Query(
-            "fields",
-        ) fields: String = "id,title,dated,technique,primaryimageurl,description,url,people,images,places",
+        @Query("fields") fields: String = DEFAULT_ARTWORK_FIELDS,
     ): NetworkResponse<ArtworkDTO>
 
     @GET("object/{id}")
