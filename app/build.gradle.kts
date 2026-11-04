@@ -107,6 +107,7 @@ dependencies {
     implementation(projects.feature.details)
     implementation(projects.feature.discover)
     implementation(projects.feature.favorites)
+    implementation(projects.feature.search)
     implementation(projects.feature.settings)
 
     implementation(libs.androidx.navigation.compose)
