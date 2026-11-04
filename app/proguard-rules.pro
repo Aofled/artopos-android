@@ -1,69 +1,45 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# ==============================================================================
+# ARTOPOS RELEASE R8 OPTIMIZATION RULES
+# ==============================================================================
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# 1. Aggressive optimization (5 optimizer passes)
+-optimizationpasses 5
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# 2. Flattening of package structure (collapses paths in DEX, saving space in the String Pool)
+-repackageclasses ""
+-allowaccessmodification
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
-
-# --- GENERAL ---
-
-# Keep stack trace data for Crashlytics (Line numbers, files)
+# 3. Preserving metadata for readable crashes in Firebase Crashlytics
 -keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile
 
-# Required for libraries using Reflection (Dagger, Retrofit, etc.)
+# 4. Preserving signatures for generic types and Retrofit/Kotlin reflection
+-keepattributes Signature
 -keepattributes *Annotation*
 -keepattributes EnclosingMethod
--keepattributes Exceptions, InnerClasses
+-keepattributes InnerClasses
 
-# CRITICAL: Keep Generic types (List<User> -> List<User>)
-# Fixes crashes in Retrofit/Gson/Moshi
--keepattributes Signature
-
-# --- KOTLIN ---
--keepclassmembers class ** {
-    @org.jetbrains.annotations.Nullable *;
-    @org.jetbrains.annotations.NotNull *;
+# 5. Stripping out `android.util.Log` debug logs in release builds
+# (Completely removes `Log.d/v/i` calls and their associated strings from the bytecode)
+-assumenosideeffects class android.util.Log {
+    public static boolean isLoggable(java.lang.String, int);
+    public static int v(...);
+    public static int d(...);
+    public static int i(...);
 }
 
-# --- KOTLIN SERIALIZATION ---
-# Prevent renaming fields in JSON models
+# 6. Kotlin Serialization Security (only what’s actually necessary)
 -keepclassmembers class * {
-    @kotlinx.serialization.Serializable *;
+    @kotlinx.serialization.SerialName <fields>;
 }
-
-# --- RETROFIT ---
-# Keep annotations for HTTP methods (@GET, @POST)
--keepattributes RuntimeVisibleAnnotations, RuntimeVisibleParameterAnnotations
--keepattributes AnnotationDefault
-
-# --- NAVIGATION COMPOSE ---
-# Prevent crashes when passing arguments between screens
--keepnames class * implements android.os.Parcelable
--keepnames class * implements java.io.Serializable
-
-# --- DEBUGGING SUPPORT (OPTIONAL) ---
-# Keep resource IDs. Usually not needed for Release.
--keep class **.R$* {
+-keepclassmembers class * extends kotlinx.serialization.internal.GeneratedSerializer {
     <fields>;
 }
 
-# Number of compiler cycles
--optimizationpasses 5
+# 7. Navigation Compose & Safe Args
+-keepnames class * implements android.os.Parcelable
+-keepnames class * implements java.io.Serializable
 
-# logs
-# -printconfiguration build/outputs/mapping/release/full_config.txt
+# 8. Suppressing false warnings from third-party libraries
+-dontwarn javax.annotation.**
+-dontwarn org.codehaus.mojo.animal_sniffer.**

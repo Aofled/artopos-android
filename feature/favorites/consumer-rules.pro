@@ -6,5 +6,3 @@
 # --- NAVIGATION WARNING ---
 # If you pass complex objects (Parcelable/Serializable) as Navigation Arguments,
 # you MUST protect them from renaming, otherwise restoration might fail.
-#
-# -keepnames class ru.createsmart.artopos.core.designsystem.model.** { *; }

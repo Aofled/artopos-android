@@ -1,15 +1,10 @@
-# Room library already has basic rules, but we add extra safety for this module.
-
-# 1. Protect Entity fields
-# If R8 renames fields (e.g., "val title" -> "val a"), Room might fail to map
-# database columns to these fields unless @ColumnInfo is used everywhere.
--keepclassmembers class * {
+# Allow R8 to obfuscate and shrink Entity fields,
+# since mapping is based on string-based @ColumnInfo annotations
+-keepclassmembers,allowobfuscation,allowshrinking class * {
     @androidx.room.Entity <fields>;
 }
 
-# 2. Protect Database implementation
-# Room uses Reflection to find the generated "_Impl" class at runtime.
-# This ensures R8 doesn't remove the constructor.
+# Protecting the constructor of generated Room implementations
 -keepclassmembers class * extends androidx.room.RoomDatabase {
     <init>(...);
 }

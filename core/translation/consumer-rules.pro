@@ -1,25 +1,24 @@
-# --- ML KIT TRANSLATION RULES ---
+# ==============================================================================
+# ML KIT TRANSLATION CONSUMER RULES
+# ==============================================================================
 
-# Google ML Kit uses Reflection and Native Code (C++).
-# These rules ensure R8 doesn't break model loading or JNI calls.
+# Note: The 'com.google.mlkit:translate' library already contains built-in
+# consumer-rules within its AAR, which automatically protect TFLite, JNI, and Protobuf.
+# We do NOT need to declare global '-keep class com.google.** { *; }' rules.
 
-# 1. Keep ML Kit entry points
-# This prevents R8 from removing classes that are called from native libraries.
--keep class com.google.mlkit.** { *; }
--keep class com.google.android.gms.** { *; }
-
-# 2. Keep TensorFlow Lite (Used internally by ML Kit)
-# If TFLite classes are renamed, the model interpreter will crash.
--keep class org.tensorflow.** { *; }
-
-# 3. Keep Protobuf messages (Used for model configuration)
-# Protobuf relies heavily on generated classes that are accessed dynamically.
--keepclassmembers class * extends com.google.protobuf.GeneratedMessageLite {
-  <fields>;
+# 1. Protecting the data source's public interface from deletion,
+# in case it is injected via reflection or Hilt in other modules.
+-keep,allowobfuscation,allowshrinking class ru.createsmart.artopos.core.translation.MLKitTranslationDataSource {
+    public <init>(...);
+    public <methods>;
 }
 
-# 4. Keep Metadata for Native Methods
-# Essential for JNI communication between Java/Kotlin and C++.
+# 2. Attributes required for the proper functioning of JNI and Play Services Tasks (.await())
+# Preserving type signatures for Kotlin Coroutines and the Google Tasks API:
+-keepattributes Signature
 -keepattributes EnclosingMethod
 -keepattributes InnerClasses
--keepattributes Signature
+
+# 3. Suppressing false R8 warnings when optimizing Play Services
+-dontwarn com.google.android.gms.**
+-dontwarn com.google.mlkit.**
