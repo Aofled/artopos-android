@@ -52,6 +52,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import ru.createsmart.artopos.core.designsystem.theme.ArtoposDimens
 import ru.createsmart.artopos.core.navigation.DiscoverRoute
 import ru.createsmart.artopos.core.navigation.FavoritesRoute
+import ru.createsmart.artopos.core.navigation.SearchRoute
 import ru.createsmart.artopos.core.uicomponents.notifiers.BottomBarCommand
 import ru.createsmart.artopos.core.uicomponents.notifiers.LocalBottomBarStateNotifier
 import ru.createsmart.artopos.core.uicomponents.notifiers.LocalBottomBarVisibility
@@ -195,7 +196,9 @@ fun ArtoposApp(
 }
 
 private fun NavDestination?.canHideBottomBar(): Boolean =
-    this?.hasRoute(DiscoverRoute::class) == true || this?.hasRoute(FavoritesRoute::class) == true
+    this?.hasRoute(DiscoverRoute::class) == true ||
+        this?.hasRoute(SearchRoute::class) == true ||
+        this?.hasRoute(FavoritesRoute::class) == true
 
 @Composable
 private fun rememberBottomBarNestedScrollConnection(

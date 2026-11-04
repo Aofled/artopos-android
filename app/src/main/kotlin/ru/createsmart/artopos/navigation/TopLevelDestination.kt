@@ -2,6 +2,7 @@ package ru.createsmart.artopos.navigation
 
 import ru.createsmart.artopos.core.navigation.DiscoverRoute
 import ru.createsmart.artopos.core.navigation.FavoritesRoute
+import ru.createsmart.artopos.core.navigation.SearchRoute
 import ru.createsmart.artopos.core.navigation.SettingsRoute
 import ru.createsmart.artopos.core.designsystem.R as DSR
 
@@ -16,6 +17,12 @@ enum class TopLevelDestination(
         iconUnselected = DSR.drawable.ic_nav_home_outlined,
         iconSelected = DSR.drawable.ic_nav_home_filled,
         titleTextId = DSR.string.core_title_discover,
+    ),
+    SEARCH(
+        route = SearchRoute,
+        iconUnselected = DSR.drawable.ic_nav_search_outlined,
+        iconSelected = DSR.drawable.ic_nav_search_filled,
+        titleTextId = DSR.string.core_cd_search,
     ),
     FAVORITES(
         route = FavoritesRoute,
