@@ -12,26 +12,84 @@ import ru.createsmart.artopos.core.model.ArtworkImage
 import ru.createsmart.artopos.core.model.CreationDate
 import ru.createsmart.artopos.core.model.ImageDimensions
 import ru.createsmart.artopos.core.network.model.ArtworkDTO
+import ru.createsmart.artopos.core.network.model.PersonDTO
 import javax.inject.Inject
 
 class ArtworkMapper @Inject constructor() {
 
     companion object {
         private val YEAR_REGEX = Regex("\\d{4}")
-        private const val ROLE_ARTIST = "Artist"
+
+        // Creator roles for artwork attribution
+        private val CREATOR_ROLES = setOf(
+            "artist",
+            "artist after",
+            "attributed to",
+            "follower of",
+            "circle of",
+            "workshop of",
+            "school of",
+            "painter",
+            "printmaker",
+            "engraver",
+            "designer",
+        )
+
+        // Unidentified artist name variants in Harvard API
+        private val UNIDENTIFIED_NAMES = setOf(
+            "unidentified artist",
+            "unknown artist",
+            "anonymous",
+            "unidentified",
+            "unknown",
+        )
+    }
+
+    /**
+     * Resolves artist name:
+     * 1. Checks creator roles.
+     * 2. Prefers known names over unidentified artists.
+     * 3. Keeps museum prefixes (e.g., "After ...").
+     * 4. Returns empty string if artist is unknown.
+     */
+    private fun resolveArtistName(people: List<PersonDTO>?): String {
+        return if (people.isNullOrEmpty()) {
+            ""
+        } else {
+            // Filter by creator roles
+            val creators = people.filter { person ->
+                val role = person.role?.trim()?.lowercase() ?: ""
+                CREATOR_ROLES.any { role.contains(it) }
+            }
+
+            if (creators.isEmpty()) {
+                people.firstOrNull()?.name?.takeUnless { isUnidentified(it) } ?: ""
+            } else {
+                // Find creators with known names
+                val identifiedCreators = creators.filterNot { isUnidentified(it.name) }
+
+                if (identifiedCreators.isNotEmpty()) {
+                    // person.name has displayname with prefix
+                    identifiedCreators.mapNotNull { it.name }.joinToString(", ")
+                } else {
+                    ""
+                }
+            }
+        }
+    }
+
+    private fun isUnidentified(name: String?): Boolean {
+        if (name.isNullOrBlank()) return true
+        val lower = name.trim().lowercase()
+        return UNIDENTIFIED_NAMES.any { lower.contains(it) }
     }
 
     // --- NETWORK (DTO) -> DATABASE (DBO) ---
 
     fun mapDtoToDbo(dto: ArtworkDTO): ArtworkDBO {
-        val artistName = dto.artists
-            ?.filter { it.role.equals(ROLE_ARTIST, ignoreCase = true) }
-            ?.mapNotNull { it.name }
-            ?.joinToString(", ")
-            ?.takeIf { it.isNotBlank() }
-            ?: ""
+        val artistName = resolveArtistName(dto.artists)
 
-        val bestImage = dto.images?.firstOrNull()
+        val bestImage = dto.images.firstOrNull()
         val finalUrl = bestImage?.url ?: dto.imageUrl ?: ""
 
         val dimensions = if (bestImage != null && bestImage.width > 0 && bestImage.height > 0) {
@@ -42,7 +100,7 @@ class ArtworkMapper @Inject constructor() {
 
         val parsedYear = dto.date?.let { YEAR_REGEX.find(it)?.value?.toIntOrNull() }
 
-        val gallery = dto.images?.map { img ->
+        val gallery = dto.images.map { img ->
             StoredImage(url = img.url ?: "", width = img.width, height = img.height)
         }
 
@@ -81,12 +139,7 @@ class ArtworkMapper @Inject constructor() {
     // --- NETWORK (DTO) -> DOMAIN ---
 
     fun mapDtoToDomain(dto: ArtworkDTO, isFavorite: Boolean = false): Artwork {
-        val artistName = dto.artists
-            .filter { it.role.equals(ROLE_ARTIST, ignoreCase = true) }
-            .mapNotNull { it.name }
-            .joinToString(", ")
-            .takeIf { it.isNotBlank() }
-            ?: ""
+        val artistName = resolveArtistName(dto.artists)
 
         val bestImage = dto.images.firstOrNull()
         val finalUrl = bestImage?.url ?: dto.imageUrl ?: ""
@@ -97,11 +150,11 @@ class ArtworkMapper @Inject constructor() {
             null
         }
 
-        val rawDate = dto.date
-        val parsedYear = rawDate?.let { YEAR_REGEX.find(it)?.value?.toIntOrNull() }
+        val date = dto.date
+        val parsedYear = date?.let { YEAR_REGEX.find(it)?.value?.toIntOrNull() }
         val creationDate = when {
             parsedYear != null -> CreationDate.ExactYear(parsedYear)
-            !rawDate.isNullOrBlank() -> CreationDate.TextOnly(rawDate)
+            !date.isNullOrBlank() -> CreationDate.TextOnly(date)
             else -> CreationDate.Unknown
         }
 
