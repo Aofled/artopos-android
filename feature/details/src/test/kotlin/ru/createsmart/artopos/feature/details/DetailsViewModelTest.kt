@@ -5,6 +5,7 @@ import app.cash.turbine.test
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceTimeBy
@@ -31,6 +32,7 @@ import ru.createsmart.artopos.core.uicomponents.manager.UiMessageManager
 import ru.createsmart.artopos.feature.details.translation.ArtworkTranslationFacade
 import kotlin.time.Duration.Companion.milliseconds
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 class DetailsViewModelTest {
 

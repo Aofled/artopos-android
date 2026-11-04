@@ -5,6 +5,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
@@ -23,6 +24,7 @@ import ru.createsmart.artopos.core.testing.util.MainDispatcherRule
 import ru.createsmart.artopos.core.uicomponents.manager.UiMessageManager
 import ru.createsmart.artopos.feature.settings.model.SettingsIntent
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class SettingsViewModelTest {
 
     @get:Rule

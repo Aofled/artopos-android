@@ -160,7 +160,7 @@ internal fun LanguageSelectionDialog(
     val languageNames = LanguageConfig.supportedLanguages.map { language ->
         val name = when {
             language.nativeName != null -> language.nativeName
-            language.nameResId != null -> stringResource(language.nameResId!!)
+            language.nameResId != null -> stringResource(language.nameResId)
             else -> LocaleListCompat.forLanguageTags(language.tag).get(0)?.displayName ?: unknownText
         }
         language.tag to name
