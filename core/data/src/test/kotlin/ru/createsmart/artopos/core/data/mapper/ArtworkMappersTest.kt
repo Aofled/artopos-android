@@ -12,6 +12,7 @@ import ru.createsmart.artopos.core.database.model.ArtworkFeedProjectionDBO
 import ru.createsmart.artopos.core.database.model.ArtworkFeedWithFavoriteFlagDBO
 import ru.createsmart.artopos.core.database.model.ArtworkWithDetailsDBO
 import ru.createsmart.artopos.core.database.model.ImageDimensionsDBO
+import ru.createsmart.artopos.core.model.Artwork
 import ru.createsmart.artopos.core.model.CreationDate
 import ru.createsmart.artopos.core.model.ImageDimensions
 import ru.createsmart.artopos.core.network.model.ArtworkDTO
@@ -270,8 +271,10 @@ class ArtworkMappersTest {
             copyright = "Public Domain",
             gallery = GalleryDTO(name = "Room 101"),
         )
+
         // WHEN
         val dbo = mapper.mapDtoToDetailsDbo(dto)
+
         // THEN
         assertEquals(42, dbo.id)
         assertEquals("Louvre", dbo.provenance)
@@ -285,5 +288,54 @@ class ArtworkMappersTest {
         assertEquals("50 x 70 cm", dbo.dimensions)
         assertEquals("Public Domain", dbo.copyright)
         assertEquals("Room 101", dbo.galleryLocation)
+    }
+
+    @Test
+    fun `mapDtoToDomain maps DTO directly to domain Artwork with favorite flag`() {
+        // GIVEN
+        val dto = ArtworkDTO(
+            id = 777,
+            title = "Starry Night",
+            artists = listOf(PersonDTO(name = "Van Gogh", role = "Artist")),
+            imageUrl = "https://example.com/starry.jpg",
+            date = "1889",
+        )
+
+        // WHEN
+        val domain = mapper.mapDtoToDomain(dto, isFavorite = true)
+
+        // THEN
+        assertEquals(777, domain.id)
+        assertEquals("Starry Night", domain.title)
+        assertEquals("Van Gogh", domain.artist)
+        assertEquals("https://example.com/starry.jpg", domain.imageUrl)
+        assertEquals(CreationDate.ExactYear(1889), domain.creationDate)
+        assertTrue(domain.isFavorite)
+    }
+
+    @Test
+    fun `mapDomainToDbo maps domain Artwork to ArtworkDBO for favorite snapshot`() {
+        // GIVEN
+        val domain = Artwork(
+            id = 888,
+            title = "The Scream",
+            artist = "Edvard Munch",
+            imageUrl = "https://example.com/scream.jpg",
+            imageDimensions = ImageDimensions(800, 1000),
+            creationDate = CreationDate.ExactYear(1893),
+            isFavorite = true,
+        )
+
+        // WHEN
+        val dbo = mapper.mapDomainToDbo(domain)
+
+        // THEN
+        assertEquals(888, dbo.id)
+        assertEquals("The Scream", dbo.title)
+        assertEquals("Edvard Munch", dbo.artist)
+        assertEquals("https://example.com/scream.jpg", dbo.imageUrl)
+        assertEquals(ImageDimensionsDBO(800, 1000), dbo.imageDimensions)
+        assertEquals("1893", dbo.date)
+        assertEquals(1893, dbo.yearInt)
     }
 }

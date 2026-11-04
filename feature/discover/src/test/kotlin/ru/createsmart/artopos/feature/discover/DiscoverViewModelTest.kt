@@ -5,6 +5,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -51,7 +52,7 @@ class DiscoverViewModelTest {
 
     @Before
     fun setUp() {
-        coEvery { initializeFilters() } returns Result.success(Unit)
+        coEvery { initializeFilters(any<Boolean>()) } returns Result.success(Unit)
         every { getFilters(any()) } returns flowOf(emptyList())
 
         val defaultSettings = UserSettings(ThemeConfig.FOLLOW_SYSTEM, "en")
@@ -158,7 +159,7 @@ class DiscoverViewModelTest {
     @Test
     fun `intent ToggleFavorite calls use case with correct id`() = runTest {
         // GIVEN
-        coEvery { toggleFavorite(any()) } returns Unit
+        coEvery { toggleFavorite(any<Int>()) } returns Unit
 
         // WHEN
         viewModel.onIntent(DiscoverIntent.ToggleFavorite(123))

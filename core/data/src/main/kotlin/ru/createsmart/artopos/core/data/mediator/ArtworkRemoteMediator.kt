@@ -123,7 +123,7 @@ class ArtworkRemoteMediator(
         return if (hasFilters()) {
             if (params.sort == FilterSortOption.DATE_BEGIN) SORT_ASC else SORT_DESC
         } else {
-            SORT_DESC // For the main page, always "desс"
+            SORT_DESC // For the main page, always "desc"
         }
     }
 

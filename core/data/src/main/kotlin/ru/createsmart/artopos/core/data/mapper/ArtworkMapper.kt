@@ -78,6 +78,72 @@ class ArtworkMapper @Inject constructor() {
         )
     }
 
+    // --- NETWORK (DTO) -> DOMAIN ---
+
+    fun mapDtoToDomain(dto: ArtworkDTO, isFavorite: Boolean = false): Artwork {
+        val artistName = dto.artists
+            .filter { it.role.equals(ROLE_ARTIST, ignoreCase = true) }
+            .mapNotNull { it.name }
+            .joinToString(", ")
+            .takeIf { it.isNotBlank() }
+            ?: ""
+
+        val bestImage = dto.images.firstOrNull()
+        val finalUrl = bestImage?.url ?: dto.imageUrl ?: ""
+
+        val dimensions = if (bestImage != null && bestImage.width > 0 && bestImage.height > 0) {
+            ImageDimensions(width = bestImage.width, height = bestImage.height)
+        } else {
+            null
+        }
+
+        val rawDate = dto.date
+        val parsedYear = rawDate?.let { YEAR_REGEX.find(it)?.value?.toIntOrNull() }
+        val creationDate = when {
+            parsedYear != null -> CreationDate.ExactYear(parsedYear)
+            !rawDate.isNullOrBlank() -> CreationDate.TextOnly(rawDate)
+            else -> CreationDate.Unknown
+        }
+
+        return Artwork(
+            id = dto.id,
+            title = dto.title.orEmpty(),
+            artist = artistName,
+            imageUrl = finalUrl,
+            imageDimensions = dimensions,
+            creationDate = creationDate,
+            isFavorite = isFavorite,
+        )
+    }
+
+    // --- DOMAIN -> DATABASE (DBO) ---
+
+    fun mapDomainToDbo(artwork: Artwork): ArtworkDBO {
+        val (dateStr, yearInt) = when (val date = artwork.creationDate) {
+            is CreationDate.ExactYear -> date.year.toString() to date.year
+            is CreationDate.TextOnly -> date.text to null
+            is CreationDate.Unknown -> null to null
+        }
+
+        val dimensions = artwork.imageDimensions?.let {
+            ImageDimensionsDBO(width = it.width, height = it.height)
+        }
+
+        return ArtworkDBO(
+            id = artwork.id,
+            title = artwork.title,
+            artist = artwork.artist,
+            imageUrl = artwork.imageUrl,
+            imageDimensions = dimensions,
+            date = dateStr,
+            yearInt = yearInt,
+            technique = null,
+            description = null,
+            url = null,
+            galleryImages = null,
+        )
+    }
+
     // --- DATABASE (DBO) -> DOMAIN ---
 
     fun mapToDomain(dbo: ArtworkFeedWithFavoriteFlagDBO): Artwork {
