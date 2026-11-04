@@ -11,9 +11,15 @@ public interface ArtworkRepository {
         params: FilterParams,
     ): Flow<PagingData<Artwork>>
 
+    public fun searchArtworks(
+        query: String,
+        params: FilterParams,
+    ): Flow<PagingData<Artwork>>
+
     public fun getArtwork(id: Int): Flow<ArtworkDetails?>
     public suspend fun syncArtworkDetails(id: Int): Result<Unit>
     public fun getFavoriteArtworks(): Flow<List<Artwork>>
+    public fun getFavoriteArtworkIds(): Flow<Set<Int>>
     public suspend fun toggleFavorite(artworkId: Int)
     public suspend fun clearDatabaseCache()
 }
