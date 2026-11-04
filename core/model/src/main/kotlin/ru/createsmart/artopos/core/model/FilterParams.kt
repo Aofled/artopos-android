@@ -9,5 +9,5 @@ public data class FilterParams(
     val classification: FilterParamItem? = null,
     val century: FilterParamItem? = null,
     val culture: FilterParamItem? = null,
-    val sort: FilterSortOption = FilterSortOption.RANK,
+    val sort: FilterSortOption = FilterSortOption.TOTAL_PAGE_VIEWS,
 )

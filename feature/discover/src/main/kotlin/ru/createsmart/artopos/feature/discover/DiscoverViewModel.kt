@@ -223,11 +223,11 @@ class DiscoverViewModel @Inject constructor(
         val currentDraft = _draftFilterParams.value
 
         val newSort = when (currentDraft.sort) {
-            FilterSortOption.RANK -> FilterSortOption.TOTAL_PAGE_VIEWS
-            FilterSortOption.TOTAL_PAGE_VIEWS -> FilterSortOption.ACCESSION_YEAR
+            FilterSortOption.TOTAL_PAGE_VIEWS -> FilterSortOption.RANK
+            FilterSortOption.RANK -> FilterSortOption.ACCESSION_YEAR
             FilterSortOption.ACCESSION_YEAR -> FilterSortOption.DATE_BEGIN
             FilterSortOption.DATE_BEGIN -> FilterSortOption.RANDOM
-            FilterSortOption.RANDOM -> FilterSortOption.RANK
+            FilterSortOption.RANDOM -> FilterSortOption.TOTAL_PAGE_VIEWS
         }
 
         _draftFilterParams.value = currentDraft.copy(sort = newSort)

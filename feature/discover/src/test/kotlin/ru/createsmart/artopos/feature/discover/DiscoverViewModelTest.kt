@@ -97,14 +97,14 @@ class DiscoverViewModelTest {
         viewModel.filtersUiState.test {
             // GIVEN
             val initialState = awaitItem()
-            assertEquals(FilterSortOption.RANK, initialState.sort) // Default
+            assertEquals(FilterSortOption.TOTAL_PAGE_VIEWS, initialState.sort) // Default
 
             // WHEN
             viewModel.onIntent(DiscoverIntent.ToggleFilterSort)
 
             // THEN
             val stateAfterFirstClick = awaitItem()
-            assertEquals(FilterSortOption.TOTAL_PAGE_VIEWS, stateAfterFirstClick.sort)
+            assertEquals(FilterSortOption.RANK, stateAfterFirstClick.sort)
         }
     }
 
@@ -152,7 +152,7 @@ class DiscoverViewModelTest {
             // THEN
             val stateAfterReset = awaitItem()
             assertEquals("", stateAfterReset.searchQuery)
-            assertEquals(FilterSortOption.RANK, stateAfterReset.sort)
+            assertEquals(FilterSortOption.TOTAL_PAGE_VIEWS, stateAfterReset.sort)
         }
     }
 

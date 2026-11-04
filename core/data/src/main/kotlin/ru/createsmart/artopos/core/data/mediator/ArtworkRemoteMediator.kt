@@ -107,9 +107,9 @@ class ArtworkRemoteMediator(
         return if (hasFilters()) {
             when (params.sort) {
                 // For the "rank", "totalpageviews", accessionyear", "datebegin", "random" filters
-                // "accessionyear" is the default.
-                FilterSortOption.RANK -> FILTER_RANK
+                // "totalpageviews" is the default.
                 FilterSortOption.TOTAL_PAGE_VIEWS -> FILTER_TOTAL_PAGE_VIEWS
+                FilterSortOption.RANK -> FILTER_RANK
                 FilterSortOption.ACCESSION_YEAR -> FILTER_ACCESSION_YEAR
                 FilterSortOption.DATE_BEGIN -> FILTER_DATE_BEGIN
                 FilterSortOption.RANDOM -> FILTER_RANDOM

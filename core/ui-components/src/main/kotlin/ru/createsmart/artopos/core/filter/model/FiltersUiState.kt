@@ -12,5 +12,5 @@ data class FiltersUiState(
     val cultures: ImmutableList<FilterListItem> = persistentListOf(),
     val searchQuery: String = "",
     val isAvailable: Boolean = false,
-    val sort: FilterSortOption = FilterSortOption.RANK,
+    val sort: FilterSortOption = FilterSortOption.TOTAL_PAGE_VIEWS,
 )

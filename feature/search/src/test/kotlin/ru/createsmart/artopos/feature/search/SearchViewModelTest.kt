@@ -86,7 +86,7 @@ class SearchViewModelTest {
         viewModel.uiState.test {
             val state = awaitItem()
             assertEquals("", state.searchQuery)
-            assertEquals(FilterSortOption.RANK, state.activeFilterParams.sort)
+            assertEquals(FilterSortOption.TOTAL_PAGE_VIEWS, state.activeFilterParams.sort)
             assertNull(state.activeFilterParams.classification)
             assertTrue(state.activeFilters.isEmpty())
             assertFalse(state.hasActiveFilters)

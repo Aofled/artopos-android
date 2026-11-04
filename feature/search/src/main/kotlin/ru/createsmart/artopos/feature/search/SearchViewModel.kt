@@ -65,8 +65,8 @@ class SearchViewModel @Inject constructor(
 
     private val _artworkSearchQuery = MutableStateFlow("")
     private val _filterSheetSearchQuery = MutableStateFlow("")
-    private val _activeFilterParams = MutableStateFlow(FilterParams(sort = FilterSortOption.RANK))
-    private val _draftFilterParams = MutableStateFlow(FilterParams(sort = FilterSortOption.RANK))
+    private val _activeFilterParams = MutableStateFlow(FilterParams(sort = FilterSortOption.TOTAL_PAGE_VIEWS))
+    private val _draftFilterParams = MutableStateFlow(FilterParams(sort = FilterSortOption.TOTAL_PAGE_VIEWS))
 
     private val _contentVersion = MutableStateFlow(0)
     val contentVersion = _contentVersion.asStateFlow()
@@ -250,7 +250,7 @@ class SearchViewModel @Inject constructor(
     }
 
     private fun onFilterReset() {
-        _draftFilterParams.value = FilterParams(sort = FilterSortOption.RANK)
+        _draftFilterParams.value = FilterParams(sort = FilterSortOption.TOTAL_PAGE_VIEWS)
         _filterSheetSearchQuery.value = ""
     }
 
@@ -277,11 +277,11 @@ class SearchViewModel @Inject constructor(
     private fun onToggleFilterSort() {
         val currentDraft = _draftFilterParams.value
         val newSort = when (currentDraft.sort) {
-            FilterSortOption.RANK -> FilterSortOption.TOTAL_PAGE_VIEWS
-            FilterSortOption.TOTAL_PAGE_VIEWS -> FilterSortOption.ACCESSION_YEAR
+            FilterSortOption.TOTAL_PAGE_VIEWS -> FilterSortOption.RANK
+            FilterSortOption.RANK -> FilterSortOption.ACCESSION_YEAR
             FilterSortOption.ACCESSION_YEAR -> FilterSortOption.DATE_BEGIN
             FilterSortOption.DATE_BEGIN -> FilterSortOption.RANDOM
-            FilterSortOption.RANDOM -> FilterSortOption.RANK
+            FilterSortOption.RANDOM -> FilterSortOption.TOTAL_PAGE_VIEWS
         }
         _draftFilterParams.value = currentDraft.copy(sort = newSort)
     }
