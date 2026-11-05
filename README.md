@@ -141,13 +141,21 @@ Create a `local.properties` file in the project root directory (if it wasn't cre
 sdk.dir=/path/to/your/android/sdk
 HARVARD_API_KEY=your-received-api-key-here
 ```  
-> **⚠️ Important note regarding memory usage:**  
-> By default, the `gradle.properties` file allocates up to **12 GB of RAM** for build processes.
-> If you are working on a machine with limited memory and experience OS freezes, please reduce the `-Xmx` arguments in `gradle.properties`.
+> **💡 RAM Allocation & Performance:**  
+> By default, the project allocates a safe baseline (~4.5 GB RAM total: 3 GB Gradle + 1.5 GB Kotlin Daemon) to ensure smooth builds on 8–16 GB machines without OS freezes.  
+> If you are working on a high-spec workstation (32+ GB RAM), you can safely boost heap limits locally in your global `~/.gradle/gradle.properties` (`C:\Users\<Username>\.gradle\gradle.properties` on Windows):
+> ```properties
+> org.gradle.jvmargs=-Xmx8192m -XX:+UseG1GC -XX:MaxMetaspaceSize=2048m -Dfile.encoding=UTF-8
+> kotlin.daemon.jvmargs=-Xmx4096m
+> ```
 
 ### 4. Verify & Run
 Run static analysis to ensure the environment is set up correctly:
 ```bash
+# 1. Automatically reformat and fix code style across all 20 modules:
+./gradlew detektFormat
+
+# 2. Run read-only static analysis (CI simulation):
 ./gradlew detektAll
 ```
 Select the `app` configuration in Android Studio and run it on an Emulator or Physical Device.
