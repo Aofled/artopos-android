@@ -20,7 +20,7 @@ class DetektConventionPlugin : Plugin<Project> {
         with(target) {
             pluginManager.apply("io.gitlab.arturbosch.detekt")
 
-            val configFile = rootProject.layout.projectDirectory.file("config/detekt/detekt.yml")
+            val configFile = layout.settingsDirectory.file("config/detekt/detekt.yml")
 
             extensions.configure<DetektExtension>("detekt") {
                 config.setFrom(files(configFile))

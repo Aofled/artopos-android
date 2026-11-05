@@ -26,10 +26,13 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                 // Settings specific for App (not for Libraries)
                 defaultConfig.targetSdk = libs.findVersionInt("android-sdk-target")
 
-                val vCode = (findProperty("ARTOPOS_VERSION_CODE") as? String)?.toIntOrNull() ?: 1
+                val vCode = providers.gradleProperty("ARTOPOS_VERSION_CODE")
+                    .map { it.toIntOrNull() ?: 1 }
+                    .getOrElse(1)
                 defaultConfig.versionCode = vCode
 
-                val vName = (findProperty("ARTOPOS_VERSION_NAME") as? String) ?: "1.0"
+                val vName = providers.gradleProperty("ARTOPOS_VERSION_NAME")
+                    .getOrElse("1.0.0")
                 defaultConfig.versionName = vName
 
                 defaultConfig.testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

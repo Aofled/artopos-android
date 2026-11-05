@@ -7,12 +7,13 @@ import org.gradle.kotlin.dsl.getByType
 import ru.createsmart.artopos.extensions.configureAndroidCompose
 
 /**
- * Adds Compose support to Library modules (Android Lib + Compose)
+ * Adds Compose support to Library modules (Android Lib + Compose).
+ * Automatically applies the base Android Library convention (SDK, Java 21, namespaces, Detekt).
  */
 class AndroidLibraryComposeConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
-            pluginManager.apply("com.android.library")
+            pluginManager.apply("artopos.android.library")
 
             val extension = extensions.getByType<LibraryExtension>()
             configureAndroidCompose(extension)
