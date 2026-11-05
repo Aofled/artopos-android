@@ -18,9 +18,8 @@ class HiltConventionPlugin : Plugin<Project> {
             }
 
             dependencies {
-                // Auto-add Hilt libraries. No need to add them manually in modules.
-                "implementation"(libs.findLibrary("hilt.android").get())
-                "ksp"(libs.findLibrary("hilt.compiler").get())
+                add("implementation", libs.findLibrary("hilt.android").get())
+                add("ksp", libs.findLibrary("hilt.compiler").get())
             }
         }
     }
