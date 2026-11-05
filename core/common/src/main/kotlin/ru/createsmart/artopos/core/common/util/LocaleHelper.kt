@@ -4,31 +4,27 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.res.Configuration
 import java.util.Locale
-import java.util.concurrent.ConcurrentHashMap
 
 object LocaleHelper {
 
-    // Cache contexts to avoid heavy recreation.
-    private val contextCache = ConcurrentHashMap<String, Context>()
-
+    /**
+     * Creates a localized context on demand without holding static references.
+     * Prevents Activity memory leaks and guarantees fresh resources on configuration changes.
+     */
     fun getLocalizedContext(baseContext: Context, languageTag: String): Context {
-        // Return base context if language is not set.
-        if (languageTag.isEmpty()) return baseContext
+        if (languageTag.isBlank()) return baseContext
 
-        return contextCache.getOrPut(languageTag) {
-            val locale = Locale.forLanguageTag(languageTag)
+        val locale = Locale.forLanguageTag(languageTag)
 
-            // Do not call Locale.setDefault to avoid changing global app locale.
-            val configuration = Configuration(baseContext.resources.configuration).apply {
-                setLocale(locale)
-            }
+        val configuration = Configuration(baseContext.resources.configuration).apply {
+            setLocale(locale)
+        }
 
-            val localizedContext = baseContext.createConfigurationContext(configuration)
+        val localizedContext = baseContext.createConfigurationContext(configuration)
 
-            // Wrap context to keep base context for Hilt and Activity.
-            object : ContextWrapper(localizedContext) {
-                override fun getBaseContext(): Context = baseContext
-            }
+        // Wrap to preserve the original baseContext so findActivity() can still resolve the Window
+        return object : ContextWrapper(localizedContext) {
+            override fun getBaseContext(): Context = baseContext
         }
     }
 }
