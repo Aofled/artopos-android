@@ -7,7 +7,7 @@
 
 **Artopos** is a modern, offline-first Android application for exploring the world's finest masterpieces using the public [Harvard Art Museums API](https://github.com/harvardartmuseums/api-docs).
 
-Built as a showcase of modern Android development, this app demonstrates strict architecture, advanced UI performance optimizations, and on-device Machine Learning integration.
+Built as a production-grade showcase of modern Android development: strict Clean Architecture, modular monolith, zero-overhead Compose rendering, and on-device ML.
 
 <div align="center">
   <img src="https://github.com/user-attachments/assets/be2e6cbe-a340-4178-909b-6cd1c088efda" width="19%" />
@@ -29,103 +29,61 @@ Built as a showcase of modern Android development, this app demonstrates strict 
 
 ## 🛠 Tech Stack
 
-**TL;DR:**
-* **Architecture:** Clean Architecture, Modular Monolith (20+ modules), Strict MVI.
-* **UI:** Jetpack Compose (Material 3, Edge-to-Edge), Navigation Compose (Type-Safe).
-* **Data & Network:** Room, Paging 3, Retrofit, Kotlinx Serialization, Coil 3.
-* **Advanced:** Google ML Kit, Baseline Profiles, Macrobenchmark, GitHub Actions.
+* **Architecture:** Clean Architecture, Modular Monolith (20 modules), Strict MVI (UDF), Hilt (pure `javax.inject` in domain).
+* **UI & Performance:** Jetpack Compose (Material 3, Edge-to-Edge), Type-Safe Navigation Compose, Immutable Collections, `Modifier.Node` API, Baseline Profiles.
+* **Data & Networking:** Room (Normalized SQLite, Composite B-Tree Indexes), Paging 3 (RemoteMediator + Network PagingSource), Retrofit 2, Kotlinx Serialization, Coil 3 (Custom 512 MB DiskCache).
+* **Search & ML:** Elasticsearch Query Builder (Wildcards + Phrases), Google ML Kit (On-Device Translation with bounded thread pools).
+* **Build & DevOps:** Gradle Kotlin DSL (Composite `build-logic`, Project Isolation ready), Version Catalog, Detekt, GitHub Actions CI/CD.
+
+---
+
+## ⚡️ Key Engineering Highlights
+
+* **Zero-Recomposition Shimmer (`Modifier.Node`):** Shimmer animations run strictly on the low-level `DrawModifierNode` API. By reading animation progress solely in the Draw phase, the rendering pipeline completely bypasses Composition and Layout passes, eliminating GC overhead during 120Hz scrolling.
+* **Layout-Shift Free Grid & Stable Anchors:** `LazyVerticalStaggeredGrid` pre-allocates placeholder dimensions using image aspect ratios before bitmap loading. Custom scroll-synchronization resets the scroll anchor only after `LoadState.NotLoading` is emitted, preventing jarring viewport jumps during sorting changes.
+* **Hardware-Aware Memory & Image Downsampling:** Decoding resolution is dynamically clamped based on the physical device RAM (`ActivityManager.isLowRamDevice`, scaling from 4,000px to 10,000px). This keeps pinch-to-zoom crisp on flagships while preventing GPU `GL_MAX_TEXTURE_SIZE` crashes and OOMs on budget hardware.
+* **Progressive On-Device ML Translation:** Two-phase loading strategy powered by `withTimeoutOrNull(300ms)`: displays instant dictionary translations; if the on-device Google ML Kit model takes longer than 300ms to warm up, an asynchronous background task seamlessly upgrades the text without UI flicker.
+* **Resilient Hybrid Paging Strategy:** Decouples offline-first Room pagination (`discover_feed` junction table) from ephemeral search pagination (`SearchPagingSource`). Eliminates Paging 3's `pageEventFlow` channel collision by streaming reactive favorite overlays independently, while persisting clean un-degraded DTO snapshots to SQLite via an in-memory session cache.
+* **Fast-Path MediaStream Copying:** When exporting artworks to the gallery, cached bytes are copied directly from Coil’s `DiskCache` snapshot into the `MediaStore` stream, avoiding costly CPU/RAM bitmap re-compression and cleaning up partial files on cancellation.
+
+---
 
 <details>
 <summary><b>View Detailed Tech Stack & Libraries</b></summary>
 <br/>
 
 ### Architecture & Design Patterns
-*   **Clean Architecture** (Strict separation of Data / Domain / Presentation layers).
-*   **Modular Monolith** (Feature-based + Layer-based modules to optimize build times and enforce encapsulation).
-*   **Offline-First** (Database as a Single Source of Truth).
-*   **MVI** (Unidirectional Data Flow with `Sealed Interfaces` for Intents and UI States).
-*   **Dependency Injection** (Hilt / Dagger).
+*   **Clean Architecture** (Strict separation of Data / Domain / Presentation layers, pure JVM Domain contracts).
+*   **Modular Monolith** (Feature-based + Layer-based modules to optimize build times and enforce strict encapsulation).
+*   **Offline-First & Hybrid Data Strategy** (Database SSOT for Feed & Favorites; In-Memory Session Cache for Search).
+*   **Strict MVI** (Unidirectional Data Flow with `Sealed Interfaces` for Intents, UI States, and Single-shot Events).
+*   **Dependency Injection** (Hilt / Dagger with pure JSR-330 `javax.inject` in pure domain modules).
 
 ### Modern Android & Compose
-*   **Kotlin 2.0+** (K2 Compiler).
-*   **Jetpack Compose** (Material 3, Edge-to-Edge, Immutable Collections, Modifier.Node API).
+*   **Kotlin 2.0+** (K2 Compiler, Strong Skipping Mode).
+*   **Jetpack Compose** (Material 3, Edge-to-Edge, Immutable Collections, Modifier.Node API, `animateItem()`).
 *   **Type-Safe Navigation** (Jetpack Navigation Compose with Kotlin Serialization for compile-time route safety).
-*   **Coroutines & Flow** (Heavy usage of `combine`, `stateIn`, `flatMapLatest`).
-*   **Paging 3** (RemoteMediator, Room Integration).
-*   **DataStore Preferences** (Async reactive user settings storage with corruption recovery).
+*   **Coroutines & Flow** (Heavy usage of `combine`, `stateIn`, `flatMapLatest`, `debounce`).
+*   **Paging 3** (RemoteMediator for SQLite caching, Network-only PagingSource with reactive Room State overlays).
+*   **DataStore Preferences** (Async reactive user settings storage with `ReplaceFileCorruptionHandler`).
 
 ### Network, Data & ML
 *   **Retrofit 2** + **Kotlin Serialization** (Resilient JSON parsing with default coercing).
-*   **OkHttp** (Custom Interceptors for forced cache-control).
-*   **Room Database** (Normalized schema, Cascade Foreign Keys, Composite Indexes, Transactions).
-*   **Coil 3** (Custom DiskCache SSOT, hardware-aware downsampling).
-*   **Google ML Kit** (On-Device Translation for dynamic content).
-*   **Zoomable** (`net.engawapg.lib:zoomable` for image pan & zoom gestures).
+*   **OkHttp** (Network Interceptors for forced 7-day Cache-Control).
+*   **Room Database** (Normalized junction tables, Cascade Foreign Keys, Composite Indexes, Transactions).
+*   **Coil 3** (Custom 512 MB DiskCache SSOT, hardware-aware downsampling, Fast-Path stream copying).
+*   **Google ML Kit** (On-Device Translation for dynamic descriptions and metadata).
+*   **Zoomable** (`net.engawapg.lib:zoomable` for image pan & pinch gestures).
 
 ### Build System & Quality
-*   **Gradle Kotlin DSL** (KTS) with **Project Isolation** support.
+*   **Gradle Kotlin DSL** (KTS) with **Project Isolation** readiness.
 *   **Version Catalog** (`libs.versions.toml`).
-*   **Convention Plugins** (Custom `build-logic` automating dependency management, Namespace generation, and ProGuard rules).
+*   **Convention Plugins** (Custom `build-logic` composite build automating dependencies, namespaces, and ProGuard rules).
 *   **Detekt** (Static code analysis with strict CI verification).
 *   **R8/ProGuard** (Optimized release builds with consumer-rules aggregation).
-*   **Baseline Profiles & Macrobenchmark** (AOT compilation and UI performance metrics).
-*   **Unit Testing & Test Harness** (Dedicated `:core:testing` module, JUnit 4, Mockk, Coroutines Test, Turbine).
-*   **GitHub Actions CI** (Automated pipeline for static analysis, unit testing, and secure APK building).
-</details>
-
----
-
-## ✨ Engineering Highlights
-
-<details>
-<summary><b>1. Compose Performance & "Jump-Free" Grid</b></summary>
-<br/>
-
-* **Modern Modifier.Node Shimmer:** The shimmer animation is built using the low-level `Modifier.Node` API (`DrawModifierNode`). It executes strictly in the Draw phase without allocations or triggering recomposition passes, eliminating Garbage Collector overhead during high-speed scrolling.
-* **Gesture-state Tracking:** `derivedStateOf` is used to observe scroll and pinch-to-zoom (`zoomState`) thresholds, ensuring recomposition triggers only when a logical state boundary is crossed rather than on every frame.
-* **Layout-shift Prevention:** `LazyVerticalStaggeredGrid` reserves exact space for placeholders using aspect ratios provided by the API, preventing disruptive layout jumps while images load asynchronously.
-* **Centralized UI Event Coordination:** Features a single top-level `SnackbarHost` synchronized with `BottomBar` and `FloatingActionButton` offsets via frame-based animations (`FastOutSlowInEasing`). This ensures snackbars smoothly adapt to navigation visibility and persist across screen transitions without being destroyed.
-* **Baseline Profiles:** Critical user journeys (app startup, feed rendering, and scroll paths) are captured via Macrobenchmark into pre-compiled AOT binary profiles (`baseline-prof.txt`). This mitigates Android Runtime (ART) JIT compilation overhead, ensuring smooth frame delivery from the very first launch.
-</details>
-
-<details>
-<summary><b>2. Hardware-Aware Image Decoding & Media</b></summary>
-<br/>
-
-* **RAM-Based Downsampling:** Decoding resolution is dynamically capped based on the physical device RAM (`ActivityManager.isLowRamDevice` and total RAM thresholds, scaling from 4000px up to 10000px). This keeps zoomed artworks crisp on flagship displays while avoiding GPU `GL_MAX_TEXTURE_SIZE` limits and `OutOfMemoryError` on budget hardware.
-* **Transaction-Safe Scoped Storage:** Artworks are saved via `MediaStore`. Android 10+ (API 29+) uses Scoped Storage with `IS_PENDING` flags, while legacy versions request runtime permissions. Any I/O error or coroutine cancellation automatically deletes incomplete entries, preventing orphaned 0-byte files in the gallery.
-* **Single Disk Cache Source of Truth:** A dedicated 512 MB Coil `DiskCache` acts as the exclusive on-disk cache for media, eliminating duplicate file storage between OkHttp and Coil and providing instant cache-size calculation.
-</details>
-
-<details>
-<summary><b>3. On-Device Machine Learning (Google ML Kit)</b></summary>
-<br/>
-
-* **Offline Translation:** Artwork descriptions and metadata are translated entirely on-device via Google ML Kit, requiring no external cloud roundtrips.
-* **Progressive UI Pattern:** A dual-phase loading strategy powered by `withTimeoutOrNull`: the UI instantly renders cached dictionary translations; if the on-device ML model takes longer than 300ms to warm up, an asynchronous background task seamlessly upgrades the text once complete.
-* **Bounded Concurrency:** ML Kit operations are strictly bounded via `Dispatchers.IO.limitedParallelism` tailored to `ActivityManager.isLowRamDevice`, preventing CPU saturation and native C++ memory exhaustion on constrained hardware.
-</details>
-
-<details>
-<summary><b>4. Robust Offline-First Architecture</b></summary>
-<br/>
-
-* **Normalized Schema & Clean SSOT:** The Discover feed utilizes a normalized junction table (`discover_feed`) linked to the primary `artworks` catalog via `ForeignKey(onDelete = CASCADE)`. This completely decouples feed pagination from the details screen, preventing stale items from leaking into the feed during concurrent background refreshes.
-* **B-Tree Database Indexing:** Room tables are equipped with composite indexes on `(sorting_index)` and `(type, count)`, replacing slow Full Table Scans with logarithmic index searches.
-* **DataStore Corruption Recovery:** Configured with `ReplaceFileCorruptionHandler` and explicit `IOException` fallbacks, safeguarding the app against fatal startup crash loops caused by corrupted preference files.
-* **Smart Catalog Synchronization (30-day TTL):** Museum categories and filters are cached locally with a 30-day Time-To-Live policy evaluated on startup via an abstracted `TimeProvider`. Updates execute inside an atomic SQLite `@Transaction`, ensuring UI state consistency during connection drops.
-* **Lightweight Cursor Projections:** Employs Room projections (`ArtworkFeedProjectionDBO`) to omit heavy columns during feed scrolling, staying well below SQLite `CursorWindow` memory limits.
-* **Pure Domain Contracts:** Network and serialization errors are mapped at the Data layer into a pure Kotlin `AppError` hierarchy that preserves root causes (`cause: Throwable?`) for transparent production diagnostics.
-</details>
-
-<details>
-<summary><b>5. DevSecOps & CI/CD Pipelines</b></summary>
-<br/>
-
-* **Convention Plugins & Project Isolation:** Modular build logic using Gradle Composite Builds (`build-logic`), ensuring compatibility with Gradle Project Isolation and Configuration Caching across 19 modules.
-* **Automated CI Workflows:**
-  * `ci_debug.yml`: Runs Detekt static analysis, Android Lint, and Unit Tests on pull requests with auto-correction disabled to strictly enforce style compliance.
-  * `ci_release.yml`: Automated release pipeline triggered by Git tags that produces signed, obfuscated AAB bundles, packages them into encrypted archives, and delivers artifacts directly via the Telegram Bot API.
+*   **Baseline Profiles & Macrobenchmark** (AOT compilation and UI frame timing metrics).
+*   **Unit Testing & Test Harness** (Dedicated `:core:testing` module, In-Memory Room testing, Robolectric, JUnit 4, Mockk, Turbine).
+*   **GitHub Actions CI** (Automated pipelines for static analysis, unit testing, and encrypted AAB delivery via Telegram Bot API).
 </details>
 
 ---
@@ -137,28 +95,29 @@ Built as a showcase of modern Android development, this app demonstrates strict 
 
 ```text
 root
-├── app                 # Application entry point, NavHost, Edge-to-Edge setup, Hilt DI assembly
-├── build-logic         # Custom Gradle Convention Plugins
-├── benchmark           # Macrobenchmark UI Performance Tests & Baseline Profile Generator
+├── app                 # Application entry point, NavHost, Composition Root, Hilt assembly
+├── build-logic         # Convention Plugins automating dependencies, namespaces & ProGuard
+├── benchmark           # Macrobenchmark tests & Baseline Profile generator
 ├── core
-│   ├── model           # Domain models, Enums, AppErrors (Pure Kotlin, no Android dependencies)
-│   ├── network         # Retrofit API interfaces, Serialization DTOs, Auth Interceptors
-│   ├── database        # Room Database, DBOs, Projections, DAOs, TypeConverters
-│   ├── data            # Repositories, Paging RemoteMediator, Domain-to-Data Mappers
-│   ├── domain          # UseCases, Repository Interfaces (Strict Business Logic)
-│   ├── datastore       # Jetpack DataStore Preferences for user settings
-│   ├── designsystem    # Core UI tokens (Theme, Typography with Google Fonts, Colors)
-│   ├── ui-components   # Reusable UI widgets (Shimmers, ArtworkCard, Placeholders, Buttons)
-│   ├── translation     # Google ML Kit integration wrapper with thread limiting
-│   ├── navigation      # Type-safe @Serializable routes for Compose Navigation
-│   ├── image-loader    # Custom OkHttpClient and Coil disk caching integration
-│   ├── testing         # Shared testing infrastructure (MainDispatcherRule, Test Dispatchers)
-│   └── common          # General Utilities (NetworkMonitor, Locale Helper, Dictionaries)
+│   ├── model           # Pure Kotlin domain entities, Enums, AppErrors (Zero Android dependencies)
+│   ├── domain          # Repository interfaces & UseCases (Strict Business Logic)
+│   ├── data            # Repositories, RemoteMediator, SearchPagingSource, Mappers
+│   ├── network         # Retrofit API, Serialization DTOs, Auth Interceptors
+│   ├── database        # Room Database, DBOs, Projections, DAOs
+│   ├── datastore       # Jetpack DataStore Preferences with corruption recovery
+│   ├── designsystem    # Core UI tokens, Themes, Downloadable Google Fonts
+│   ├── ui-components   # Reusable widgets (ShimmerNode, ArtworkCard, FilterBottomSheet)
+│   ├── translation     # Google ML Kit wrapper with limitedParallelism
+│   ├── navigation      # Type-safe @Serializable routes
+│   ├── image-loader    # Coil 3 & OkHttp configuration, MediaStore downloader
+│   ├── common          # Shared utilities (NetworkMonitor, LocaleHelper, Dictionaries)
+│   └── testing         # Shared testing harness (MainDispatcherRule)
 └── feature
-    ├── discover        # "Discover" Infinite Feed screen with Paging 3 and Filter BottomSheet
-    ├── details         # Deep-dive screen with full description, Zoomable gallery, and ML translation
-    ├── favorites       # Local saved artworks screen (Offline SSOT)
-    └── settings        # App preferences (Theme, Language, Cache clearing)
+    ├── discover        # Infinite feed with Paging 3 and Filter BottomSheet
+    ├── search          # Debounced live search with smart script guidance
+    ├── details         # Deep-dive screen with Zoomable gallery and ML translation
+    ├── favorites       # Saved artworks screen (Local SQLite SSOT)
+    └── settings        # Preferences (Theme, Dynamic Locale, Cache cleaner)
 ```
 </details>
 
