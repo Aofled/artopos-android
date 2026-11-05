@@ -9,7 +9,7 @@
  * 1. RUN DETEKT (Code Style & Smells)
  *    Checks all modules including `build-logic`.
  *    Command: ./gradlew detektAll
- *    Note: Auto-correction is enabled locally via `gradle.properties`.
+ *    Note: Run ./gradlew detektFormat to auto-fix issues.
  *
  * 2. RUN ANDROID LINT (Resources, Manifest, Android API)
  *    Checks for Android-specific issues (e.g. Unused resources, accessibility).
@@ -64,4 +64,12 @@ tasks.register("detektAll") {
 
     // Run detekt for build-logic using composite build.
     dependsOn(gradle.includedBuild("build-logic").task(":convention:detekt"))
+}
+
+tasks.register("detektFormat") {
+    group = "formatting"
+    description = "Run Detekt auto-formatting on all modules including build-logic"
+
+    // Runs formatting for build-logic composite build.
+    dependsOn(gradle.includedBuild("build-logic").task(":convention:detektFormat"))
 }

@@ -5,30 +5,24 @@ import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
+import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.withType
 import ru.createsmart.artopos.extensions.libs
 
 /**
  * Static analysis & Formatting (Style guide)
  *
- * Simple check (For CI and locally): ./gradlew detektAll
- * (It will fail if there are formatting errors. The code will not change.)
- * Auto-correct (Locally before commit): ./gradlew detektAll
+ * Check code style: ./gradlew detektAll
+ * Auto-fix code style: ./gradlew detektFormat
  */
 class DetektConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
             pluginManager.apply("io.gitlab.arturbosch.detekt")
 
-            // Disable auto-correct on CI.
-            val isCi = providers.environmentVariable("CI").isPresent
-            val isAutoCorrectProperty = providers.gradleProperty("detekt.autocorrect").getOrElse("false") == "true"
-            val isAutoCorrectEnabled = !isCi && isAutoCorrectProperty
+            val configFile = rootProject.layout.projectDirectory.file("config/detekt/detekt.yml")
 
             extensions.configure<DetektExtension>("detekt") {
-                // Locate config safely for Isolated Projects.
-                val configFile = rootProject.layout.projectDirectory.file("config/detekt/detekt.yml")
-
                 config.setFrom(files(configFile))
                 source.setFrom(files("src"))
 
@@ -38,19 +32,40 @@ class DetektConventionPlugin : Plugin<Project> {
                 // Speed up analysis. Warning: High RAM usage!
                 // Disable if Gradle crashes with OOM (OutOfMemory).
                 parallel = true
+                // Standard Detekt runs in read-only mode by default.
+                autoCorrect = false
+            }
 
-                // Auto-fix simple errors (formatting)
-                autoCorrect = isAutoCorrectEnabled
+            // Formatting task: fixes style issues in place.
+            tasks.register<Detekt>("detektFormat") {
+                group = "formatting"
+                description = "Reformats code and fixes auto-correctable style issues for this module"
+                setSource(files("src"))
+                config.setFrom(files(configFile))
+                buildUponDefaultConfig = true
+                parallel = true
+                autoCorrect = true
+
+                // Disable reports for faster formatting.
+                reports {
+                    xml.required.set(false)
+                    html.required.set(false)
+                    txt.required.set(false)
+                    sarif.required.set(false)
+                }
+            }
+
+            // Verification task: runs code audit without modifying files.
+            tasks.register("detektAll") {
+                group = "verification"
+                description = "Runs read-only Detekt check for this module"
+                dependsOn(tasks.named("detekt"))
             }
 
             tasks.withType<Detekt>().configureEach {
-                autoCorrect = isAutoCorrectEnabled
-            }
-
-            tasks.register("detektAll") {
-                group = "verification"
-                description = "Runs detekt for this module"
-                dependsOn(tasks.named("detekt"))
+                if (name == "detektFormat") {
+                    autoCorrect = true
+                }
             }
 
             dependencies {

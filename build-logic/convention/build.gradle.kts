@@ -77,3 +77,20 @@ gradlePlugin {
         }
     }
 }
+
+tasks.register<io.gitlab.arturbosch.detekt.Detekt>("detektFormat") {
+    group = "formatting"
+    description = "Reformats code in build-logic"
+    setSource(files("src"))
+    config.setFrom(files("../../config/detekt/detekt.yml"))
+    buildUponDefaultConfig = true
+    parallel = true
+    autoCorrect = true
+
+    reports {
+        xml.required.set(false)
+        html.required.set(false)
+        txt.required.set(false)
+        sarif.required.set(false)
+    }
+}
