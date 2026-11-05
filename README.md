@@ -156,7 +156,7 @@ Run static analysis to ensure the environment is set up correctly:
 ./gradlew detektFormat
 
 # 2. Run read-only static analysis (CI simulation):
-./gradlew detektAll
+./gradlew detekt
 ```
 Select the `app` configuration in Android Studio and run it on an Emulator or Physical Device.
 

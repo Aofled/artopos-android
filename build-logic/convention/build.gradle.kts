@@ -24,7 +24,7 @@ val isAutoCorrectEnabled = providers.gradleProperty("detekt.autocorrect").orNull
 
 detekt {
     config.setFrom(files("../../config/detekt/detekt.yml"))
-    autoCorrect = isAutoCorrectEnabled
+    autoCorrect = false
 }
 
 gradlePlugin {

@@ -29,7 +29,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Run Detekt
-        run: ./gradlew detektAll --no-daemon
+        run: ./gradlew detekt --no-daemon
 
       - name: Upload Detekt Reports
         if: always() # We save reports even if the analysis fails (to view errors)

@@ -12,7 +12,7 @@ import ru.createsmart.artopos.extensions.libs
 /**
  * Static analysis & Formatting (Style guide)
  *
- * Check code style: ./gradlew detektAll
+ * Check code style: ./gradlew detekt
  * Auto-fix code style: ./gradlew detektFormat
  */
 class DetektConventionPlugin : Plugin<Project> {
@@ -55,17 +55,8 @@ class DetektConventionPlugin : Plugin<Project> {
                 }
             }
 
-            // Verification task: runs code audit without modifying files.
-            tasks.register("detektAll") {
-                group = "verification"
-                description = "Runs read-only Detekt check for this module"
-                dependsOn(tasks.named("detekt"))
-            }
-
             tasks.withType<Detekt>().configureEach {
-                if (name == "detektFormat") {
-                    autoCorrect = true
-                }
+                autoCorrect = (name == "detektFormat")
             }
 
             dependencies {

@@ -8,7 +8,7 @@
  * --- STATIC ANALYSIS (DETEKT & LINT) ---
  * 1. RUN DETEKT (Code Style & Smells)
  *    Checks all modules including `build-logic`.
- *    Command: ./gradlew detektAll
+ *    Command: ./gradlew detekt
  *    Note: Run ./gradlew detektFormat to auto-fix issues.
  *
  * 2. RUN ANDROID LINT (Resources, Manifest, Android API)
@@ -17,7 +17,7 @@
  *
  * 3. RUN ALL CHECKS (CI Simulation)
  *    Run this before pushing to trigger the same checks as GitHub Actions.
- *    Command: ./gradlew detektAll lintDebug
+ *    Command: ./gradlew detekt lintDebug
  *
  * --- TESTING ---
  * 4. RUN ALL UNIT TESTS
@@ -57,19 +57,16 @@ tasks.register("clean", Delete::class) {
     delete(rootProject.layout.buildDirectory)
 }
 
-// Root task to run Detekt on all modules and build-logic plugins.
-tasks.register("detektAll") {
+// Root check task: runs :detekt across modules and build-logic composite build.
+tasks.register("detekt") {
     group = "verification"
     description = "Run Detekt on all modules including build-logic"
-
-    // Run detekt for build-logic using composite build.
     dependsOn(gradle.includedBuild("build-logic").task(":convention:detekt"))
 }
 
+// Root formatting task: runs detektFormat across modules and build-logic.
 tasks.register("detektFormat") {
     group = "formatting"
     description = "Run Detekt auto-formatting on all modules including build-logic"
-
-    // Runs formatting for build-logic composite build.
     dependsOn(gradle.includedBuild("build-logic").task(":convention:detektFormat"))
 }
