@@ -46,6 +46,25 @@ Thumbs.db
 
 # --- AI Artifacts ---
 .artifacts/
+.opencode/plans/
+.opencode/reviews/
 
 # --- Publication ---
 app/release/
+.opencode/opencode.json
+.opencode/skills/plan-executor/SKILL.md
+.opencode/skills/planning-interview/SKILL.md
+.opencode/skills/planning-interview/references/plan-template.md
+.opencode/skills/staged-architecture-review/SKILL.md
+.opencode/skills/staged-architecture-review/references/review-template.md
+.opencode/skills/staged-conventional-commit/SKILL.md
+.opencode/skills/tester/SKILL.md
+.opencode/skills/tester/references/test-failure-template.md
+.opencode/skills/verifier/SKILL.md
+.opencode/skills/verifier/references/verification-template.md
+app/AGENTS.md
+benchmark/AGENTS.md
+build-logic/AGENTS.md
+core/AGENTS.md
+feature/AGENTS.md
+AGENTS.md
